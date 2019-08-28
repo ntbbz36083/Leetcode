@@ -71,4 +71,81 @@ class Solution(object):
                             continue
                         rooms[x][y] = val
                         q.extend([(x+1,y,val+1),(x-1,y,val+1),(x,y+1,val+1),(x,y-1,val+1)])
-                            
+##200. Number of Islands                            
+class Solution(object):
+    def numIslands(self, grid):
+        """
+        :type grid: List[List[str]]
+        :rtype: int
+        """
+        if not grid: return 0
+        r, c = len(grid), len(grid[0])
+        visited = [[False for _ in range(c)] for _ in range(r)]
+
+        def dfs(i, j):
+            if i < 0 or i >= r or j < 0 or j >= c or grid[i][j] == '0' or visited[i][j]:
+                return
+            visited[i][j] = True
+            dfs(i + 1, j)
+            dfs(i - 1, j)
+            dfs(i, j + 1)
+            dfs(i, j - 1)
+
+        count = 0
+        for i in range(r):
+            for j in range(c):
+                if not visited[i][j] and grid[i][j] == '1':
+                    dfs(i, j)
+                    count += 1
+        return count
+class Solution(object):
+    def numIslands(self, grid):
+        """
+        :type grid: List[List[str]]
+        :rtype: int
+        """
+        if not grid:
+            return 0
+        count = 0
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == '1':
+                    self.helper(i,j,grid)
+                    count += 1
+        return count
+    def helper(self,ii, jj, grid):
+        if ii < 0 or ii >= len(grid) or jj < 0 or jj >= len(grid[0]) or grid[ii][jj] != '1':
+            return
+        grid[ii][jj] = '#'
+        self.helper(ii+1,jj,grid)
+        self.helper(ii-1,jj,grid)
+        self.helper(ii,jj+1,grid)
+        self.helper(ii,jj-1,grid)
+##279. Perfect Squares
+class Solution(object):
+    def numSquares(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        if n < 2:
+            return n
+        lst = []
+        i = 1
+        while i*i <= n:
+            lst.append(i*i)
+            i += 1
+        count = 0
+        dic = {n}
+        while dic:
+            count += 1
+            temp = set()
+            for x in dic:
+                for y in lst:
+                    if x == y:
+                        return count
+                    elif x < y:
+                        break
+                    temp.add(x-y)
+            dic = temp
+        return count
