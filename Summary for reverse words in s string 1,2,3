@@ -1,0 +1,57 @@
+This post will include all 3 reverse words in a string question in leetcode, which are:
+151. Reverse Words in a String
+186. Reverse Words in a String II
+557. Reverse Words in a String III
+
+The general approach is
+
+change string to a list. s = list(s) ind = len(s)
+reverse whole list.
+reverse each word in array.
+To reverse, we create 2 function to reverse a whole list and reverse the each word in list.
+def reverse_list(self, s, i, j):
+        while i < j:
+            s[i], s[j] = s[j], s[i]
+            i += 1
+            j -= 1 
+T: O(n/2) S: O(1)
+def reverse_word(self, s, ind):
+        i = 0
+        j = 0
+        while i < ind:
+			# This will skip any space that are in front of the word
+            while i < j or (i < ind and s[i] == ' '):
+                i += 1
+			# This will find the position that word ends.
+            while j < i or (j < ind and s[j] != ' '):
+                j += 1
+			# reverse list between i, j-1, which is the position of the word
+            self.reverse(s, i, j-1)
+T: O(nlogn) S: O(1)
+By using above 2 functions, we can easily handle:
+186. Reverse Words in a String II --- which string is already converted to a list, so no need for step1
+557. Reverse Words in a String III --- which has no space and we can reverse it diretly.
+
+Since there are spaces in string in 151. Reverse Words in a String, we can use another function to take care of the spaces.
+
+    def remove_space(self, s, ind):
+        i, j = 0, 0
+        while j < ind:
+			# skip all spaces before a word 
+            while j < ind and s[j] == ' ':
+                j += 1
+			# put words in its right posistion
+            while j < ind and s[j] != ' ':
+                s[i] = s[j]
+                i += 1
+                j += 1
+			# skip all spaces after a word
+            while j < ind and s[j] == ' ':
+                j += 1
+			# if a word is done, we need to add a space at the end of it so we can keep the original format.
+            if j < ind:
+                s[i] = ' '
+                i += 1
+        return s[:i]
+T: O(n) S: O(1)
+So for 151. Reverse Words in a String: T: O(n+logn) S: O(1)
