@@ -1,4 +1,4 @@
-#752. Open the Lock
+##752. Open the Lock
 class Solution(object):
     def openLock(self, deadends, target):
         """
@@ -28,3 +28,47 @@ class Solution(object):
             res.append(node[:i] + str((num+1) % 10) + node[i+1:])
             res.append(node[:i] + str((num-1) % 10) + node[i+1:])
         return res
+##286. Walls and Gates
+class Solution(object):
+    def wallsAndGates(self, rooms):
+        """
+        :type rooms: List[List[int]]
+        :rtype: None Do not return anything, modify rooms in-place instead.
+        """
+        if not rooms:
+            return
+        for i in range(len(rooms)):
+            for j in range(len(rooms[0])):
+                if rooms[i][j] == 0:
+                    self.helper(i,j,rooms,0)
+        
+        
+    def helper(self,ii,jj,a,val):
+        if ii < 0 or ii >= len(a) or jj < 0 or jj >= len(a[0]) or a[ii][jj] < val:
+            return
+        a[ii][jj] = val
+        self.helper(ii+1,jj,a,val+1)
+        self.helper(ii-1,jj,a,val+1)
+        self.helper(ii,jj+1,a,val+1)
+        self.helper(ii,jj-1,a,val+1)
+class Solution(object):
+    def wallsAndGates(self, rooms):
+        """
+        :type rooms: List[List[int]]
+        :rtype: None Do not return anything, modify rooms in-place instead.
+        """
+        if not rooms:
+            return
+        r = len(rooms)
+        c = len(rooms[0])
+        for i in range(r):
+            for j in range(c):
+                if rooms[i][j] == 0:
+                    q = collections.deque([(i-1,j,1),(i+1,j,1),(i,j-1,1),(i,j+1,1)])
+                    while q:
+                        x, y, val = q.popleft()
+                        if x < 0 or x >= r or y < 0 or y >= c or rooms[x][y] <= val:
+                            continue
+                        rooms[x][y] = val
+                        q.extend([(x+1,y,val+1),(x-1,y,val+1),(x,y+1,val+1),(x,y-1,val+1)])
+                            
