@@ -67,4 +67,69 @@ def dfs(self, root, sum, path, res):
         self.dfs(root.left, sum-root.val, path+[root.val], res)
         self.dfs(root.right, sum-root.val, path+[root.val], res)
 			
-	
+#437. Path Sum III
+#https://leetcode.com/problems/path-sum-iii/
+##Recursive:
+class Solution(object):
+    def find_paths(self, root, target):
+        if root:
+            return int(root.val == target) + self.find_paths(root.left, target-root.val) + self.find_paths(root.right, target-root.val)
+        return 0
+
+    def pathSum(self, root, sum):
+        """
+        :type root: TreeNode
+        :type sum: int
+        :rtype: int
+        """
+        if root:
+            return self.find_paths(root, sum) + self.pathSum(root.left, sum) + self.pathSum(root.right, sum)
+        return 0
+##https://leetcode.com/problems/path-sum-iii/discuss/141424/Python-step-by-step-walk-through.-Easy-to-understand.-Two-solutions-comparison.-%3A-)
+##Iterative:
+class Solution(object):
+    def pathSum(self, root, sum):
+        """
+        :type root: TreeNode
+        :type sum: int
+        :rtype: int
+        """
+        if not root:
+            return 0
+        
+        stack = [(root, [root.val])]
+        num = 0
+        
+        while stack:
+            node, totals = stack.pop()
+            
+            num += totals.count(sum)
+                
+            if node.left:
+                stack.append((node.left, [x+node.left.val for x in totals]+[node.left.val]))
+            if node.right:
+                stack.append((node.right, [x+node.right.val for x in totals]+[node.right.val]))
+        return num
+
+#666. Path Sum IV
+#https://leetcode.com/problems/path-sum-iv/
+class Solution(object):
+    def pathSum(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        dic = collections.defaultdict(int)
+        # Create a dict of depth and pos
+        for num in nums:
+            depth, pos = num/100, (num/10)%10
+            val = num % 10
+            # At each level, store the sum of all the previous nodes covered
+            dic[depth, pos] = dic[depth-1, (pos+1)/2] + val
+            
+        res = 0
+        for depth,pos in dic.keys():
+            # Since the leaf nodes contain sum of the entire path from root to each leaf nodes, just check whether it is a leaf node or not and then add up all the leaf nodes
+            if (depth+1, pos*2-1) not in dic and (depth+1,pos*2) not in dic:
+                res += dic[depth,pos]
+        return res	
