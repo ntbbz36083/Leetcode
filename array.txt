@@ -1,3 +1,59 @@
+7. Reverse Integer
+https://leetcode.com/problems/reverse-integer/
+        
+def reverse(self, x):
+        """
+        :type x: int
+        :rtype: int
+        """
+        if x > 0:
+            return self.re(x)
+        else:
+            return -self.re(-x)
+        
+    def re(self, x):
+        res = 0
+        while x:
+            digit = x % 10
+            res = res * 10 + digit
+            x = int(x/10)
+        return 0 if res > pow(2,31) or res < -pow(2,31) else res
+
+12. Integer to Roman
+https://leetcode.com/problems/integer-to-roman/
+
+def intToRoman(self, num):
+        """
+        :type num: int
+        :rtype: str
+        """
+        values = [ 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 ]   
+        numerals = [ "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" ]
+        res, i = '', 0
+        while num:
+            res += (num // values[i]) * numerals[i]
+            num %= values[i]
+            i += 1
+        return res
+
+13. Roman to Integer
+https://leetcode.com/problems/roman-to-integer/
+
+def romanToInt(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        roman = {'M': 1000,'D': 500 ,'C': 100,'L': 50,'X': 10,'V': 5,'I': 1}
+        z = 0
+        for i in range(0,len(s)-1):
+            if roman[s[i]] < roman[s[i+1]]:
+                z -= roman[s[i]]
+            else:
+                z += roman[s[i]]
+        return z + roman[s[-1]]
+        
+
 20. Valid Parentheses
 https://leetcode.com/problems/valid-parentheses/
 def isValid(self, s):
@@ -65,6 +121,27 @@ def maxSubArray(self, nums):
             ms = max(ms, cur)
         return ms
 
+88. Merge Sorted Array
+https://leetcode.com/problems/merge-sorted-array/
+
+def merge(self, nums1, m, nums2, n):
+        """
+        :type nums1: List[int]
+        :type m: int
+        :type nums2: List[int]
+        :type n: int
+        :rtype: None Do not return anything, modify nums1 in-place instead.
+        """
+        while m>0 and n>0:
+            if nums1[m-1]>=nums2[n-1]:
+                nums1[m+n-1] = nums1[m-1]
+                m -= 1
+            else:
+                nums1[m+n-1] = nums2[n-1]
+                n -= 1
+        if n>0:
+            nums1[:n] = nums2[:n]
+
 121. Best Time to Buy and Sell Stock
 https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
@@ -110,6 +187,65 @@ def reverseList(self, head, prev = None):
         cur = head.next
         head.next = prev
         return self.reverseList(cur, head)
+
+234. Palindrome Linked List
+https://leetcode.com/problems/palindrome-linked-list/
+
+def isPalindrome(self, head):
+        """
+        :type head: ListNode
+        :rtype: bool
+        """
+        if not head:
+            return True
+        def re(node, pre = None):
+            while node:
+                cur = node
+                node = node.next
+                cur.next = pre
+                pre = cur
+            return pre
+        fast_head = slow_head = head
+        while fast_head and fast_head.next:
+            slow_head = slow_head.next
+            fast_head = fast_head.next.next
+        new_head = re(slow_head)
+        while new_head:
+            if head.val != new_head.val:
+                return False
+            head = head.next
+            new_head = new_head.next
+        return True
+
+415. Add Strings
+https://leetcode.com/problems/add-strings/
+
+def addStrings(self, num1, num2):
+        """
+        :type num1: str
+        :type num2: str
+        :rtype: str
+        """
+        if len(num1) > len(num2):
+            num1, num2 = num2, num1
+        n1, n2 = len(num1), len(num2)
+        num1, num2 = num1[::-1], num2[::-1]
+        res = []
+        carry = 0
+        i = 0
+        while i < n1: 
+            temp = int(num1[i]) + int(num2[i]) + carry
+            res.append(str(temp%10))
+            carry = temp / 10
+            i += 1
+        while i < n2:
+            temp = int(num2[i]) + carry
+            res.append(str(temp%10))
+            carry = temp / 10
+            i += 1
+        if carry:
+            res.append('1')
+        return ''.join(res[::-1])
 
 937. Reorder Data in Log Files
 https://leetcode.com/problems/reorder-data-in-log-files/
