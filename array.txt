@@ -1,3 +1,42 @@
+20. Valid Parentheses
+https://leetcode.com/problems/valid-parentheses/
+def isValid(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        if not s:
+            return True
+        stack = ['N']
+        dic = {')':'(',
+              ']':'[',
+              '}':'{'}
+        for ch in s:
+            if ch in dic:
+                if stack.pop() != dic[ch]:
+                    return False
+            else:
+                stack.append(ch)
+        return len(stack) == 1
+
+53. Maximum Subarray
+https://leetcode.com/problems/maximum-subarray/
+
+def maxSubArray(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        #t:O(n)
+        #s:O(1)
+        if not nums:
+            return 
+        cur = ms = nums[0]
+        for num in nums[1:]:
+            cur = max(cur+num, num)
+            ms = max(ms, cur)
+        return ms
+
 937. Reorder Data in Log Files
 https://leetcode.com/problems/reorder-data-in-log-files/
 
