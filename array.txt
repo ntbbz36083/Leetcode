@@ -1,0 +1,20 @@
+937. Reorder Data in Log Files
+https://leetcode.com/problems/reorder-data-in-log-files/
+
+def reorderLogFiles(self, logs):
+        """
+        :type logs: List[str]
+        :rtype: List[str]
+        """
+        #T:O(n)
+        #S:O(n)
+        digits = []
+        letters = []
+        for log in logs:
+            if log.split()[1].isdigit():
+                digits.append(log)
+            else:
+                letters.append(log)
+        letters.sort(key=lambda x: (x.split()[1:],x.split()[0]))
+        res = letters + digits
+        return res
