@@ -19,6 +19,34 @@ def isValid(self, s):
                 stack.append(ch)
         return len(stack) == 1
 
+21. Merge Two Sorted Lists
+https://leetcode.com/problems/merge-two-sorted-lists/
+
+def mergeTwoLists(self, l1, l2):
+        """
+        :type l1: ListNode
+        :type l2: ListNode
+        :rtype: ListNode
+        """
+        #T:O(n)
+        #S:O(n)
+        if  not l1 and not l2:
+            return
+        head = new = ListNode(0)
+        while l1 and l2:
+            if l1.val > l2.val:
+                new.next = l2
+                l2 = l2.next
+            else:
+                new.next = l1
+                l1 = l1.next
+            new = new.next
+        if l1:
+            new.next = l1
+        if l2:
+            new.next = l2
+        return head.next
+
 53. Maximum Subarray
 https://leetcode.com/problems/maximum-subarray/
 
@@ -36,6 +64,52 @@ def maxSubArray(self, nums):
             cur = max(cur+num, num)
             ms = max(ms, cur)
         return ms
+
+121. Best Time to Buy and Sell Stock
+https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
+
+def maxProfit(self, prices):
+        """
+        :type prices: List[int]
+        :rtype: int
+        """
+        #T:O(n)
+        #S:O(n)
+        if not prices:
+            return 0
+        min_price = float('inf')
+        max_profit = 0
+        for price in prices:
+            min_price = min(min_price, price)
+            profit = price - min_price
+            max_profit = max(max_profit, profit)
+        return max_profit
+
+206. Reverse Linked List
+https://leetcode.com/problems/reverse-linked-list/
+
+def reverseList(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        pre = None
+        while head:
+            cur = head
+            head = head.next
+            cur.next = pre
+            pre = cur
+        return pre
+def reverseList(self, head, prev = None):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        if not head:
+            return prev
+        cur = head.next
+        head.next = prev
+        return self.reverseList(cur, head)
 
 937. Reorder Data in Log Files
 https://leetcode.com/problems/reorder-data-in-log-files/
@@ -57,3 +131,26 @@ def reorderLogFiles(self, logs):
         letters.sort(key=lambda x: (x.split()[1:],x.split()[0]))
         res = letters + digits
         return res
+
+953. Verifying an Alien Dictionary
+https://leetcode.com/problems/verifying-an-alien-dictionary/
+
+def isAlienSorted(self, words, order):
+        """
+        :type words: List[str]
+        :type order: str
+        :rtype: bool
+        """
+        dic = {}
+        for i, word in enumerate(order):
+            dic[word] = i
+        new_word = []
+        for word in words:
+            temp = []
+            for w in word:
+                temp.append(dic[w])
+            new_word.append(temp)
+        for w1, w2 in zip(new_word, new_word[1:]):
+            if w1 > w2:
+                return False
+        return True
