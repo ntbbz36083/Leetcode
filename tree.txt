@@ -1,0 +1,55 @@
+99. Recover Binary Search Tree
+https://leetcode.com/problems/recover-binary-search-tree/
+class Solution(object):
+    def recoverTree(self, root): # O(n+lg(n)) space  
+        res = []
+        self.dfs(root, res)
+        first, second = None, None
+        for i in range(len(res)-1):
+            if res[i].val > res[i+1].val and not first:
+                first = res[i]
+            if res[i].val > res[i+1].val and first:
+                second = res[i+1]
+        first.val, second.val = second.val, first.val
+        
+    def dfs(self, root, res):
+        if root:
+            self.dfs(root.left, res)
+            res.append(root)
+            self.dfs(root.right, res)
+
+
+105. Construct Binary Tree from Preorder and Inorder Traversal
+https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        if inorder:
+            ind = inorder.index(preorder.pop(0))
+            root = TreeNode(inorder[ind])
+            root.left = self.buildTree(preorder,inorder[:ind])
+            root.right = self.buildTree(preorder,inorder[ind+1:])
+            return root
+
+124. Binary Tree Maximum Path Sum
+https://leetcode.com/problems/binary-tree-maximum-path-sum/
+class Solution:
+    def maxPathSum(self, root: TreeNode) -> int:
+        self.max_sum = float('-inf')
+        self.dfs(root)
+        return self.max_sum
+    
+    def dfs(self, node):
+        if not node: return 0
+        
+        # only add positive contributions
+        leftST_sum = max(0, self.dfs(node.left))
+        rightST_sum = max(0, self.dfs(node.right))
+
+        # check if cumulative sum at current node > global max sum so far
+        # this evaluates a candidate path
+        self.max_sum = max(self.max_sum, leftST_sum + rightST_sum + node.val)
+        
+        # add to the current node ONLY one of the children contributions
+        # in order to maintain the constraint of considering only paths
+        # if not, we would be exploring explore the whole tree - against problem definition
+        return max(leftST_sum, rightST_sum) + node.val
