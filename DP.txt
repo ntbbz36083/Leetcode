@@ -77,3 +77,24 @@ class Solution(object):
                 dp[i] = min(dp[i], 1 + dp[i - coin])
         return dp[amount] if dp[amount] != amount+1 else -1 
         
+300. Longest Increasing Subsequence
+https://leetcode.com/problems/longest-increasing-subsequence/
+T: O(n2)
+S: O(n)
+class Solution(object):
+    def lengthOfLIS(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        if not nums:
+            return 0
+        n = len(nums)
+        dp = [1 for _ in range(n)]
+        for i in range(n):
+            for j in range(i):
+                if nums[i]> nums[j]:
+                    dp[i] = max(dp[i], dp[j]+1)
+        return max(dp)
+        
+        
