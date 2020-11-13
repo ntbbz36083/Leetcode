@@ -1,39 +1,47 @@
-509. Fibonacci Number
-https://leetcode.com/problems/fibonacci-number/
+72. Edit Distance
+https://leetcode.com/problems/edit-distance/
+T:O(mn)
+S:(mn)
 class Solution(object):
-    def fib(self, N):
+    def minDistance(self, word1, word2):
         """
-        :type N: int
+        :type word1: str
+        :type word2: str
         :rtype: int
         """
-        if N <1:
-            return 0
-        dic = {}
-        def helper(N):
-            if N==1 or N==2:
-                return 1
-            if N in dic:
-                return dic[N]
-            dic[N] = helper(N-1)+helper(N-2)
-            return dic[N]
-        return helper(N)
-        
+        m,n = len(word1), len(word2)
+        dp = [[0 for _ in range(n+1)] for _ in range(m+1)]
+        for i in range(m+1):
+            for j in range(n+1):
+                if i == 0:
+                    dp[i][j] = j
+                elif j == 0:
+                    dp[i][j] = i
+                elif word1[i-1] == word2[j-1]:
+                    dp[i][j] = dp[i-1][j-1]
+                else:
+                    dp[i][j] = min(dp[i-1][j-1], dp[i-1][j],dp[i][j-1]) + 1
+        return dp[m][n]
+
+300. Longest Increasing Subsequence
+https://leetcode.com/problems/longest-increasing-subsequence/
+T: O(n2)
+S: O(n)
 class Solution(object):
-    def fib(self, N):
+    def lengthOfLIS(self, nums):
         """
-        :type N: int
+        :type nums: List[int]
         :rtype: int
         """
-        if not N:
+        if not nums:
             return 0
-        if N==1 or N==2:
-            return 1
-        prev, cur = 1, 1
-        for i in range(3,N+1):
-            sum1 = prev + cur
-            prev = cur
-            cur = sum1
-        return cur
+        n = len(nums)
+        dp = [1 for _ in range(n)]
+        for i in range(n):
+            for j in range(i):
+                if nums[i]> nums[j]:
+                    dp[i] = max(dp[i], dp[j]+1)
+        return max(dp)
         
 322. Coin Change
 https://leetcode.com/problems/coin-change/
@@ -76,25 +84,101 @@ class Solution(object):
                     continue
                 dp[i] = min(dp[i], 1 + dp[i - coin])
         return dp[amount] if dp[amount] != amount+1 else -1 
-        
-300. Longest Increasing Subsequence
-https://leetcode.com/problems/longest-increasing-subsequence/
-T: O(n2)
-S: O(n)
+            
+509. Fibonacci Number
+https://leetcode.com/problems/fibonacci-number/
 class Solution(object):
-    def lengthOfLIS(self, nums):
+    def fib(self, N):
         """
-        :type nums: List[int]
+        :type N: int
         :rtype: int
         """
-        if not nums:
+        if N <1:
             return 0
-        n = len(nums)
-        dp = [1 for _ in range(n)]
-        for i in range(n):
-            for j in range(i):
-                if nums[i]> nums[j]:
-                    dp[i] = max(dp[i], dp[j]+1)
-        return max(dp)
+        dic = {}
+        def helper(N):
+            if N==1 or N==2:
+                return 1
+            if N in dic:
+                return dic[N]
+            dic[N] = helper(N-1)+helper(N-2)
+            return dic[N]
+        return helper(N)
         
+class Solution(object):
+    def fib(self, N):
+        """
+        :type N: int
+        :rtype: int
+        """
+        if not N:
+            return 0
+        if N==1 or N==2:
+            return 1
+        prev, cur = 1, 1
+        for i in range(3,N+1):
+            sum1 = prev + cur
+            prev = cur
+            cur = sum1
+        return cur
         
+887. Super Egg Drop
+https://leetcode.com/problems/super-egg-drop/
+T:O(kn2)
+S:O(kn)
+class Solution(object):
+    def superEggDrop(self, K, N):
+        """
+        :type K: int
+        :type N: int
+        :rtype: int
+        """
+        dic = {}
+        def dp(k,n):
+            if k==1:
+                return n
+            if n == 0:
+                return 0
+            if (k,n) in dic:
+                return dic[(k,n)]
+            res = float('inf')
+            for i in range(1,n+1):
+                res = min(res, 
+                         1+ max(dp(k-1, i-1), dp(k, n-i))
+                         )
+            dic[(k,n)] = res
+            return res
+        return dp(K,N)
+
+T:O(knlogn)
+S:O(kn)
+class Solution(object):
+    def superEggDrop(self, K, N):
+        """
+        :type K: int
+        :type N: int
+        :rtype: int
+        """
+        dic = {}
+        def dp(k,n):
+            if k==1:
+                return n
+            if n == 0:
+                return 0
+            if (k,n) in dic:
+                return dic[(k,n)]
+            res = float('inf')
+            lo, hi = 1, n
+            while lo <= hi:
+                mid = (hi+lo)/2
+                broken = dp(k-1,mid-1)
+                not_broken = dp(k, n-mid)
+                if broken > not_broken:
+                    hi = mid - 1
+                    res = min(res, broken+1)
+                else:
+                    lo = mid + 1
+                    res = min(res, not_broken+1)
+            dic[(k,n)] = res
+            return res
+        return dp(K,N)
