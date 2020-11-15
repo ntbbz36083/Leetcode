@@ -182,3 +182,54 @@ class Solution(object):
             dic[(k,n)] = res
             return res
         return dp(K,N)
+
+198. House Robber
+https://leetcode.com/problems/house-robber/
+
+class Solution(object):
+    def rob(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        dp1, dp2= 0, 0
+        for num in nums:
+            dp1, dp2 = dp2, max(dp1+num,dp2)
+        return dp2
+        
+213. House Robber II
+https://leetcode.com/problems/house-robber-ii/
+
+class Solution(object):
+    def rob(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        def simple(nums):
+            rob, not_rob = 0,0
+            for num in nums:
+                rob, not_rob = not_rob, max(not_rob, rob + num)
+            return not_rob
+        if not nums:
+            return 0
+        elif len(nums)==1:
+            return nums[0]
+        else:
+            return max(simple(nums[1:]),simple(nums[:-1]))
+            
+337. House Robber III
+https://leetcode.com/problems/house-robber-iii/
+
+class Solution(object):
+    def rob(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        def dfs(node):
+            if not node:
+                return (0,0)
+            left, right = dfs(node.left),dfs(node.right)
+            return (node.val+left[1]+right[1], max(left[0],left[1])+max(right[0],right[1]))
+        return max(dfs(root))
