@@ -1,0 +1,280 @@
+1. Two Sum
+https://leetcode.com/problems/two-sum/
+
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        if not nums:
+            return 
+        dic = {}
+        for i, num in enumerate(nums):
+            if num in dic:
+                return [dic[num], i]
+            else:
+                dic[target-num] = i
+                
+167. Two Sum II - Input array is sorted
+https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/
+
+class Solution(object):
+    def twoSum(self, numbers, target):
+        """
+        :type numbers: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        left, right = 0, len(numbers)-1
+        while left < right:
+            su = numbers[left] + numbers[right]
+            if su == target:
+                return [left+1, right+1]
+            elif su < target:
+                left += 1
+            else:
+                right -= 1
+        return [-1,-1]
+
+170. Two Sum III - Data structure design
+https://leetcode.com/problems/two-sum-iii-data-structure-design/
+1. solution for normal usage
+
+class TwoSum(object):
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.dic = {}
+
+    def add(self, number):
+        """
+        Add the number to an internal data structure..
+        :type number: int
+        :rtype: None
+        """
+        self.dic[number] = self.dic.get(number,0)+1
+
+    def find(self, value):
+        """
+        Find if there exists any pair of numbers which sum is equal to the value.
+        :type value: int
+        :rtype: bool
+        """
+        for k in self.dic:
+            n = value - k
+            if n==k and self.dic[k]>1:
+                return True
+            if n != k and n in self.dic:
+                return True
+        return False
+
+2.solution for frequently used find()
+class TwoSum(object):
+#S:O(n)
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.dic = {}
+        self.num = []
+
+    def add(self, number):
+    #T:O(n)
+        """
+        Add the number to an internal data structure..
+        :type number: int
+        :rtype: None
+        """
+        for n in self.num:
+            self.dic[n+number] = self.dic.get(n+number,0)+1
+        self.num.append(number)
+#if find is used frequently.
+    def find(self, value):
+    #T:O(1) 
+        """
+        Find if there exists any pair of numbers which sum is equal to the value.
+        :type value: int
+        :rtype: bool
+        """
+        return value in self.dic
+
+653. Two Sum IV - Input is a BST
+https://leetcode.com/problems/two-sum-iv-input-is-a-bst/
+
+class Solution(object):
+#T:O(n)
+#S:O(n)
+    def findTarget(self, root, k):
+        """
+        :type root: TreeNode
+        :type k: int
+        :rtype: bool
+        """
+        if not root:
+            return False
+        return self._findTarget(root, set(), k)
+        
+    def _findTarget(self, node, nodes, k):
+        if not node:
+            return False
+        complement = k - node.val
+        if complement in nodes:
+            return True
+        nodes.add(node.val)
+        return self._findTarget(node.left, nodes,k) or self._findTarget(node.right, nodes,k)
+
+1214. Two Sum BSTs
+https://leetcode.com/problems/two-sum-bsts/
+#T:O(n)
+#S:O(n)
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution(object):
+    def twoSumBSTs(self, root1, root2, target):
+        """
+        :type root1: TreeNode
+        :type root2: TreeNode
+        :type target: int
+        :rtype: bool
+        """
+        seen = set()
+        def dfs(node):
+            if not node:
+                return
+            seen.add(target-node.val)
+            if node.left:
+                dfs(node.left)
+            if node.right:
+                dfs(node.right)
+        def find(node):
+            if not node:
+                return False
+            if node.val in seen:
+                return True
+            return find(node.left) or find(node.right)
+        dfs(root1)
+        return find(root2)
+
+15. 3Sum
+https://leetcode.com/problems/3sum/
+T:O(n2)
+S:O(n)
+class Solution(object):
+    def threeSum(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[List[int]]
+        """
+        def twosumtarget(nums,start, target):
+            lo,hi = start,len(nums)-1
+            res = []
+            while lo < hi:
+                su = nums[lo] + nums[hi]
+                left, right = nums[lo], nums[hi]
+                if su < target:
+                    while lo < hi and nums[lo] == left:
+                        lo += 1
+                elif su > target:
+                    while lo < hi and nums[hi] == right:
+                        hi -= 1
+                else:
+                    res.append([left,right])
+                    while lo < hi and nums[lo] == left: 
+                        lo += 1
+                    while lo < hi and nums[hi] == right:
+                        hi -= 1
+            return res
+        nums.sort()
+        n = len(nums)
+        res = set()
+        for i in range(n):
+            tuples = twosumtarget(nums, i + 1, 0 - nums[i])
+            #print(tuples)
+            for re in tuples:
+                res.add(tuple(re+[nums[i]]))
+            while i < n - 1 and nums[i] == nums[i + 1]:
+                i += 1
+        return [r for r in res]
+
+18. 4Sum
+https://leetcode.com/problems/4sum/
+
+class Solution(object):
+    def fourSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[List[int]]
+        """
+        def nsum(nums, n, start, target):
+            sz = len(nums)
+            res = set()
+            if n<2 or sz < n:
+                return list(res)
+            elif n == 2:
+                lo,hi = start,sz-1
+                while lo < hi:
+                    su = nums[lo] + nums[hi]
+                    left, right = nums[lo], nums[hi]
+                    if su < target:
+                        while lo < hi and nums[lo] == left:
+                            lo += 1
+                    elif su > target:
+                        while lo < hi and nums[hi] == right:
+                            hi -= 1
+                    else:
+                        res.add(tuple([left,right]))
+                        while lo < hi and nums[lo] == left: 
+                            lo += 1
+                        while lo < hi and nums[hi] == right:
+                            hi -= 1
+            else:
+                for i in range(start,sz):
+                    sub = nsum(nums, n-1,i+1,target-nums[i])
+                    for arr in sub:
+                        arr+=[nums[i]]
+                        res.add(tuple(arr))
+                    while i < sz - 1 and nums[i] == nums[i + 1]: 
+                        i += 1
+            return [list(r) for r in res]
+        nums.sort()
+        return nsum(nums, 4, 0, target)
+        
+        
+#########solution for n sum:
+remember to sort first
+nums.sort()
+def nsum(nums, n, start, target):
+            sz = len(nums)
+            res = set()
+            if n<2 or sz < n:
+                return list(res)
+            elif n == 2:
+                lo,hi = start,sz-1
+                while lo < hi:
+                    su = nums[lo] + nums[hi]
+                    left, right = nums[lo], nums[hi]
+                    if su < target:
+                        while lo < hi and nums[lo] == left:
+                            lo += 1
+                    elif su > target:
+                        while lo < hi and nums[hi] == right:
+                            hi -= 1
+                    else:
+                        res.add(tuple([left,right]))
+                        while lo < hi and nums[lo] == left: 
+                            lo += 1
+                        while lo < hi and nums[hi] == right:
+                            hi -= 1
+            else:
+                for i in range(start,sz):
+                    sub = nsum(nums, n-1,i+1,target-nums[i])
+                    for arr in sub:
+                        arr+=[nums[i]]
+                        res.add(tuple(arr))
+                    while i < sz - 1 and nums[i] == nums[i + 1]: 
+                        i += 1
+            return [list(r) for r in res]
