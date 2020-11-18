@@ -64,3 +64,82 @@ class Solution(object):
         if right < 0 or nums[right] != target:
             return -1 
         return right
+
+100. Same Tree
+https://leetcode.com/problems/same-tree/
+#T:O(n)
+#S:O(1)
+class Solution(object):
+    def isSameTree(self, p, q):
+        """
+        :type p: TreeNode
+        :type q: TreeNode
+        :rtype: bool
+        """
+        if not p and not q:
+            return True
+        if not p or not q:
+            return False
+        if p.val != q.val:
+            return False
+        return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+        
+        
+98. Validate Binary Search Tree        
+https://leetcode.com/problems/validate-binary-search-tree/
+class Solution(object):
+#T:O(n)
+#S:O(1)
+    def isValidBST(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        def helper(node, min_l, max_l):
+            if not node:
+                return True
+            if min_l and node.val <= min_l.val:
+                return False
+            if max_l and node.val >= max_l.val:
+                return False
+            return helper(node.left, min_l, node) and helper(node.right, node, max_l)
+        return helper(root, None, None)
+
+700. Search in a Binary Search Tree
+https://leetcode.com/problems/search-in-a-binary-search-tree/
+class Solution(object):
+#T:O(n)
+#S:O(1)
+    def searchBST(self, root, val):
+        """
+        :type root: TreeNode
+        :type val: int
+        :rtype: TreeNode
+        """
+        if not root:
+            return 
+        if root.val == val:
+            return root
+        if root.val < val:
+            return self.searchBST(root.right, val)
+        elif root.val > val:
+            return self.searchBST(root.left, val)
+
+701. Insert into a Binary Search Tree
+https://leetcode.com/problems/insert-into-a-binary-search-tree/
+class Solution(object):
+#T:O(n)
+#S:O(n)
+    def insertIntoBST(self, root, val):
+        """
+        :type root: TreeNode
+        :type val: int
+        :rtype: TreeNode
+        """
+        if not root:
+            return TreeNode(val)
+        if root.val < val:
+            root.right = self.insertIntoBST(root.right, val)
+        elif root.val > val:
+            root.left = self.insertIntoBST(root.left, val)
+        return root
