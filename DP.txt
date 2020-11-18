@@ -122,6 +122,28 @@ class Solution(object):
             cur = sum1
         return cur
         
+516. Longest Palindromic Subsequence
+https://leetcode.com/problems/longest-palindromic-subsequence/
+T:O(n2)
+S:O(n2)
+class Solution(object):
+    def longestPalindromeSubseq(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        n = len(s)
+        dp = [[0 for _ in range(n)] for _ in range(n)]
+        for i in range(n):
+            dp[i][i] = 1
+        for i in range(n-2,-1,-1):
+            for j in range(i+1,n):
+                if s[i] == s[j]:
+                    dp[i][j] = dp[i+1][j-1] + 2
+                else:
+                    dp[i][j] = max(dp[i+1][j],dp[i][j-1])
+        return dp[0][n-1]
+
 887. Super Egg Drop
 https://leetcode.com/problems/super-egg-drop/
 T:O(kn2)
@@ -220,7 +242,8 @@ class Solution(object):
             
 337. House Robber III
 https://leetcode.com/problems/house-robber-iii/
-
+#T:O(n2)
+#S:O(n2)
 class Solution(object):
     def rob(self, root):
         """
@@ -233,3 +256,30 @@ class Solution(object):
             left, right = dfs(node.left),dfs(node.right)
             return (node.val+left[1]+right[1], max(left[0],left[1])+max(right[0],right[1]))
         return max(dfs(root))
+
+877. Stone Game
+https://leetcode.com/problems/stone-game/
+
+class Solution(object):
+    def stoneGame(self, piles):
+        """
+        :type piles: List[int]
+        :rtype: bool
+        """
+        n = len(piles)
+        dp = [[[0,0] for _ in range(n)] for _ in range(n)]
+        for i in range(n):
+            dp[i][i][0] = piles[i]
+        for l in range(2,n+1):
+            for i in range(n-l+1):
+                j = l + i - 1
+                left = piles[i] + dp[i+1][j][1]
+                right = piles[j] + dp[i][j-1][1]
+                if left > right:
+                    dp[i][j][0] = left
+                    dp[i][j][1] = dp[i+1][j][0]
+                else:
+                    dp[i][j][0] = right
+                    dp[i][j][1] = dp[i][j-1][0]
+        res = dp[0][n-1]
+        return True if res[0]>res[1] else False
