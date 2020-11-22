@@ -92,3 +92,56 @@ class Solution(object):
         head.next.next = head
         head.next = self.succ
         return last
+
+25. Reverse Nodes in k-Group
+https://leetcode.com/problems/reverse-nodes-in-k-group/
+class Solution(object):
+#T:O(n)
+#T:O(1)
+    def reverseKGroup(self, head, k):
+        """
+        :type head: ListNode
+        :type k: int
+        :rtype: ListNode
+        """
+        if not head:
+            return
+        a, b = head, head
+        for i in range(k):
+            if not b:
+                return head
+            b = b.next
+        newhead = self.helper(a,b)
+        a.next = self.reverseKGroup(b,k)
+        return newhead
+        
+    def helper(self, a, b):
+        pre, cur, nxt = ListNode(None), a, a
+        while cur != b:
+            nxt = nxt.next
+            cur.next = pre
+            pre = cur
+            cur = nxt
+        return pre
+    
+    
+234. Palindrome Linked List
+https://leetcode.com/problems/palindrome-linked-list/
+#T:O(n)
+#S:O(n)
+class Solution(object):
+    def isPalindrome(self, head):
+        """
+        :type head: ListNode
+        :rtype: bool
+        """
+        self.left, right = head, head
+        return self.helper(right)
+    def helper(self, right):
+        if not right:
+            return True
+        res = self.helper(right.next)
+        res = res and right.val == self.left.val
+        self.left = self.left.next
+        return res
+        
