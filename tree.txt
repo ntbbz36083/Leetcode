@@ -30,6 +30,59 @@ class Solution:
             root.right = self.buildTree(preorder,inorder[ind+1:])
             return root
 
+class Solution(object):
+    def buildTree(self, preorder, inorder):
+        """
+        :type preorder: List[int]
+        :type inorder: List[int]
+        :rtype: TreeNode
+        """
+        return self.build(preorder, 0,len(preorder)-1, inorder, 0, len(inorder)-1)
+        
+    def build(self, preorder, prestart, preend,
+             inorder, instart, inend):
+        if prestart>preend:
+            return
+        root_val = preorder[prestart]
+        index = 0
+        for i in range(instart,inend+1):
+            if root_val == inorder[i]:
+                index = i
+                break
+        left_len = index-instart
+        root = TreeNode(root_val)
+        root.left = self.build(preorder, prestart+1, prestart+left_len,inorder, instart, index-1)
+        root.right = self.build(preorder, prestart+1+left_len, preend, inorder, index+1, inend)
+        return root
+
+
+106. Construct Binary Tree from Inorder and Postorder Traversal
+https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/
+class Solution(object):
+    def buildTree(self, inorder, postorder):
+        """
+        :type inorder: List[int]
+        :type postorder: List[int]
+        :rtype: TreeNode
+        """
+        return self.build(inorder, 0, len(inorder)-1, postorder, 0, len(postorder)-1)
+    
+    def build(self, inorder, instart, inend, postorder, poststart, postend):
+        if instart > inend:
+            return
+        root_val = postorder[postend]
+        index = -1
+        for i in range(instart, inend+1):
+            if inorder[i] == root_val:
+                index = i
+                break
+        left_len = index - instart
+        root = TreeNode(root_val)
+        root.left = self.build(inorder, instart, index-1, postorder, poststart, poststart+left_len-1)
+        root.right = self.build(inorder, index+1, inend, postorder, poststart+left_len, postend-1)
+        return root
+
+
 124. Binary Tree Maximum Path Sum
 https://leetcode.com/problems/binary-tree-maximum-path-sum/
 class Solution:
@@ -117,3 +170,29 @@ class Solution(object):
             p = p.right
         p.right = right
         return root
+
+654. Maximum Binary Tree
+https://leetcode.com/problems/maximum-binary-tree/
+class Solution(object):
+#T:O(nlogn)
+#T:O(n)
+    def constructMaximumBinaryTree(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: TreeNode
+        """
+        return self.build(nums,0,len(nums)-1)
+        
+    def build(self, nums, lo, hi):
+        if lo > hi:
+            return None
+        index = -1
+        max_val = float('-inf')
+        for i in range(lo, hi+1):
+            if nums[i] > max_val:
+                index = i
+                max_val = nums[i]
+        new_root = TreeNode(max_val)
+        new_root.left = self.build(nums, lo, index-1)
+        new_root.right = self.build(nums, index+1, hi)
+        return new_root
