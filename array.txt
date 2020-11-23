@@ -103,6 +103,39 @@ def mergeTwoLists(self, l1, l2):
             new.next = l2
         return head.next
 
+26. Remove Duplicates from Sorted Array
+https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+class Solution(object):
+    def removeDuplicates(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        slow, fast = 0,0
+        while fast < len(nums):
+            if nums[slow] != nums[fast]:
+                slow += 1
+                nums[slow] = nums[fast]    
+            fast += 1
+        return slow+1
+
+27. Remove Element
+https://leetcode.com/problems/remove-element/
+class Solution(object):
+    def removeElement(self, nums, val):
+        """
+        :type nums: List[int]
+        :type val: int
+        :rtype: int
+        """
+        slow, fast = 0,0
+        while fast < len(nums):
+            if nums[fast] != val:
+                nums[slow] = nums[fast]
+                slow += 1
+            fast += 1
+        return slow
+
 53. Maximum Subarray
 https://leetcode.com/problems/maximum-subarray/
 
@@ -234,6 +267,23 @@ def isPalindrome(self, head):
             head = head.next
             new_head = new_head.next
         return True
+
+283. Move Zeroes
+https://leetcode.com/problems/move-zeroes/
+
+class Solution(object):
+    def moveZeroes(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: None Do not return anything, modify nums in-place instead.
+        """
+        slow, fast = 0, 0
+        while fast < len(nums):
+            if nums[fast] != 0:
+                nums[slow], nums[fast] = nums[fast], nums[slow]
+                slow += 1
+            fast += 1
+        return slow
 
 415. Add Strings
 https://leetcode.com/problems/add-strings/
