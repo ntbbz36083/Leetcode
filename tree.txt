@@ -1,3 +1,15 @@
+98. Validate Binary Search Tree
+https://leetcode.com/problems/validate-binary-search-tree/
+
+class Solution(object):
+    def isValidBST(self, root, floor=float('-inf'), ceiling=float('inf')):
+        if not root: 
+            return True
+        if root.val <= floor or root.val >= ceiling:
+            return False
+        # in the left branch, root is the new ceiling; contrarily root is the new floor in right branch
+        return self.isValidBST(root.left, floor, root.val) and self.isValidBST(root.right, root.val, ceiling)
+
 99. Recover Binary Search Tree
 https://leetcode.com/problems/recover-binary-search-tree/
 class Solution(object):
@@ -83,47 +95,6 @@ class Solution(object):
         return root
 
 
-124. Binary Tree Maximum Path Sum
-https://leetcode.com/problems/binary-tree-maximum-path-sum/
-class Solution:
-    def maxPathSum(self, root: TreeNode) -> int:
-        self.max_sum = float('-inf')
-        self.dfs(root)
-        return self.max_sum
-    
-    def dfs(self, node):
-        if not node: return 0
-        
-        # only add positive contributions
-        leftST_sum = max(0, self.dfs(node.left))
-        rightST_sum = max(0, self.dfs(node.right))
-
-        # check if cumulative sum at current node > global max sum so far
-        # this evaluates a candidate path
-        self.max_sum = max(self.max_sum, leftST_sum + rightST_sum + node.val)
-        
-        # add to the current node ONLY one of the children contributions
-        # in order to maintain the constraint of considering only paths
-        # if not, we would be exploring explore the whole tree - against problem definition
-        return max(leftST_sum, rightST_sum) + node.val
-
-226. Invert Binary Tree
-https://leetcode.com/problems/invert-binary-tree/
-class Solution(object):
-#T:o(n)
-#S:o(n)
-    def invertTree(self, root):
-        """
-        :type root: TreeNode
-        :rtype: TreeNode
-        """
-        if not root:
-            return root
-        root.left, root.right = root.right, root.left
-        self.invertTree(root.left)
-        self.invertTree(root.right)
-        return root
-
 116. Populating Next Right Pointers in Each Node
 https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
 
@@ -170,6 +141,271 @@ class Solution(object):
             p = p.right
         p.right = right
         return root
+
+124. Binary Tree Maximum Path Sum
+https://leetcode.com/problems/binary-tree-maximum-path-sum/
+class Solution:
+    def maxPathSum(self, root: TreeNode) -> int:
+        self.max_sum = float('-inf')
+        self.dfs(root)
+        return self.max_sum
+    
+    def dfs(self, node):
+        if not node: return 0
+        
+        # only add positive contributions
+        leftST_sum = max(0, self.dfs(node.left))
+        rightST_sum = max(0, self.dfs(node.right))
+
+        # check if cumulative sum at current node > global max sum so far
+        # this evaluates a candidate path
+        self.max_sum = max(self.max_sum, leftST_sum + rightST_sum + node.val)
+        
+        # add to the current node ONLY one of the children contributions
+        # in order to maintain the constraint of considering only paths
+        # if not, we would be exploring explore the whole tree - against problem definition
+        return max(leftST_sum, rightST_sum) + node.val
+
+
+226. Invert Binary Tree
+https://leetcode.com/problems/invert-binary-tree/
+class Solution(object):
+#T:o(n)
+#S:o(n)
+    def invertTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: TreeNode
+        """
+        if not root:
+            return root
+        root.left, root.right = root.right, root.left
+        self.invertTree(root.left)
+        self.invertTree(root.right)
+        return root
+
+230. Kth Smallest Element in a BST
+https://leetcode.com/problems/kth-smallest-element-in-a-bst/
+
+class Solution(object):
+#T:O(n)
+#T:O(n)
+    def kthSmallest(self, root, k):
+        """
+        :type root: TreeNode
+        :type k: int
+        :rtype: int
+        """
+        self.rank = 0
+        self.res = 0
+        self.helper(root,k)
+        return self.res
+    def helper(self, root, k):
+        if not root:
+            return
+        self.helper(root.left, k)
+        self.rank += 1
+        if self.rank == k:
+            self.res = root.val
+            return
+        self.helper(root.right, k)
+
+
+297. Serialize and Deserialize Binary Tree
+https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
+#################################  preorder traverse  #################################
+#################################  preorder traverse  #################################
+class Codec:
+
+    def serialize(self, root):
+        #T:O(n)
+        #S:O(n)
+        """Encodes a tree to a single string.
+        
+        :type root: TreeNode
+        :rtype: str
+        """
+        res = []
+        self.traverse(root, res)
+        #print(','.join(res))
+        return ','.join(res)
+    
+    def traverse(self, root, res):
+        if not root:
+            res.append('#')
+            return
+        res.append(str(root.val))
+        self.traverse(root.left, res)
+        self.traverse(root.right, res)
+    def deserialize(self, data):
+        #T:O(n2)
+        #S:O(n)
+        """Decodes your encoded data to tree.
+        
+        :type data: str
+        :rtype: TreeNode
+        """
+        nodes = data.split(',')
+        return self.dtraverse(nodes)
+    
+    def dtraverse(self, nodes):
+        if not nodes:
+            return
+        first = nodes.pop(0)
+        if first == '#':
+            return
+        root = TreeNode(int(first))
+        root.left = self.dtraverse(nodes)
+        root.right = self.dtraverse(nodes)
+        return root
+
+# Your Codec object will be instantiated and called as such:
+# ser = Codec()
+
+# deser = Codec()
+# ans = deser.deserialize(ser.serialize(root))
+#################################  level order traverse  #################################
+#################################  level order traverse  #################################
+class Codec:
+#T:O(n)
+#S:O(n)
+    def serialize(self, root):
+        #T:O(n)
+        #S:O(n)
+        """Encodes a tree to a single string.
+        
+        :type root: TreeNode
+        :rtype: str
+        """
+        if not root:
+            return ""
+        res = []
+        q = collections.deque([root])
+        while q:
+            node = q.popleft()
+            if node:
+                q.append(node.left)
+                q.append(node.right)
+            res.append(str(node.val) if node else "#")
+        return ','.join(res)
+    
+    
+    def deserialize(self, data):
+        #T:O(n2)
+        #S:O(n)
+        """Decodes your encoded data to tree.
+        
+        :type data: str
+        :rtype: TreeNode
+        """
+        if not data:
+            return None
+        nodes = data.split(',')
+        root = TreeNode(int(nodes[0]))
+        q = collections.deque([root])
+        i = 1
+        while q:
+            node = q.popleft()
+            if nodes[i] is not "#":
+                node.left = TreeNode(int(nodes[i]))
+                q.append(node.left)
+            i += 1
+            if nodes[i] is not "#":
+                node.right = TreeNode(int(nodes[i]))
+                q.append(node.right)
+            i += 1
+        return root
+# Your Codec object will be instantiated and called as such:
+# ser = Codec()
+
+# deser = Codec()
+# ans = deser.deserialize(ser.serialize(root))
+
+
+450. Delete Node in a BST
+https://leetcode.com/problems/delete-node-in-a-bst/
+
+class Solution(object):
+#T:O(n)
+#S:O(1)
+    def deleteNode(self, root, key):
+        """
+        :type root: TreeNode
+        :type key: int
+        :rtype: TreeNode
+        """
+        
+        if not root:
+            return 
+        if root.val == key:
+            if not root.left:
+                return root.right
+            if not root.right:
+                return root.left
+            min_node = self.getmin(root.right)
+            root.val = min_node.val
+            root.right = self.deleteNode(root.right, min_node.val)
+        if key > root.val:
+            root.right = self.deleteNode(root.right, key)
+        else:
+            root.left = self.deleteNode(root.left, key)
+        return root
+    def getmin(self, node):
+        while node.left:
+            node = node.left
+        return node
+
+538. Convert BST to Greater Tree
+https://leetcode.com/problems/convert-bst-to-greater-tree/
+
+class Solution(object):
+#T:O(n)
+#S:O(1)
+    def convertBST(self, root):
+        """
+        :type root: TreeNode
+        :rtype: TreeNode
+        """
+        self.sum = 0
+        self.helper(root)
+        return root
+    def helper(self, root):
+        if not root:
+            return
+        self.helper(root.right)
+        self.sum += root.val
+        root.val = self.sum
+        self.helper(root.left)
+
+
+652. Find Duplicate Subtrees
+https://leetcode.com/problems/find-duplicate-subtrees/
+class Solution(object):
+#T:O(n)
+#S:O(n)
+    def findDuplicateSubtrees(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[TreeNode]
+        """
+        self.dic = {}
+        self.res = []
+        self.helper(root)
+        return self.res
+        
+    def helper(self, root):
+        if not root:
+            return '#'
+        left = self.helper(root.left)
+        right = self.helper(root.right)
+        subtree = left + ','+right+','+ str(root.val)
+        freq = self.dic.get(subtree,0)
+        if freq == 1:
+            self.res.append(root)
+        self.dic[subtree] = self.dic.get(subtree,0) + 1
+        return subtree
+
+
 
 654. Maximum Binary Tree
 https://leetcode.com/problems/maximum-binary-tree/
