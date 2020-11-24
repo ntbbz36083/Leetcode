@@ -1,0 +1,74 @@
+292. Nim Game
+https://leetcode.com/problems/nim-game/
+
+class Solution(object):
+    def canWinNim(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        return n % 4 != 0
+
+319. Bulb Switcher
+https://leetcode.com/problems/bulb-switcher/
+
+class Solution(object):
+    def bulbSwitch(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        return int(math.sqrt(n))
+
+382. Linked List Random Node
+https://leetcode.com/problems/linked-list-random-node/
+class Solution(object):
+
+    def __init__(self, head):
+        """
+        @param head The linked list's head.
+        Note that the head is guaranteed to be not null, so it contains at least one node.
+        :type head: ListNode
+        """
+        self.head = head
+
+    def getRandom(self):
+        """
+        Returns a random node's value.
+        :rtype: int
+        """
+        result = self.head
+        node = self.head.next
+        ind = 1
+        while node:
+            if random.randint(0,ind) is 0:
+                result = node
+            node = node.next
+            ind += 1
+        return result.val
+
+398. Random Pick Index
+https://leetcode.com/problems/random-pick-index/
+class Solution(object):
+
+    def __init__(self, nums):
+        """
+        :type nums: List[int]
+        """
+        self.nums = nums
+
+    def pick(self, target):
+        """
+        :type target: int
+        :rtype: int
+        """
+        res = 0
+        count = 0
+        for i, num in enumerate(self.nums):
+            if num == target:
+                count += 1
+                chance = random.randint(1,count)
+                if chance == count:
+                    res = i
+        return res
+
