@@ -30,6 +30,108 @@ class Solution(object):
             res.append(root)
             self.dfs(root.right, res)
 
+101. Symmetric Tree
+https://leetcode.com/problems/symmetric-tree/
+
+class Solution(object):
+    def isSymmetric(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        if not root:
+            return True
+        return self.helper(root.left, root.right)
+    def helper(self, node1, node2):
+        if node1 and node2 and node1.val == node2.val:
+            outer = self.helper(node1.left, node2.right)
+            inner = self.helper(node1.right, node2.left)
+            return outer and inner
+        return node1 == node2
+
+102. Binary Tree Level Order Traversal
+#####  Iterative  ####
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        q = collections.deque([root])
+        res = []
+        while q:
+            temp = []
+            for i in range(len(q)):
+                node = q.popleft()
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+                temp.append(node.val)
+            res.append(temp)
+        return res
+
+#####  Recurisve  ####
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        res = []
+        self.helper(root, 0, res)
+        return res
+    def helper(self, node, level, res):
+        if not node:
+            return
+        if len(res) < level+1:
+            res.append([])
+        res[level].append(node.val)
+        self.helper(node.left, level+1,res)
+        self.helper(node.right, level+1,res)
+        
+104. Maximum Depth of Binary Tree
+https://leetcode.com/problems/maximum-depth-of-binary-tree/
+#####  Iterative  ####
+class Solution(object):
+    def maxDepth(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        if not root:
+            return 0
+        i = 0
+        q = collections.deque([root])
+        while q:
+            for j in range(len(q)):
+                node = q.popleft()
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+            i += 1
+        return i
+#####  Recursive  ####
+class Solution(object):
+    def maxDepth(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        if not root:
+            return 0
+        return self.helper(root)
+    def helper(self, node):
+        if not node:
+            return 0
+        left = self.helper(node.left)
+        right = self.helper(node.right)
+        return max(left, right) + 1
 
 105. Construct Binary Tree from Preorder and Inorder Traversal
 https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
@@ -94,6 +196,30 @@ class Solution(object):
         root.right = self.build(inorder, index+1, inend, postorder, poststart+left_len, postend-1)
         return root
 
+107. Binary Tree Level Order Traversal II
+https://leetcode.com/problems/binary-tree-level-order-traversal-ii/
+
+class Solution(object):
+    def levelOrderBottom(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        q = collections.deque([root])
+        res = []
+        while q:
+            temp = []
+            for i in range(len(q)):
+                node = q.popleft()
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+                temp.append(node.val)
+            res.append(temp)
+        return res[::-1]
 
 116. Populating Next Right Pointers in Each Node
 https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
