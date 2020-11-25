@@ -1,3 +1,55 @@
+96. Unique Binary Search Trees
+https://leetcode.com/problems/unique-binary-search-trees/
+class Solution(object):
+    def numTrees(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        cache = {}
+        
+        def counttree(n, cache):
+            if n == 0:
+                return 1     
+            if n in cache:
+                return cache[n]
+            res = 0
+            for i in range(n):
+                left = counttree(i,cache)
+                right = counttree(n-i-1,cache)
+                res += left * right
+            cache[n] = res    
+            return res
+        return counttree(n,cache)
+
+95. Unique Binary Search Trees II
+https://leetcode.com/problems/unique-binary-search-trees-ii/
+
+class Solution(object):
+    def generateTrees(self, n):
+        """
+        :type n: int
+        :rtype: List[TreeNode]
+        """
+        def buildtree(nums):
+            if not nums:
+                return [None]
+            res = []
+            for i in range(len(nums)):
+                left_list = buildtree(nums[:i])
+                right_list = buildtree(nums[i+1:])
+                for left in left_list:
+                    for right in right_list:
+                        node = TreeNode(nums[i])
+                        node.left = left
+                        node.right = right
+                        res+=[node]
+            return res
+        if n == 0:
+            return []
+        return buildtree([_ for _ in range(1,n+1)])
+
+
 98. Validate Binary Search Tree
 https://leetcode.com/problems/validate-binary-search-tree/
 
@@ -93,7 +145,34 @@ class Solution(object):
         res[level].append(node.val)
         self.helper(node.left, level+1,res)
         self.helper(node.right, level+1,res)
-        
+
+103. Binary Tree Zigzag Level Order Traversal
+https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
+
+class Solution(object):
+    def zigzagLevelOrder(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        q = collections.deque([root])
+        res = []
+        index = 1
+        while q:
+            temp = []
+            for _ in range(len(q)):
+                node = q.popleft()
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+                temp.append(node.val)
+            res.append(temp[::index])
+            index *= -1
+        return res
+
 104. Maximum Depth of Binary Tree
 https://leetcode.com/problems/maximum-depth-of-binary-tree/
 #####  Iterative  ####
@@ -264,6 +343,88 @@ class Solution(object):
             return -1
         return max(left,right)+1
     
+112. Path Sum
+https://leetcode.com/problems/path-sum/
+#####  Iterative  ####
+class Solution(object):
+    def hasPathSum(self, root, sum):
+        """
+        :type root: TreeNode
+        :type sum: int
+        :rtype: bool
+        """
+        if not root:
+            return False
+        q = collections.deque([(root,sum)])
+        while q:
+            node, val = q.popleft()
+            if not node.left and not node.right and val == node.val:
+                return True
+            if node.left:
+                q.append((node.left,val-node.val))
+            if node.right:
+                q.append((node.right, val-node.val))
+        return False
+            
+#####  Recursive  ####
+class Solution(object):
+    def hasPathSum(self, root, sum):
+        """
+        :type root: TreeNode
+        :type sum: int
+        :rtype: bool
+        """
+        if not root:
+            return False
+        sum -= root.val
+        if not root.left and not root.right and sum == 0:
+            return True
+        return self.hasPathSum(root.left, sum) or self.hasPathSum(root.right, sum)
+
+113. Path Sum II
+https://leetcode.com/problems/path-sum-ii/
+#####  Iterative  ####
+class Solution(object):
+    def pathSum(self, root, sum):
+        """
+        :type root: TreeNode
+        :type sum: int
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return
+        q, res = collections.deque([(root, sum, [])]), []
+        while q:
+            node,val,temp = q.popleft()
+            if not node.left and not node.right and node.val == val:
+                temp+=[node.val]
+                res.append(temp)
+            if node.left:
+                q.append((node.left, val-node.val, temp+[node.val]))
+            if node.right:
+                q.append((node.right, val-node.val, temp+[node.val]))
+        return res
+
+#####  Recursive  ####
+class Solution(object):
+    def pathSum(self, root, sum):
+        """
+        :type root: TreeNode
+        :type sum: int
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return []
+        res = []
+        self.helper(root, sum, [], res)
+        return res
+    def helper(self, node, sum, ls, res):
+        if node:
+            if not node.left and not node.right and node.val == sum:
+                ls.append(node.val)
+                res.append(ls)
+            self.helper(node.left, sum-node.val, ls+[node.val], res)
+            self.helper(node.right, sum-node.val, ls+[node.val], res)
 
 116. Populating Next Right Pointers in Each Node
 https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
@@ -336,7 +497,86 @@ class Solution:
         # if not, we would be exploring explore the whole tree - against problem definition
         return max(leftST_sum, rightST_sum) + node.val
 
+129. Sum Root to Leaf Numbers
+https://leetcode.com/problems/sum-root-to-leaf-numbers/
+#####  Iterative  ####
+class Solution(object):
+    def sumNumbers(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        if not root:
+            return  0
+        q = collections.deque([(root, 0)])
+        res = 0
+        while q:    
+            node, ls = q.popleft()
+            if not node.left and not node.right:
+                ls = ls * 10 + node.val
+                res += ls
+            if node.left:
+                q.append([node.left,ls*10+node.val])
+            if node.right:
+                q.append([node.right,ls*10+node.val])
+        return res
 
+#####  Recursive  ####
+    def sumNumbers1(self, root): # DFS recursively 
+            self.res = 0
+            self.dfs(root, 0)
+            return self.res
+
+    def dfs(self, root, path):
+        if root:
+            if not root.left and not root.right:
+                path = path*10 + root.val
+                self.res += path
+            self.dfs(root.left, path*10+root.val)
+            self.dfs(root.right, path*10+root.val)
+            
+199. Binary Tree Right Side View
+https://leetcode.com/problems/binary-tree-right-side-view/
+#####  Iterative  ####
+class Solution(object):
+    def rightSideView(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if not root:
+            return []
+        q = collections.deque([(root,[])])
+        res = []
+        while q:
+            for _ in range(len(q)):
+                node, path = q.popleft()
+                path += [node.val]
+                if node.left:
+                    q.append((node.left, path))
+                if node.right:
+                    q.append((node.right, path))
+            res.append(path[-1])
+        return res
+
+#####  Recursive  ####        
+class Solution(object):
+    def rightSideView(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if not root:
+            return []
+        self.res = []
+        self.helper(root, 0)
+        return self.res
+    def helper(self, node, level):
+        if node:
+            if level == len(self.res):
+                self.res.append(node.val)
+            self.helper(node.right, level+1)
+            self.helper(node.left, level+1)
 226. Invert Binary Tree
 https://leetcode.com/problems/invert-binary-tree/
 class Solution(object):
