@@ -620,6 +620,176 @@ class Solution(object):
             return
         self.helper(root.right, k)
 
+235. Lowest Common Ancestor of a Binary Search Tree
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
+
+class Solution(object):
+#T:O(logn)
+#S:O(logn)
+    def lowestCommonAncestor(self, root, p, q):
+        """
+        :type root: TreeNode
+        :type p: TreeNode
+        :type q: TreeNode
+        :rtype: TreeNode
+        """
+        while root:
+            if max(p.val, q.val) < root.val:
+                root = root.left
+            elif min(p.val, q.val) > root.val:
+                root = root.right
+            else:
+                return root
+        return None
+    
+
+236. Lowest Common Ancestor of a Binary Tree
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+
+class Solution(object):
+#T:O(n)
+#S:O(n)
+    def lowestCommonAncestor(self, root, p, q):
+        """
+        :type root: TreeNode
+        :type p: TreeNode
+        :type q: TreeNode
+        :rtype: TreeNode
+        """
+        if root:
+            if root==p or root==q:
+                return root
+            left = self.lowestCommonAncestor(root.left, p, q)
+            right = self.lowestCommonAncestor(root.right, p, q)
+            if left and right:
+                return root
+            if left or right:
+                return left or right
+
+1644. Lowest Common Ancestor of a Binary Tree II
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/
+class Solution(object):
+#T:O(n)
+#S:O(n)
+    def lowestCommonAncestor(self, root, p, q):
+        """
+        :type root: TreeNode
+        :type p: TreeNode
+        :type q: TreeNode
+        :rtype: TreeNode
+        """
+        self.res = None
+        self.helper(root, p, q)
+        return self.res
+    def helper(self, node, p,q):
+        if node:
+            left = self.helper(node.left, p,q)
+            right = self.helper(node.right, p,q)
+            # if both find, then current node is LCA
+            if left and right:
+                self.res = node
+                return False
+            # if either branch find and the other node exists, then current node is LCA
+            elif (left or right) and (node == p or node == q):
+                self.res = node
+                return False
+            #check whether p or q is in the tree
+            elif node == p or node == q:
+                return True
+            # for everything else, return left or right if either finds something, otherwise false
+            else:
+                return left or right
+
+250. Count Univalue Subtrees
+https://leetcode.com/problems/count-univalue-subtrees/
+
+lass Solution(object):
+    def countUnivalSubtrees(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        if not root:
+            return 0
+        self.res = 0
+        self.helper(root,0)
+        return self.res
+    def helper(self, node, parent):
+        if node:
+            left = self.helper(node.left, node.val)
+            right = self.helper(node.right, node.val)
+            if left and right:
+                self.res += 1
+            return left and right and node.val == parent
+        return True
+
+257. Binary Tree Paths
+https://leetcode.com/problems/binary-tree-paths/
+#####  Iterative  ####
+class Solution(object):
+    def binaryTreePaths(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[str]
+        """
+        if not root:
+            return []
+        q = collections.deque([(root,[])])
+        res = []
+        while q:
+            node, path = q.popleft()
+            if not node.left and not node.right:
+                path.append(node.val)
+                res.append('->'.join([str(i) for i in path])) 
+            if node.left:
+                q.append((node.left, path+[node.val]))
+            if node.right:
+                q.append((node.right, path+[node.val]))
+        return res
+#####  Recursive  #### 
+class Solution(object):
+    def binaryTreePaths(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[str]
+        """
+        if not root:
+            return []
+        self.res = []
+        self.helper(root,[])
+        return self.res
+    def helper(self, node, path):
+        if not node:
+            return
+        if not node.left and not node.right:
+            path += [node.val]
+            self.res.append('->'.join([str(i) for i in path]))
+        self.helper(node.left, path + [node.val])
+        self.helper(node.right, path + [node.val])
+
+270. Closest Binary Search Tree Value
+https://leetcode.com/problems/closest-binary-search-tree-value/
+class Solution(object):
+    def closestValue(self, root, target):
+        """
+        :type root: TreeNode
+        :type target: float
+        :rtype: int
+        """
+        self.res = 0
+        self.min = float('inf')
+        self.helper(root, target)
+        return self.res
+    
+    def helper(self, node, target):
+        if node:
+            if abs(node.val - target) < self.min:
+                self.min = abs(node.val - target) 
+                self.res = node.val
+            if target < node.val:
+                self.helper(node.left, target)
+            else:
+                self.helper(node.right, target)
 
 297. Serialize and Deserialize Binary Tree
 https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
@@ -731,6 +901,27 @@ class Codec:
 # deser = Codec()
 # ans = deser.deserialize(ser.serialize(root))
 
+404. Sum of Left Leaves
+https://leetcode.com/problems/sum-of-left-leaves/
+class Solution(object):
+    def sumOfLeftLeaves(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        if not root:
+            return 0
+        self.res = 0
+        self.helper(root)
+        return self.res
+        
+    def helper(self, node):
+        if node:
+            if node.left and not node.left.left and not node.left.right:
+                self.res += node.left.val
+            self.helper(node.left)
+            self.helper(node.right)
+
 
 450. Delete Node in a BST
 https://leetcode.com/problems/delete-node-in-a-bst/
@@ -764,6 +955,61 @@ class Solution(object):
         while node.left:
             node = node.left
         return node
+
+501. Find Mode in Binary Search Tree
+https://leetcode.com/problems/find-mode-in-binary-search-tree/
+#T:O(n)
+#S:O(n)
+class Solution(object):
+    def findMode(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        self.dic={}
+        self.helper(root)
+        m = float('-inf')
+        for key in self.dic:
+            if self.dic[key]>m:
+                m = self.dic[key]
+        res = []
+        for key,val in self.dic.items():
+            if val == m:
+                res.append(key)
+        return res
+    def helper(self, node):
+        if node:
+            self.dic[node.val] = self.dic.get(node.val,0)+1
+            self.helper(node.left)
+            self.helper(node.right)
+class Solution(object):
+#T:O(n)
+#S:O(1)
+    def findMode(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        self.prev = None
+        self.curr_count = 0
+        self.max_count = 0
+        self.res = []
+        self.helper(root)
+        return self.res
+    def helper(self, node):
+        if node:
+            self.helper(node.left)
+            if node.val == self.prev:
+                self.curr_count += 1
+            else:
+                self.curr_count = 1
+            if self.curr_count > self.max_count:
+                self.max_count = self.curr_count
+                self.res = [node.val]
+            elif self.curr_count == self.max_count:
+                self.res.append(node.val)
+            self.prev = node.val
+            self.helper(node.right)
 
 538. Convert BST to Greater Tree
 https://leetcode.com/problems/convert-bst-to-greater-tree/
