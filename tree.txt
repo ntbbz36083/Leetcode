@@ -1234,6 +1234,26 @@ class Solution(object):
             self.prev = node.val
             self.helper(node.right)
 
+530. Minimum Absolute Difference in BST
+https://leetcode.com/problems/minimum-absolute-difference-in-bst/
+class Solution(object):
+    def getMinimumDifference(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.min = self.pre = float('inf')
+        self.helper(root)
+        return self.min
+    
+    def helper(self, node):
+        if node:
+            self.helper(node.left)
+            self.min = min(self.min, abs(node.val-self.pre))
+            self.pre = node.val
+            self.helper(node.right)
+            
+
 538. Convert BST to Greater Tree
 https://leetcode.com/problems/convert-bst-to-greater-tree/
 
@@ -1255,6 +1275,46 @@ class Solution(object):
         self.sum += root.val
         root.val = self.sum
         self.helper(root.left)
+
+543. Diameter of Binary Tree
+https://leetcode.com/problems/diameter-of-binary-tree/
+class Solution(object):
+    def diameterOfBinaryTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.ans = 0
+        self.helper(root)
+        return self.ans
+    
+    def helper(self, node):
+        if node:
+            left, right = self.helper(node.left),self.helper(node.right)
+            self.ans = max(self.ans, left+right)
+            return max(left, right)+1
+        return 0
+
+572. Subtree of Another Tree
+https://leetcode.com/problems/subtree-of-another-tree/
+class Solution(object):
+    def isSubtree(self, s, t):
+        """
+        :type s: TreeNode
+        :type t: TreeNode
+        :rtype: bool
+        """
+        if not s:
+            return False
+        if self.helper(s,t):
+            return True
+        return self.isSubtree(s.left, t) or self.isSubtree(s.right, t)
+        
+        
+    def helper(self, p, q):
+        if p and q:
+            return p.val == q.val and self.helper(p.left, q.left) and self.helper(p.right, q.right)
+        return p is q
 
 
 652. Find Duplicate Subtrees
