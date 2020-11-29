@@ -1234,6 +1234,72 @@ class Solution(object):
             self.prev = node.val
             self.helper(node.right)
 
+508. Most Frequent Subtree Sum
+https://leetcode.com/problems/most-frequent-subtree-sum/
+class Solution(object):
+    def findFrequentTreeSum(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if root is None: return []
+
+        self.count = collections.Counter()
+        self.dfs(root)
+        maxCount = max(self.count.values())
+        return [s for s in self.count if self.count[s] == maxCount]
+    def dfs(self, node):
+            if node is None: return 0
+            s = node.val + self.dfs(node.left) + self.dfs(node.right)
+            self.count[s] += 1
+            return s
+
+513. Find Bottom Left Tree Value
+https://leetcode.com/problems/find-bottom-left-tree-value/
+class Solution(object):
+    def findBottomLeftValue(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        q = collections.deque([(root,1)])
+        max_depth = 0
+        ans = 0
+        while q:
+            node, level = q.popleft()
+            if node:
+                if level > max_depth:
+                    max_depth = level
+                    ans = node.val
+                q.append((node.left, level+1))
+                q.append((node.right, level+1))
+        return ans
+
+515. Find Largest Value in Each Tree Row
+https://leetcode.com/problems/find-largest-value-in-each-tree-row/
+class Solution(object):
+    def largestValues(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        if not root:
+            return []
+        q = collections.deque([root])
+        res = []
+        while q:
+            temp = []
+            for _ in range(len(q)):
+                node = q.popleft() 
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+                temp.append(node.val)
+            res.append(max(temp))
+        return res
+
+
 530. Minimum Absolute Difference in BST
 https://leetcode.com/problems/minimum-absolute-difference-in-bst/
 class Solution(object):
@@ -1253,6 +1319,34 @@ class Solution(object):
             self.pre = node.val
             self.helper(node.right)
             
+536. Construct Binary Tree from String
+https://leetcode.com/problems/construct-binary-tree-from-string/
+
+class Solution(object):
+    def str2tree(self, s):
+        """
+        :type s: str
+        :rtype: TreeNode
+        """
+        if not s or len(s) ==0:
+            return None
+        node, i = self.helper(s, 0)
+        return node
+        
+    def helper(self, s, i):
+        start = i
+        while i < len(s) and (s[i] == '-' or s[i].isdigit()):
+            i += 1
+        node = TreeNode(int(s[start:i]))
+        if i < len(s) and s[i] == '(':
+            i += 1
+            node.left, i = self.helper(s,i)
+            i += 1
+        if i < len(s) and s[i] == '(':
+            i += 1
+            node.right, i = self.helper(s,i)
+            i += 1
+        return node, i
 
 538. Convert BST to Greater Tree
 https://leetcode.com/problems/convert-bst-to-greater-tree/
@@ -1295,6 +1389,27 @@ class Solution(object):
             return max(left, right)+1
         return 0
 
+563. Binary Tree Tilt
+https://leetcode.com/problems/binary-tree-tilt/
+class Solution(object):
+    def findTilt(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.res = 0
+        self.helper(root)
+        return self.res
+        
+    def helper(self, node):
+        if node:
+            left = self.helper(node.left)
+            right = self.helper(node.right)
+            self.res += abs(left - right)
+            return node.val + left + right
+        return 0
+
+
 572. Subtree of Another Tree
 https://leetcode.com/problems/subtree-of-another-tree/
 class Solution(object):
@@ -1316,6 +1431,95 @@ class Solution(object):
             return p.val == q.val and self.helper(p.left, q.left) and self.helper(p.right, q.right)
         return p is q
 
+582. Kill Process
+https://leetcode.com/problems/kill-process/
+############  Iterative  ############  
+class Solution(object):
+    def killProcess(self, pid, ppid, kill):
+        """
+        :type pid: List[int]
+        :type ppid: List[int]
+        :type kill: int
+        :rtype: List[int]
+        """
+        parent, q = collections.defaultdict(list), collections.deque([kill])
+        for kid, par in zip(pid, ppid):
+            parent[par].append(kid)
+        res = []        
+        while q:
+            for _ in range(len(q)):
+                x = q.popleft()
+                res.append(x)
+                if x in parent:
+                    q.extend(parent[x])
+        return res
+        
+617. Merge Two Binary Trees
+https://leetcode.com/problems/merge-two-binary-trees/
+############  Recursive  ############
+class Solution(object):
+    def mergeTrees(self, t1, t2):
+        """
+        :type t1: TreeNode
+        :type t2: TreeNode
+        :rtype: TreeNode
+        """
+        if t1 and t2:
+            root = TreeNode(t1.val+t2.val)
+            root.left = self.mergeTrees(t1.left, t2.left)
+            root.right = self.mergeTrees(t1.right, t2.right)
+            return root
+        else:
+            return t1 or t2
+            
+############  Iterative  ############  
+class Solution(object):
+    def mergeTrees(self, t1, t2):
+        """
+        :type t1: TreeNode
+        :type t2: TreeNode
+        :rtype: TreeNode
+        """
+        if not t1 or not t2:
+            return t1 or t2
+        q1, q2 = collections.deque([t1]),collections.deque([t2])
+        while q1 and q2:
+            node1, node2 = q1.popleft(), q2.popleft()
+            if node1 and node2:
+                node1.val = node1.val + node2.val
+                if (not node1.left) and node2.left:
+                    node1.left = TreeNode(0)
+                if (not node1.right) and node2.right:
+                    node1.right = TreeNode(0)
+                q1.append(node1.left)
+                q1.append(node1.right)
+                q2.append(node2.left)
+                q2.append(node2.right)
+        return t1
+
+637. Average of Levels in Binary Tree
+https://leetcode.com/problems/average-of-levels-in-binary-tree/
+class Solution(object):
+    def averageOfLevels(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[float]
+        """
+        if not root:
+            return []
+        res = []
+        q = collections.deque([root])
+        while q:
+            temp = []
+            for _ in range(len(q)):
+                node = q.popleft()
+                temp.append(node.val)
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+            res.append(sum(temp)/float(len(temp)))
+        return res
 
 652. Find Duplicate Subtrees
 https://leetcode.com/problems/find-duplicate-subtrees/
