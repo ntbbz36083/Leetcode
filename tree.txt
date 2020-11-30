@@ -1091,6 +1091,27 @@ class Solution(object):
             self.helper(node.left)
             self.helper(node.right)
 
+429. N-ary Tree Level Order Traversal
+https://leetcode.com/problems/n-ary-tree-level-order-traversal/
+class Solution(object):
+    def levelOrder(self, root):
+        """
+        :type root: Node
+        :rtype: List[List[int]]
+        """
+        if not root:
+            return root
+        q = collections.deque([(root,0)])
+        res = []
+        while q:
+            node, level = q.popleft()
+            if len(res) < level + 1:
+                res.append([])
+            for child in node.children:
+                q.append((child,level+1))
+            res[level].append(node.val)
+        return res
+
 437. Path Sum III
 https://leetcode.com/problems/path-sum-iii/
 https://leetcode.com/problems/path-sum-iii/discuss/141424/Python-step-by-step-walk-through.-Easy-to-understand.-Two-solutions-comparison.-%3A-)
@@ -1389,6 +1410,49 @@ class Solution(object):
             return max(left, right)+1
         return 0
 
+545. Boundary of Binary Tree
+https://leetcode.com/problems/boundary-of-binary-tree/
+class Solution(object):
+#T:O(n)
+#S:O(n)
+    def boundaryOfBinaryTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+
+        def leftmost(node):
+            if not node or not node.left and not node.right:
+                return
+            res.append(node.val)
+            if node.left:
+                leftmost(node.left)
+            else:
+                leftmost(node.right)
+        def leaf(node):
+            if not node:
+                return
+            leaf(node.left)
+            if node != root and not node.left and not node.right:
+                res.append(node.val)
+            leaf(node.right)
+        def rightmost(node):
+            if not node or not node.left and not node.right:
+                return 
+            if node.right:
+                rightmost(node.right)
+            else:
+                rightmost(node.left)
+            res.append(node.val)
+        if not root:
+            return []
+        res = [root.val]
+        leftmost(root.left)
+        leaf(root)
+        rightmost(root.right)
+        return res
+
+
 563. Binary Tree Tilt
 https://leetcode.com/problems/binary-tree-tilt/
 class Solution(object):
@@ -1453,6 +1517,65 @@ class Solution(object):
                 if x in parent:
                     q.extend(parent[x])
         return res
+     
+589. N-ary Tree Preorder Traversal
+https://leetcode.com/problems/n-ary-tree-preorder-traversal/
+class Solution(object):
+    def preorder(self, root):
+        """
+        :type root: Node
+        :rtype: List[int]
+        """
+        if not root:
+            return []
+        self.res = []
+        self.helper(root)
+        return self.res
+    def helper(self, node):
+        if node:
+            self.res.append(node.val)
+            for child in node.children:
+                self.helper(child)
+        
+590. N-ary Tree Postorder Traversal
+https://leetcode.com/problems/n-ary-tree-postorder-traversal/
+class Solution(object):
+    def postorder(self, root):
+        """
+        :type root: Node
+        :rtype: List[int]
+        """
+        if not root:
+            return []
+        self.res = []
+        self.helper(root)
+        return self.res
+    def helper(self, node):
+        if node:
+            for child in node.children:
+                self.helper(child)
+            self.res.append(node.val)
+            
+
+606. Construct String from Binary Tree
+https://leetcode.com/problems/add-one-row-to-tree/
+
+class Solution(object):
+    def tree2str(self, t):
+        """
+        :type t: TreeNode
+        :rtype: str
+        """
+        if not t:
+            return ""
+        res = ""
+        left = self.tree2str(t.left)
+        right = self.tree2str(t.right)
+        if left or right:
+            res += "(%s)" %left
+        if right:
+            res += "(%s)" %right
+        return str(t.val)+res 
         
 617. Merge Two Binary Trees
 https://leetcode.com/problems/merge-two-binary-trees/
@@ -1496,6 +1619,42 @@ class Solution(object):
                 q2.append(node2.left)
                 q2.append(node2.right)
         return t1
+        
+623. Add One Row to Tree
+https://leetcode.com/problems/add-one-row-to-tree/
+class Solution(object):
+    def addOneRow(self, root, v, d):
+        """
+        :type root: TreeNode
+        :type v: int
+        :type d: int
+        :rtype: TreeNode
+        """
+        if not root:
+            return
+        if d == 1:
+            new_root = TreeNode(v)
+            new_root.left = root
+            return new_root
+        q = collections.deque([root])
+        i = 1
+        while q:
+            for _ in range(len(q)):
+                node = q.popleft()
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+                if i == d-1:
+                    o_l = node.left
+                    o_r = node.right
+                    node.left = TreeNode(v)
+                    node.right = TreeNode(v)
+                    node.left.left = o_l
+                    node.right.right = o_r
+            i += 1
+        return root
+
 
 637. Average of Levels in Binary Tree
 https://leetcode.com/problems/average-of-levels-in-binary-tree/
@@ -1576,6 +1735,80 @@ class Solution(object):
         new_root.right = self.build(nums, index+1, hi)
         return new_root
 
+655. Print Binary Tree
+https://leetcode.com/problems/print-binary-tree/
+class Solution(object):
+    def printTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[str]]
+        """
+        if not root:
+            return
+        height = self.getheight(root)
+        width = 2 ** height - 1
+        self.matrix = [["" for _ in range(width)] for _ in range(height)]
+        self.update(root, 0, 0, width-1)
+        return self.matrix
+        
+    def getheight(self, node):
+        if not node:
+            return 0
+        return 1 + max(self.getheight(node.left),self.getheight(node.right))
+    def update(self, node, row, left, right):
+        if not node:
+            return
+        mid = (left+right)/2
+        self.matrix[row][mid] = str(node.val)
+        self.update(node.left, row+1, left, mid-1)
+        self.update(node.right, row+1, mid+1, right)
+
+662. Maximum Width of Binary Tree
+https://leetcode.com/problems/maximum-width-of-binary-tree/
+
+class Solution(object):
+    def widthOfBinaryTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        if not root:
+            return
+        q = collections.deque([(root, 0, 0)])
+        cur_level = 0
+        left = 0
+        max_width = 0
+        
+        while q:
+            for _ in range(len(q)):
+                node, level, pos = q.popleft()
+                if node:
+                    q.append((node.left, level+1, pos*2))
+                    q.append((node.right, level+1, pos*2+1))
+                    if level != cur_level:
+                        cur_level = level
+                        left = pos
+                    max_width = max(pos-left+1, max_width)
+            
+        return max_width
+
+663. Equal Tree Partition
+https://leetcode.com/problems/equal-tree-partition/
+class Solution:
+    def checkEqualTree(self, root: TreeNode) -> bool:
+        self.root = root
+        self.cuts = set()
+        su = self.getsum(self.root)
+        return su/2 in self.cuts
+    def getsum(self, node: TreeNode)->int:
+        if node:
+            s = node.val + self.getsum(node.left) + self.getsum(node.right)
+            if node is not self.root:
+                self.cuts.add(s)
+            return s
+        return 0
+
+
 666. Path Sum IV
 https://leetcode.com/problems/path-sum-iv/
 class Solution(object):
@@ -1596,3 +1829,97 @@ class Solution(object):
             if (level+1, pos * 2) not in dic.keys() and (level+1, pos * 2-1) not in dic.keys():
                 res += dic[level, pos]
         return res
+
+669. Trim a Binary Search Tree
+https://leetcode.com/problems/trim-a-binary-search-tree/
+class Solution:
+    def trimBST(self, root: TreeNode, low: int, high: int) -> TreeNode:
+        if not root:
+            return
+        if root.val > high:
+            return self.trimBST(root.left, low, high)
+        if root.val < low:
+            return self.trimBST(root.right, low, high)
+        root.left = self.trimBST(root.left, low, high)
+        root.right = self.trimBST(root.right, low, high)
+        return root
+
+671. Second Minimum Node In a Binary Tree
+https://leetcode.com/problems/second-minimum-node-in-a-binary-tree/
+class Solution:
+    def findSecondMinimumValue(self, root: TreeNode) -> int:
+        self.second = float('inf')
+        self.root = root
+        self.helper(self.root)
+        return self.second if self.second != float('inf') else -1
+        
+    def helper(self, node: TreeNode) -> int:
+        if node:
+            if self.root.val < node.val < self.second:
+                self.second = node.val
+            if self.root.val == node.val:
+                self.helper(node.left)
+                self.helper(node.right)
+
+687. Longest Univalue Path
+https://leetcode.com/problems/longest-univalue-path/
+class Solution(object):
+    def longestUnivaluePath(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.max= 0
+        self.helper(root, None)
+        return self.max
+    
+    def helper(self, node, parent):
+        if node:
+            left = self.helper(node.left, node.val)  
+            right = self.helper(node.right, node.val)
+            self.max = max(self.max, left+right)
+            if node.val == parent:
+                return max(left, right)+1
+            else:
+                return 0
+        return 0
+
+742. Closest Leaf in a Binary Tree
+https://leetcode.com/problems/closest-leaf-in-a-binary-tree/
+class Solution(object):
+    def findClosestLeaf(self, root, k):
+        """
+        :type root: TreeNode
+        :type k: int
+        :rtype: int
+        """
+        self.dic = collections.defaultdict(list)
+        self.s = set()
+        self.traverse(root)
+        q = collections.deque([k])
+        seen = set()
+        while q:
+            for _ in range(len(q)):
+                node = q.popleft()
+                if node in seen:
+                    continue
+                if node in self.s:
+                    return node
+                seen.add(node)
+                q.extend(self.dic[node])
+                
+    def traverse(self, node):
+        if not node:
+            return
+        if not node.left and not node.right:
+            self.s.add(node.val)
+            return
+        if node.left:
+            self.dic[node.val].append(node.left.val)
+            self.dic[node.left.val].append(node.val)
+            self.traverse(node.left)
+        if node.right:
+            self.dic[node.val].append(node.right.val)
+            self.dic[node.right.val].append(node.val)
+            self.traverse(node.right)
+            
