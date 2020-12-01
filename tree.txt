@@ -1452,6 +1452,20 @@ class Solution(object):
         rightmost(root.right)
         return res
 
+559. Maximum Depth of N-ary Tree
+https://leetcode.com/problems/maximum-depth-of-n-ary-tree/
+class Solution(object):
+    def maxDepth(self, root):
+        """
+        :type root: Node
+        :rtype: int
+        """
+        if not root:
+            return 0
+        height = 0
+        for child in root.children:
+            height = max(height, self.maxDepth(child))
+        return height+1        
 
 563. Binary Tree Tilt
 https://leetcode.com/problems/binary-tree-tilt/
