@@ -535,6 +535,39 @@ class Solution(object):
             self.dfs(root.left, path*10+root.val)
             self.dfs(root.right, path*10+root.val)
             
+173. Binary Search Tree Iterator
+https://leetcode.com/problems/binary-search-tree-iterator/
+class BSTIterator(object):
+
+    def __init__(self, root):
+        """
+        :type root: TreeNode
+        """
+        self.stack = []
+        while root:
+            self.stack.append(root)
+            root = root.left
+        
+    def next(self):
+        """
+        @return the next smallest number
+        :rtype: int
+        """
+        node = self.stack.pop()
+        x = node.right
+        while x:
+            self.stack.append(x)
+            x = x.left
+        return node.val
+
+    def hasNext(self):
+        """
+        @return whether we have a next smallest number
+        :rtype: bool
+        """
+        return len(self.stack) > 0
+
+
 199. Binary Tree Right Side View
 https://leetcode.com/problems/binary-tree-right-side-view/
 #####  Iterative  ####
@@ -1090,6 +1123,48 @@ class Solution(object):
                 self.res += node.left.val
             self.helper(node.left)
             self.helper(node.right)
+
+428. Serialize and Deserialize N-ary Tree
+https://leetcode.com/problems/serialize-and-deserialize-n-ary-tree/
+class Codec:
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+        
+        :type root: Node
+        :rtype: str
+        """
+        res = []
+        def dfs(node):
+            if node:
+                res.append(str(node.val))
+                for child in node.children:
+                    dfs(child)
+                res.append('#')
+        dfs(root)
+        #print(res)
+        return ','.join(res)
+    
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+        
+        :type data: str
+        :rtype: Node
+        """
+        if not data:
+            return None
+        data = collections.deque(data.split(','))
+        root = Node(int(data.popleft()),[])
+        q = [root]
+        while data:
+            val = data.popleft()
+            if val == '#':
+                
+                q.pop()
+            else:
+                new = Node(int(val),[])
+                q[-1].children.append(new)
+                q.append(new)
+        return root
 
 429. N-ary Tree Level Order Traversal
 https://leetcode.com/problems/n-ary-tree-level-order-traversal/
@@ -1936,4 +2011,89 @@ class Solution(object):
             self.dic[node.val].append(node.right.val)
             self.dic[node.right.val].append(node.val)
             self.traverse(node.right)
+
+863. All Nodes Distance K in Binary Tree
+https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/
+class Solution(object):
+#T:O(n)
+#S:O(n)
+    def distanceK(self, root, target, K):
+        """
+        :type root: TreeNode
+        :type target: TreeNode
+        :type K: int
+        :rtype: List[int]
+        """
+        self.dic = collections.defaultdict(list)
+        self.res = []
+        self.visited = set()
+        self.K = K
+        self.dfs1(root)
+        self.dfs2(target, 0)
+        return self.res
+    def dfs1(self, node):
+        if node.left:
+            self.dic[node.left].append(node)
+            self.dic[node].append(node.left)
+            self.dfs1(node.left)
+        if node.right:
+            self.dic[node.right].append(node)
+            self.dic[node].append(node.right)
+            self.dfs1(node.right)
+    
+    def dfs2(self, node, d):
+        if d < self.K:
+            self.visited.add(node)
+            for v in self.dic[node]:
+                if v not in self.visited:
+                    self.dfs2(v, d+1)
+        else:
+            self.res.append(node.val)
             
+
+938. Range Sum of BST
+https://leetcode.com/problems/range-sum-of-bst/
+class Solution(object):
+    def rangeSumBST(self, root, low, high):
+        """
+        :type root: TreeNode
+        :type low: int
+        :type high: int
+        :rtype: int
+        """
+        if not root:
+            return 0
+        elif root.val < low:
+            return self.rangeSumBST(root.right, low, high)
+        elif root.val > high:
+            return self.rangeSumBST(root.left, low, high)
+        return root.val + self.rangeSumBST(root.right, low, high) + self.rangeSumBST(root.left, low, high)
+    
+
+987. Vertical Order Traversal of a Binary Tree
+https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
+class Solution(object):
+#T:O(h*n)
+#S:O(n)
+    def verticalTraversal(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[List[int]]
+        """
+        self.dic = collections.defaultdict(list)
+        q = collections.deque([(root,0)])
+        self.min_l, self.max_l = 0,0
+        while q:
+            tmp = collections.defaultdict(list)
+            for _ in range(len(q)):
+                node, l = q.popleft()
+                tmp[l].append(node.val)
+                if node.left:
+                    q.append((node.left,l-1))
+                    self.min_l = min(self.min_l, l-1)
+                if node.right:
+                    q.append((node.right,l+1))
+                    self.max_l = max(self.max_l, l+1)
+            for i in tmp:
+                self.dic[i] += sorted(tmp[i])
+        return [self.dic[i] for i in range(self.min_l, self.max_l+1)]
