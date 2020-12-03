@@ -2097,3 +2097,24 @@ class Solution(object):
             for i in tmp:
                 self.dic[i] += sorted(tmp[i])
         return [self.dic[i] for i in range(self.min_l, self.max_l+1)]
+
+1469. Find All The Lonely Nodes
+https://leetcode.com/problems/find-all-the-lonely-nodes/
+class Solution(object):
+    def getLonelyNodes(self, root):
+        """
+        :type root: TreeNode
+        :rtype: List[int]
+        """
+        self.res = []
+        self.helper(root)
+        return self.res
+    def helper(self, node):
+        if node:
+            if node.left and not node.right:
+                self.res.append(node.left.val)
+            if node.right and not node.left:
+                self.res.append(node.right.val)
+            self.helper(node.left)
+            self.helper(node.right)
+        
