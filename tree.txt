@@ -473,6 +473,25 @@ class Solution(object):
         p.right = right
         return root
 
+117. Populating Next Right Pointers in Each Node II
+https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/
+class Solution(object):
+    def connect(self, root):
+        q = collections.deque([root]) if root else []
+        while q:
+            m = len(q)
+            while m:
+                m -= 1
+                node = q.popleft()
+                if m != 0:
+                    node.next = q[0]
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+        return root
+    
+
 124. Binary Tree Maximum Path Sum
 https://leetcode.com/problems/binary-tree-maximum-path-sum/
 class Solution:
@@ -2050,6 +2069,21 @@ class Solution(object):
         else:
             self.res.append(node.val)
             
+889. Construct Binary Tree from Preorder and Postorder Traversal
+https://leetcode.com/problems/construct-binary-tree-from-preorder-and-postorder-traversal/
+class Solution(object):
+    preIndex, posIndex = 0, 0
+        
+    def constructFromPrePost(self, pre, post):
+        root = TreeNode(pre[self.preIndex])
+        self.preIndex += 1
+        if (root.val != post[self.posIndex]):
+            root.left = self.constructFromPrePost(pre, post)
+        if (root.val != post[self.posIndex]):
+            root.right = self.constructFromPrePost(pre, post)
+        self.posIndex += 1
+        return root
+    
 
 938. Range Sum of BST
 https://leetcode.com/problems/range-sum-of-bst/
@@ -2097,6 +2131,88 @@ class Solution(object):
             for i in tmp:
                 self.dic[i] += sorted(tmp[i])
         return [self.dic[i] for i in range(self.min_l, self.max_l+1)]
+
+1008. Construct Binary Search Tree from Preorder Traversal
+https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/
+class Solution(object):
+#T:O(n)
+#S:O(h)
+    def bstFromPreorder(self, preorder):
+        """
+        :type preorder: List[int]
+        :rtype: TreeNode
+        """
+        self.i = 0
+        return self.helper(preorder, float('inf'))
+    
+    def helper(self, A, bound = float('inf')):
+        if self.i == len(A) or A[self.i] > bound:
+            return None
+        node = TreeNode(A[self.i])
+        self.i += 1
+        node.left = self.helper(A, node.val)
+        node.right = self.helper(A, bound)
+        return node
+
+
+1110. Delete Nodes And Return Forest
+https://leetcode.com/problems/delete-nodes-and-return-forest/
+class Solution(object):
+    def delNodes(self, root, to_delete):
+        """
+        :type root: TreeNode
+        :type to_delete: List[int]
+        :rtype: List[TreeNode]
+        """
+        self.s = set(to_delete)
+        self.res = []
+        self.helper(root, False)
+        return self.res
+    
+    def helper(self, node, parent):  
+        if node is None:
+            return None
+        if node.val in self.s:
+            node.left = self.helper(node.left, parent=False)
+            node.right = self.helper(node.right, parent=False)
+            return None
+        else:
+            if not parent:
+                self.res.append(node)
+            node.left = self.helper(node.left, parent=True)
+            node.right = self.helper(node.right, parent=True)
+            return node
+  
+1245. Tree Diameter
+https://leetcode.com/problems/tree-diameter/
+class Solution(object):
+    def treeDiameter(self, edges):
+        """
+        :type edges: List[List[int]]
+        :rtype: int
+        """
+        self.graph = collections.defaultdict(list)
+        for u,v in edges:
+            self.graph[u].append(v)
+            self.graph[v].append(u)
+        node, level = self.dfs(0)
+        return self.dfs(node)[1]
+        
+    def dfs(self, pos):
+        max_level = float('-inf')
+        visited = set()
+        stack = [(pos,0)]
+        while stack:
+            node, level = stack.pop()
+            if node in visited:
+                continue
+            visited.add(node)
+            if max_level < level:
+                max_level = level
+                farestnode = node
+            for nei in self.graph[node]:
+                stack.append((nei, level + 1))
+        return (farestnode, max_level)
 
 1469. Find All The Lonely Nodes
 https://leetcode.com/problems/find-all-the-lonely-nodes/
