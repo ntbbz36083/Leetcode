@@ -553,7 +553,27 @@ class Solution(object):
                 self.res += path
             self.dfs(root.left, path*10+root.val)
             self.dfs(root.right, path*10+root.val)
-            
+
+156. Binary Tree Upside Down
+https://leetcode.com/problems/binary-tree-upside-down/
+class Solution(object):
+    def upsideDownBinaryTree(self, root):
+        if not root:
+            return root
+        l = root.left
+        r = root.right
+        root.left = None
+        root.right = None
+        while l:
+            new_l = l.left
+            new_r = l.right
+            l.left = r
+            l.right = root
+            root = l
+            l = new_l
+            r = new_r
+        return root
+
 173. Binary Search Tree Iterator
 https://leetcode.com/problems/binary-search-tree-iterator/
 class BSTIterator(object):
@@ -629,6 +649,7 @@ class Solution(object):
                 self.res.append(node.val)
             self.helper(node.right, level+1)
             self.helper(node.left, level+1)
+
 226. Invert Binary Tree
 https://leetcode.com/problems/invert-binary-tree/
 class Solution(object):
@@ -717,6 +738,25 @@ class Solution(object):
                 return root
             if left or right:
                 return left or right
+
+255. Verify Preorder Sequence in Binary Search Tree
+https://leetcode.com/problems/verify-preorder-sequence-in-binary-search-tree/
+class Solution(object):
+    i = 0
+    def verifyPreorder(self, preorder):
+        """
+        :type preorder: List[int]
+        :rtype: bool
+        """
+        st = []
+        low = float('-inf')
+        for x in preorder:
+            if x < low:
+                return False
+            while st and st[-1] < x:
+                low = st.pop()
+            st.append(x)
+        return True
 
 1644. Lowest Common Ancestor of a Binary Tree II
 https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/
@@ -1143,6 +1183,28 @@ class Solution(object):
             self.helper(node.left)
             self.helper(node.right)
 
+426. Convert Binary Search Tree to Sorted Doubly Linked List
+https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
+class Solution(object):
+    def treeToDoublyList(self, root):
+        """
+        :type root: Node
+        :rtype: Node
+        """
+        if not root:return
+        dummy = Node(9,None,None)
+        prev = dummy
+        stack, node = [], root
+        while stack or node:
+            while node:
+                stack.append(node)
+                node = node.left
+            node = stack.pop()
+            node.left, prev.right, prev = prev, node, node
+            node = node.right
+        dummy.right.left, prev.right = prev, dummy.right
+        return dummy.right
+
 428. Serialize and Deserialize N-ary Tree
 https://leetcode.com/problems/serialize-and-deserialize-n-ary-tree/
 class Codec:
@@ -1368,6 +1430,25 @@ class Solution(object):
             s = node.val + self.dfs(node.left) + self.dfs(node.right)
             self.count[s] += 1
             return s
+
+510. Inorder Successor in BST II
+https://leetcode.com/problems/inorder-successor-in-bst-ii/
+class Solution(object):
+    def inorderSuccessor(self, node):
+        """
+        :type node: Node
+        :rtype: Node
+        """
+        if node.right:
+            right = node.right
+            while right.left:
+                right = right.left
+            return right
+        while node.parent:
+            if node.parent.left == node:
+                return node.parent
+            node = node.parent
+        return None
 
 513. Find Bottom Left Tree Value
 https://leetcode.com/problems/find-bottom-left-tree-value/
@@ -2031,6 +2112,42 @@ class Solution(object):
             self.dic[node.right.val].append(node.val)
             self.traverse(node.right)
 
+776. Split BST
+https://leetcode.com/problems/split-bst/
+class Solution(object):
+    def splitBST(self, root, V):
+        """
+        :type root: TreeNode
+        :type V: int
+        :rtype: List[TreeNode]
+        """
+        if not root:
+            return None, None
+        if root.val > V:
+            left, right = self.splitBST(root.left, V)
+            root.left = right
+            return [left, root]
+        else:
+            left, right = self.splitBST(root.right, V)
+            root.right = left
+            return [root, right]
+
+814. Binary Tree Pruning
+https://leetcode.com/problems/binary-tree-pruning/
+class Solution(object):
+    def pruneTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: TreeNode
+        """
+        if not root:
+            return None
+        root.left = self.pruneTree(root.left)
+        root.right = self.pruneTree(root.right)
+        if not root.left and not root.right and not root.val:
+            return None
+        return root
+
 863. All Nodes Distance K in Binary Tree
 https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/
 class Solution(object):
@@ -2084,6 +2201,25 @@ class Solution(object):
         self.posIndex += 1
         return root
     
+894. All Possible Full Binary Trees
+https://leetcode.com/problems/all-possible-full-binary-trees/
+class Solution(object):
+    def allPossibleFBT(self, N):
+        """
+        :type N: int
+        :rtype: List[TreeNode]
+        """
+        N -= 1
+        if N == 0: return [TreeNode(0)]
+        ret = []
+        for l in range(1, N, 2):
+            for left in self.allPossibleFBT(l):
+                for right in self.allPossibleFBT(N - l):
+                    root = TreeNode(0)
+                    root.left = left
+                    root.right = right
+                    ret += [root]
+        return ret
 
 938. Range Sum of BST
 https://leetcode.com/problems/range-sum-of-bst/
@@ -2102,7 +2238,51 @@ class Solution(object):
         elif root.val > high:
             return self.rangeSumBST(root.left, low, high)
         return root.val + self.rangeSumBST(root.right, low, high) + self.rangeSumBST(root.left, low, high)
+
+951. Flip Equivalent Binary Trees
+https://leetcode.com/problems/flip-equivalent-binary-trees/
+class Solution(object):
+    def flipEquiv(self, root1, root2):
+        """
+        :type root1: TreeNode
+        :type root2: TreeNode
+        :rtype: bool
+        """
+        if not root1 or not root2:
+            return root1 is root2         
+        return root1.val == root2.val and (self.flipEquiv(root1.left, root2.left) and self.flipEquiv(root1.right, root2.right) \
+    or self.flipEquiv(root1.left, root2.right) and self.flipEquiv(root1.right, root2.left))
+
+
+968. Binary Tree Cameras
+https://leetcode.com/problems/binary-tree-cameras/
+class Solution(object):
+    def minCameraCover(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.sum = 0
+        if self.helper(root)==0:
+            self.sum += 1
+        return self.sum
     
+    def helper(self, node):
+        #0 means not cover, 1 means covered but no camera,
+        #2 means camera on it
+        if not node:
+            return 1
+        l = self.helper(node.left)
+        r = self.helper(node.right)
+        
+        if l == 0 or r == 0:
+            self.sum += 1
+            return 2
+        elif l == 2 or r == 2:
+            return 1
+        else:
+            return 0
+        
 
 987. Vertical Order Traversal of a Binary Tree
 https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
@@ -2131,6 +2311,29 @@ class Solution(object):
             for i in tmp:
                 self.dic[i] += sorted(tmp[i])
         return [self.dic[i] for i in range(self.min_l, self.max_l+1)]
+
+993. Cousins in Binary Tree
+https://leetcode.com/problems/cousins-in-binary-tree/
+class Solution(object):
+    def isCousins(self, root, x, y):
+        """
+        :type root: TreeNode
+        :type x: int
+        :type y: int
+        :rtype: bool
+        """
+        q = collections.deque([(root, 0, 0)])
+        dic = {}
+        while q:
+            node, level, parent = q.popleft()
+            dic[node.val] = (level, parent)
+            if node.left:
+                q.append((node.left, level+1, node.val))
+            if node.right:
+                q.append((node.right, level+1, node.val))
+        if dic[x][0] == dic[y][0] and dic[x][1] != dic[y][1]:
+            return True
+        return False
 
 1008. Construct Binary Search Tree from Preorder Traversal
 https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/
@@ -2182,7 +2385,39 @@ class Solution(object):
             node.left = self.helper(node.left, parent=True)
             node.right = self.helper(node.right, parent=True)
             return node
-  
+
+1130. Minimum Cost Tree From Leaf Values
+https://leetcode.com/problems/minimum-cost-tree-from-leaf-values/
+DP:
+#T:O(n3)
+#S:O(n2)
+class Solution(object):
+    def mctFromLeafValues(self, arr):
+        """
+        :type arr: List[int]
+        :rtype: int
+        """
+        return self.dp(arr, 0, len(arr)-1, {})
+    def dp(self, arr, l, r, cache):
+        if (l, r) in cache:
+            return cache[(l,r)]
+        if l >= r:
+            return 0
+        res = float('inf')
+        for i in range(l,r):
+            val = max(arr[l:i+1]) * max(arr[i+1:r+1])
+            res = min(res, val + self.dp(arr, l, i, cache) + self.dp(arr,i+1,r ,cache))
+        cache[(l,r)] = res
+        return res
+#T:O(n2)
+#S:O(n)
+def mctFromLeafValues(self, A):
+        res = 0
+        while len(A) > 1:
+            i = A.index(min(A))
+            res += min(A[i - 1:i] + A[i + 1:i + 2]) * A.pop(i)
+        return res
+
 1245. Tree Diameter
 https://leetcode.com/problems/tree-diameter/
 class Solution(object):
