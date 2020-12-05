@@ -1,0 +1,21 @@
+953. Verifying an Alien Dictionary
+https://leetcode.com/problems/verifying-an-alien-dictionary/
+class Solution(object):
+#T:O(n)
+#S:O(n)
+
+    def isAlienSorted(self, words, order):
+        """
+        :type words: List[str]
+        :type order: str
+        :rtype: bool
+        """
+        dic = {}
+        for i, w in enumerate(order):
+            dic[w] = i
+
+        words = [[dic[c] for c in w] for w in words]    
+        for w1, w2 in zip(words, words[1:]):
+            if w1 > w2:
+                return False
+        return True
