@@ -1,0 +1,175 @@
+130. Surrounded Regions
+#######  DFS  #######
+https://leetcode.com/problems/surrounded-regions/
+class Solution(object):
+    def solve(self, board):
+        """
+        :type board: List[List[str]]
+        :rtype: None Do not return anything, modify board in-place instead.
+        """
+        if not board or not board[0]:
+            return
+
+        for i in [0, len(board)-1]:
+            for j in range(len(board[0])):
+                self.dfs(i,j,board)
+        for i in range(len(board)):
+            for j in [0, len(board[0])-1]:
+                self.dfs(i,j,board)
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] == 'O':
+                    board[i][j] = 'X'
+                elif board[i][j] == '.':
+                    board[i][j] = 'O'
+                    
+    def dfs(self, i, j, board):
+        if 0 <= i < len(board) and 0 <= j < len(board[0]) and board[i][j] == 'O':
+            board[i][j] = '.'
+            self.dfs(i+1,j, board)
+            self.dfs(i-1,j, board)
+            self.dfs(i,j+1, board)
+            self.dfs(i,j-1, board)
+            
+#######  Union Find  #######
+class UF(object):
+    def __init__(self, n):
+        self.parent = [i for i in range(n)]
+        self.rank = [0 for _ in range(n)]
+        
+    def find(self, p):
+        while p != self.parent[p]:
+            self.parent[p] = self.parent[self.parent[p]]
+            p = self.parent[p]
+        return p
+    
+    def union(self, a, b):
+        i = self.find(a)
+        j = self.find(b)
+        if i == j:
+            return
+        if self.parent[i] <= self.parent[j]:
+            self.rank[j] += 1
+            self.parent[i] = self.parent[j]
+        else:
+            self.rank[i] += 1
+            self.parent[j] = self.parent[i]
+            
+    def connected(self, a, b):
+        return self.find(a) == self.find(b)
+        
+class Solution(object):
+    def solve(self, board):
+        """
+        :type board: List[List[str]]
+        :rtype: None Do not return anything, modify board in-place instead.
+        """
+        if not board or not board[0]:
+            return
+        m, n = len(board), len(board[0])
+        uf = UF(m*n+1)
+        
+        for i in range(m):
+            for j in [0,n-1]:
+                if board[i][j] == 'O':
+                    uf.union(i*n+j,m*n)
+        for i in [0,m-1]:
+            for j in range(n):
+                if board[i][j] == 'O':
+                    uf.union(i*n+j,m*n)
+        
+        d = [(1,0),(-1,0),(0,1), (0,-1)]
+        for i in range(1,m-1):
+            for j in range(1,n-1):
+                if board[i][j] == 'O':
+                    for dir in d:
+                        x = i + dir[0]
+                        y = j + dir[1]
+                        if board[x][y] == 'O':
+                            uf.union(i*n+j,x*n+y)
+        for i in range(m):
+            for j in range(n):
+                if not uf.connected(i*n+j, m*n):
+                    board[i][j] = 'X'
+                    
+990. Satisfiability of Equality Equations
+https://leetcode.com/problems/satisfiability-of-equality-equations/
+#######  DFS  #######
+class Solution(object):
+    def equationsPossible(self, equations):
+        """
+        :type equations: List[str]
+        :rtype: bool
+        """
+        graph = collections.defaultdict(set)
+        notEquals = []
+        
+        def canmeet(u,target, visited):
+            if u == target:
+                return True
+            visited.add(u)
+            for v in graph[u]:
+                if v in visited:
+                    continue
+                if canmeet(v,target,visited):
+                    return True
+            return False
+        for equ in equations:
+            if equ[1:3] == '!=':
+                a,b = equ.split('!=')
+                notEquals.append((a,b))
+            else:
+                a,b = equ.split('==')
+                graph[a].add(b)
+                graph[b].add(a)
+        for a, b in notEquals:
+            if canmeet(a,b,set()):
+                return False
+        return True
+        
+ #######  Union Find  #######
+ class UF(object):
+    def __init__(self, n):
+        self.parent = [i for i in range(n)]
+        self.rank = [0 for _ in range(n)]
+        
+    def find(self, p):
+        while p != self.parent[p]:
+            self.parent[p] = self.parent[self.parent[p]]
+            p = self.parent[p]
+        return p
+    
+    def union(self, a, b):
+        i = self.find(a)
+        j = self.find(b)
+        if i == j:
+            return
+        if self.parent[i] <= self.parent[j]:
+            self.rank[j] += 1
+            self.parent[i] = self.parent[j]
+        else:
+            self.rank[i] += 1
+            self.parent[j] = self.parent[i]
+            
+    def connected(self, a, b):
+        return self.find(a) == self.find(b)
+class Solution(object):
+    def equationsPossible(self, equations):
+        """
+        :type equations: List[str]
+        :rtype: bool
+        """
+        uf = UF(26)
+        equ, nonequ = [], []
+        for a, e, _, b in equations:
+            a,b = ord(a)-97, ord(b)-97
+            if e == '=':
+                equ.append((a,b))
+            else:
+                nonequ.append((a,b))
+        for a, b in equ:
+            uf.union(a,b)
+        for a, b in nonequ:
+            if uf.find(a) == uf.find(b):
+                return False
+        return True                                
