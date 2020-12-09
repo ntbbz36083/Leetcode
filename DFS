@@ -1,3 +1,24 @@
+17. Letter Combinations of a Phone Number
+https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+class Solution(object):
+    def letterCombinations(self, digits):
+        """
+        :type digits: str
+        :rtype: List[str]
+        """
+        if not digits:
+            return []
+        d = {"2":"abc", "3":"def", "4":"ghi", "5":"jkl", "6":"mno", "7":"pqrs", "8":"tuv", "9":"wxyz"}
+        res = []
+        def dfs(index, path):
+            if len(path)==len(digits):
+                res.append(path)
+            else:
+                for c in d[digits[index]]:
+                    dfs(index+1, path + c)        
+        dfs(0, "")
+        return res
+
 46. Permutations
 https://leetcode.com/problems/permutations/
 class Solution(object):
@@ -291,10 +312,44 @@ class Solution(object):
             union(e[0], e[1])
         
         return len([0 for i in range(n) if i == parent[i]])
-        
+
+394. Decode String
+https://leetcode.com/problems/decode-string/
+
+
+
 547. Friend Circles
 https://leetcode.com/problems/friend-circles/
 
+
+695. Max Area of Island
+class Solution(object):
+#T:O(V) v is vertex that will traverse through, which is number 1
+#S:O(n)
+    def maxAreaOfIsland(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        max_area = 0
+        visited = set()
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == 1:
+                    if (i,j) not in visited:
+                        self.cur_area = 0
+                        self.dfs(grid, i,j,visited)
+                        max_area = max(max_area, self.cur_area)
+        return max_area
+    
+    def dfs(self, grid, i, j,  visited):
+        if 0 <= i < len(grid) and 0 <= j < len(grid[0]) and grid[i][j] == 1 and (i,j) not in visited:
+            visited.add((i,j))
+            self.cur_area += 1            
+            self.dfs(grid,i+1, j,  visited)
+            self.dfs(grid,i-1, j,  visited)
+            self.dfs(grid,i, j+1,  visited)
+            self.dfs(grid,i, j-1,  visited)
 
 721. Accounts Merge
 https://leetcode.com/problems/accounts-merge/
