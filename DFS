@@ -229,6 +229,69 @@ class Solution(object):
                             uf.union((i*n+j), (x*n+y))                            
         return uf.count    
 
+323. Number of Connected Components in an Undirected Graph
+https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+#######  DFS  ######
+class Solution(object):
+    def countComponents(self, n, edges):
+#T:O(E+V)
+#S:O(n)
+        """
+        :type n: int
+        :type edges: List[List[int]]
+        :rtype: int
+        """
+        g = collections.defaultdict(list) #space O(n)
+        visited = set() #space O(n)
+        res = 0
+        for edge in edges: #time O(e) edge number 
+            g[edge[0]].append(edge[1])
+            g[edge[1]].append(edge[0])
+        for i in range(n): #not all visited, only those vertex O(v), worest O(n), best o(1)
+            if i not in visited:
+                self.dfs(i,g,visited)
+                res += 1
+        return res
+    
+    def dfs(self, vertex, g, visited):
+        if vertex not in visited:
+            visited.add(vertex)
+            for nei in g[vertex]:
+                self.dfs(nei, g, visited)
+
+#######  Union Find  ######
+class Solution(object):
+    def countComponents(self, n, edges):
+#T:O(E+V)
+#S:O(n)
+        """
+        :type n: int
+        :type edges: List[List[int]]
+        :rtype: int
+        """
+        def find(a):
+            while a != parent[a]:
+                parent[a] = parent[parent[a]]
+                a = parent[a]
+            return a
+        
+        def union(a,b):
+            a, b = find(a), find(b)
+            if a != b:
+                if parent[a] < parent[b]:
+                    parent[a] = b
+                    rank[b] += 1
+                else:
+                    parent[b] = a
+                    rank[a] += 1
+                    #if rank[a] == rank[b]:
+                        #rank[a] += 1
+        parent, rank = [i for i in range(n)], [0 for _ in range(n)]
+        for e in edges:
+            union(e[0], e[1])
+        
+        return len([0 for i in range(n) if i == parent[i]])
+        
 547. Friend Circles
 https://leetcode.com/problems/friend-circles/
 
