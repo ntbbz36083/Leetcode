@@ -63,7 +63,110 @@ class LRUCache(object):
         n = node.next
         p.next = n
         n.prev = p
-        
+
+208. Implement Trie (Prefix Tree)
+https://leetcode.com/problems/implement-trie-prefix-tree/
+class Trie(object):
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.tire = {}
+
+    def insert(self, word):
+        """
+        Inserts a word into the trie.
+        :type word: str
+        :rtype: None
+        """
+        t = self.tire
+        for w in word:
+            if w not in t:
+                t[w] = {}
+            t = t[w]
+        t['#'] = '#'
+
+    def search(self, word):
+        """
+        Returns if the word is in the trie.
+        :type word: str
+        :rtype: bool
+        """
+        t = self.tire
+        for w in word:
+            if w not in t:
+                return False
+            t = t[w]
+        if '#' in t:
+            return True
+        return False
+
+    def startsWith(self, prefix):
+        """
+        Returns if there is any word in the trie that starts with the given prefix.
+        :type prefix: str
+        :rtype: bool
+        """
+        t =self.tire
+        for w in prefix:
+            if w not in t:
+                return False
+            t = t[w]
+        return True
+
+# Your Trie object will be instantiated and called as such:
+# obj = Trie()
+# obj.insert(word)
+# param_2 = obj.search(word)
+# param_3 = obj.startsWith(prefix)
+
+211. Design Add and Search Words Data Structure
+https://leetcode.com/problems/design-add-and-search-words-data-structure/
+class WordDictionary(object):
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.tire = {}
+
+    def addWord(self, word):
+        """
+        :type word: str
+        :rtype: None
+        """
+        t = self.tire
+        for w in word:
+            if w not in t:
+                t[w] = {}
+            t = t[w]
+        t['#'] = True
+    def search(self, word):
+        """
+        :type word: str
+        :rtype: bool
+        """
+        return self.searchNode(self.tire, word)
+            
+    def searchNode(self, t, word):
+        for i, c in enumerate(word):
+            if c == '.':
+                #return any(self.searchNode(t[w], word[i+1:]) for w in t if w != '$')
+                for w in t:
+                    if w != '#':        
+                        if self.searchNode(t[w], word[i+1:]):
+                            return True
+            if c not in t:
+                return False
+            t = t[c]
+        return '#' in t
+
+# Your WordDictionary object will be instantiated and called as such:
+# obj = WordDictionary()
+# obj.addWord(word)
+# param_2 = obj.search(word)
+
 355. Design Twitter
 https://leetcode.com/problems/design-twitter/
 
