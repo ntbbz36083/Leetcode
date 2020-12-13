@@ -2418,6 +2418,43 @@ def mctFromLeafValues(self, A):
             res += min(A[i - 1:i] + A[i + 1:i + 2]) * A.pop(i)
         return res
 
+1145. Binary Tree Coloring Game
+https://leetcode.com/problems/binary-tree-coloring-game/
+class Solution(object):
+    def btreeGameWinningMove(self, root, n, x):
+        """
+        :type root: TreeNode
+        :type n: int
+        :type x: int
+        :rtype: bool
+        """
+        q = collections.deque([root])
+        red_node = None
+        r_l, r_r, p_o = 0,0,0
+        while q:
+            cur_node = q.popleft()
+            if cur_node.val == x:
+                red_node = cur_node
+            else:
+                p_o += 1
+                if cur_node.left:
+                    q.append(cur_node.left)
+                if cur_node.right:
+                    q.append(cur_node.right)
+        if red_node.left:
+            q.append(red_node.left)
+            while q:
+                cur_node = q.popleft()
+                r_l += 1
+                if cur_node.left:
+                    q.append(cur_node.left)
+                if cur_node.right:
+                    q.append(cur_node.right)
+        else:
+            r_l = 0
+        r_r = n-r_l-p_o-1
+        low, med, high = sorted([r_l,r_r,p_o])
+        return high > n/2
 1245. Tree Diameter
 https://leetcode.com/problems/tree-diameter/
 class Solution(object):
@@ -2449,6 +2486,60 @@ class Solution(object):
                 stack.append((nei, level + 1))
         return (farestnode, max_level)
 
+1302. Deepest Leaves Sum
+https://leetcode.com/problems/deepest-leaves-sum/
+class Solution(object):
+    def deepestLeavesSum(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.height = self.getheight(root)
+        self.res = 0
+        self.helper(root,1)
+        return self.res
+    
+    def getheight(self, node):
+        if node:
+            left = self.getheight(node.left)
+            right = self.getheight(node.right)
+            return max(left,right)+1
+        return 0
+    
+    def helper(self, node, h):
+        if node:
+            if h == self.height:
+                self.res += node.val
+            self.helper(node.left,h+1)
+            self.helper(node.right,h+1)
+            
+1315. Sum of Nodes with Even-Valued Grandparent
+https://leetcode.com/problems/sum-of-nodes-with-even-valued-grandparent/
+class Solution(object):
+    def sumEvenGrandparent(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.res = 0
+        self.helper(root)
+        return self.res
+        
+    def helper(self, node):
+        if node:
+            if node.val % 2 == 0:
+                if node.left:
+                    if node.left.left:
+                        self.res += node.left.left.val
+                    if node.left.right:
+                        self.res += node.left.right.val
+                if node.right:
+                    if node.right.left:
+                        self.res += node.right.left.val
+                    if node.right.right:
+                        self.res += node.right.right.val
+            self.helper(node.left)
+            self.helper(node.right)
 1469. Find All The Lonely Nodes
 https://leetcode.com/problems/find-all-the-lonely-nodes/
 class Solution(object):
