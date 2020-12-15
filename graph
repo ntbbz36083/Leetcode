@@ -1,0 +1,21 @@
+https://leetcode.com/problems/clone-n-ary-tree/discuss/815712/Python-simple-recursive-solution-and-the-follow-up-question
+133. Clone Graph
+https://leetcode.com/problems/clone-graph/
+class Solution(object):
+    def cloneGraph(self, node):
+        """
+        :type node: Node
+        :rtype: Node
+        """
+        def clone(node):
+            if not node:
+                return None
+            if node in d:
+                return d[node]
+            newnode = Node(node.val)
+            d[node] = newnode
+            for nei in node.neighbors:
+                newnode.neighbors.append(clone(nei))
+            return newnode
+        d = {}
+        return clone(node)
