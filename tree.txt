@@ -2436,6 +2436,26 @@ class Solution(object):
             self.m = max(self.m,mx-mn)
             return
 
+1104. Path In Zigzag Labelled Binary Tree
+https://leetcode.com/problems/path-in-zigzag-labelled-binary-tree/
+class Solution(object):
+#T:O(logn)
+#S:O(h)
+    def pathInZigZagTree(self, label):
+        """
+        :type label: int
+        :rtype: List[int]
+        """
+        level = 1
+        res = []
+        while label >= 2 ** level:
+            level += 1
+        while label > 0:
+            res.append(label)
+            cur_max, cur_min = 2**level -1, 2**(level-1)
+            label = int(cur_max+cur_min-label)/2
+            level -= 1
+        return res[::-1]
 
 1110. Delete Nodes And Return Forest
 https://leetcode.com/problems/delete-nodes-and-return-forest/
@@ -2555,6 +2575,34 @@ class Solution(object):
         r_r = n-r_l-p_o-1
         low, med, high = sorted([r_l,r_r,p_o])
         return high > n/2
+
+1161. Maximum Level Sum of a Binary Tree
+https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/
+class Solution(object):
+#T:O(n)
+#T:O(h)
+    def maxLevelSum(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        if not root:
+            return 0
+        m, res = float('-inf'), 1
+        q = collections.deque([(root,1)])
+        while q:
+            su = 0
+            for _ in range(len(q)):
+                node, level = q.popleft()
+                su += node.val
+                if node.left:
+                    q.append((node.left, level+1))
+                if node.right:
+                    q.append((node.right, level+1))
+            if m < su:
+                m, res = su, level
+        return res
+
 1245. Tree Diameter
 https://leetcode.com/problems/tree-diameter/
 class Solution(object):
@@ -2612,7 +2660,40 @@ class Solution(object):
                 self.res += node.val
             self.helper(node.left,h+1)
             self.helper(node.right,h+1)
-            
+
+1305. All Elements in Two Binary Search Trees
+https://leetcode.com/problems/all-elements-in-two-binary-search-trees/
+class Solution(object):
+#T:O(n1+n2)
+#S:O(n1+n2)
+    def getAllElements(self, root1, root2):
+        """
+        :type root1: TreeNode
+        :type root2: TreeNode
+        :rtype: List[int]
+        """
+        res = []
+        l1,l2 = [], []
+        self.helper(root1,l1)
+        self.helper(root2, l2)
+        i,j = 0,0
+        while i<len(l1) and j < len(l2):
+            if l1[i]> l2[j]:
+                res.append(l2[j])
+                j += 1
+            else:
+                res.append(l1[i])
+                i += 1
+        
+        return res + l1[i:] + l2[j:]
+    
+    def helper(self, node, l):
+        if node:
+            self.helper(node.left, l)
+            l.append(node.val)
+            self.helper(node.right, l)
+        
+
 1315. Sum of Nodes with Even-Valued Grandparent
 https://leetcode.com/problems/sum-of-nodes-with-even-valued-grandparent/
 class Solution(object):
@@ -2640,6 +2721,51 @@ class Solution(object):
                         self.res += node.right.right.val
             self.helper(node.left)
             self.helper(node.right)
+
+1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree
+https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/
+class Solution(object):
+    def getTargetCopy(self, original, cloned, target):
+        """
+        :type original: TreeNode
+        :type cloned: TreeNode
+        :type target: TreeNode
+        :rtype: TreeNode
+        """
+        if not original or not cloned:
+            return None
+        stack = [(original, cloned)]
+        while stack:
+            org, clone = stack.pop()
+            if org == target:
+                return clone
+            if org.left:
+                stack.append((org.left, clone.left))
+            if org.right:
+                stack.append((org.right, clone.right))
+
+1448. Count Good Nodes in Binary Tree
+https://leetcode.com/problems/count-good-nodes-in-binary-tree/
+class Solution(object):
+#T:O(logn)
+#T:O(h)
+    def goodNodes(self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.res = 0
+        self.helper(root,root.val)
+        return self.res
+    
+    def helper(self, node, m):
+        if node:
+            if node.val >= m:
+                self.res += 1
+                m = node.val
+            self.helper(node.left, m)
+            self.helper(node.right, m)
+
 1469. Find All The Lonely Nodes
 https://leetcode.com/problems/find-all-the-lonely-nodes/
 class Solution(object):
@@ -2659,4 +2785,46 @@ class Solution(object):
                 self.res.append(node.right.val)
             self.helper(node.left)
             self.helper(node.right)
-        
+
+1490. Clone N-ary Tree
+https://leetcode.com/problems/clone-n-ary-tree/
+class Solution(object):
+    def cloneTree(self, root):
+        """
+        :type root: Node
+        :rtype: Node
+        """
+        if not root:
+            return None
+        newroot = Node(root.val)
+        for child in root.children:
+            newroot.children.append(self.cloneTree(child))
+        return newroot
+
+1612. Check If Two Expression Trees are Equivalent
+https://leetcode.com/problems/check-if-two-expression-trees-are-equivalent/
+class Solution(object):
+#T:O(n)
+#T:O(26)
+    def checkEquivalence(self, root1, root2):
+        """
+        :type root1: Node
+        :type root2: Node
+        :rtype: bool
+        """
+        self.d = collections.Counter()
+        self.helper(root1,1)
+        self.helper(root2,-1)
+        return all(x == 0 for x in self.d.values())
+    
+    def helper(self, node, sign):
+        if not node:
+            return
+        if node.val == '+':
+            self.helper(node.left, sign)
+            self.helper(node.right, sign)
+        elif node.val == '-':
+            self.helper(node.left, sign)
+            self.helper(node.right, -sign)
+        else:
+            self.d[node.val] += sign
