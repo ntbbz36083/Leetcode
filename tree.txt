@@ -2722,6 +2722,24 @@ class Solution(object):
             self.helper(node.left)
             self.helper(node.right)
 
+1325. Delete Leaves With a Given Value
+https://leetcode.com/problems/delete-leaves-with-a-given-value/
+class Solution(object):
+    def removeLeafNodes(self, root, target):
+        """
+        :type root: TreeNode
+        :type target: int
+        :rtype: TreeNode
+        """
+        if root.left:
+            root.left = self.removeLeafNodes(root.left, target)
+        if root.right:
+            root.right = self.removeLeafNodes(root.right, target)
+        if root.left == root.right and root.val == target:
+            return None
+        else:
+            return root
+
 1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree
 https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/
 class Solution(object):
@@ -2800,6 +2818,31 @@ class Solution(object):
         for child in root.children:
             newroot.children.append(self.cloneTree(child))
         return newroot
+
+1602. Find Nearest Right Node in Binary Tree
+https://leetcode.com/problems/find-nearest-right-node-in-binary-tree/
+class Solution(object):
+    def findNearestRightNode(self, root, u):
+        """
+        :type root: TreeNode
+        :type u: TreeNode
+        :rtype: TreeNode
+        """
+        q = collections.deque([root])
+        while q:
+            x = len(q)
+            for i in range(x):
+                node = q.popleft()
+                if node == u:
+                    if i == x-1:
+                        return None
+                    else:
+                        return q[0]
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+
 
 1612. Check If Two Expression Trees are Equivalent
 https://leetcode.com/problems/check-if-two-expression-trees-are-equivalent/
