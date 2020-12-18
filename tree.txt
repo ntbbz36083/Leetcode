@@ -2188,6 +2188,28 @@ class Solution(object):
         else:
             self.res.append(node.val)
 
+865. Smallest Subtree with all the Deepest Nodes
+https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/
+class Solution(object):
+    def subtreeWithAllDeepest(self, root):
+        """
+        :type root: TreeNode
+        :rtype: TreeNode
+        """
+        return self.helper(root)[1]
+    
+    def helper(self, node):
+        if node:
+            hl, lca = self.helper(node.left)
+            hr, rca = self.helper(node.right)
+            if hl > hr:
+                return hl+1, lca
+            if hl < hr:
+                return hr+1, rca
+            return hl+1, node
+        else:
+            return 0, None
+
 872. Leaf-Similar Trees
 https://leetcode.com/problems/leaf-similar-trees/
 class Solution(object):
@@ -2786,6 +2808,28 @@ class Solution(object):
             self.helper(node.left, m)
             self.helper(node.right, m)
 
+1457. Pseudo-Palindromic Paths in a Binary Tree
+https://leetcode.com/problems/pseudo-palindromic-paths-in-a-binary-tree/
+class Solution(object):
+    def pseudoPalindromicPaths (self, root):
+        """
+        :type root: TreeNode
+        :rtype: int
+        """
+        self.res = 0
+        self.helper(root, set())
+        return self.res
+    
+    def helper(self, node, cur):
+        if node:
+            cur.remove(node.val) if node.val in cur else cur.add(node.val)
+            if not node.left and not node.right:
+                if len(cur) <= 1: self.res += 1
+            else:
+                self.helper(node.left, cur)
+                self.helper(node.right, cur)
+            cur.remove(node.val) if node.val in cur else cur.add(node.val)
+
 1469. Find All The Lonely Nodes
 https://leetcode.com/problems/find-all-the-lonely-nodes/
 class Solution(object):
@@ -2805,6 +2849,57 @@ class Solution(object):
                 self.res.append(node.right.val)
             self.helper(node.left)
             self.helper(node.right)
+
+1485. Clone Binary Tree With Random Pointer
+https://leetcode.com/problems/clone-binary-tree-with-random-pointer/
+class Solution:
+    def copyRandomBinaryTree(self, root: 'Node') -> 'NodeCopy':
+        
+        self.createNodeCopyNodes(root)
+        self.populateRandom(root)
+                    
+        return self.breakNodes(root)
+
+        
+    def createNodeCopyNodes(self, root):
+        if not root:
+            return root
+        
+        newRoot = NodeCopy(root.val)
+        
+        newRoot.left = root.left
+        newRoot.right = root.right
+        
+        root.left = newRoot
+        root.right = None
+        
+        self.createNodeCopyNodes(newRoot.left)
+        self.createNodeCopyNodes(newRoot.right)
+        
+    def populateRandom(self, root):
+        if not root:
+            return root
+        
+        newRoot = root.left
+        if root.random:
+            newRoot.random = root.random.left
+        else:
+            newRoot.random = None
+            
+        self.populateRandom(newRoot.left)
+        self.populateRandom(newRoot.right)
+        
+    def breakNodes(self, root):
+        if not root:
+            return root
+        newRoot = root.left
+        root.left = newRoot.left
+        root.right = newRoot.right
+        if root.left:
+            newRoot.left = self.breakNodes(root.left)
+        if root.right:
+            newRoot.right = self.breakNodes(root.right)
+        return newRoot
 
 1490. Clone N-ary Tree
 https://leetcode.com/problems/clone-n-ary-tree/
