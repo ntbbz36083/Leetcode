@@ -1,5 +1,3 @@
-
-
 96. Unique Binary Search Trees
 https://leetcode.com/problems/unique-binary-search-trees/
 class Solution(object):
@@ -2301,6 +2299,27 @@ class Solution(object):
         return root1.val == root2.val and (self.flipEquiv(root1.left, root2.left) and self.flipEquiv(root1.right, root2.right) \
     or self.flipEquiv(root1.left, root2.right) and self.flipEquiv(root1.right, root2.left))
 
+958. Check Completeness of a Binary Tree
+https://leetcode.com/problems/check-completeness-of-a-binary-tree/
+class Solution(object):
+    def isCompleteTree(self, root):
+        """
+        :type root: TreeNode
+        :rtype: bool
+        """
+        if not root:
+            return True
+        q = collections.deque([(root, 1)])
+        res = []
+        while q:
+            u, coord = q.popleft()
+            res.append(coord)
+            if u.left:
+                q.append((u.left, 2*coord))
+            if u.right:
+                q.append((u.right, 2*coord+1))
+        return len(res) == res[-1]
+
 965. Univalued Binary Tree
 https://leetcode.com/problems/univalued-binary-tree/
 class Solution(object):
@@ -2375,6 +2394,33 @@ class Solution(object):
             for i in tmp:
                 self.dic[i] += sorted(tmp[i])
         return [self.dic[i] for i in range(self.min_l, self.max_l+1)]
+
+988. Smallest String Starting From Leaf
+https://leetcode.com/problems/smallest-string-starting-from-leaf/
+class Solution(object):
+    def smallestFromLeaf(self, root):
+        """
+        :type root: TreeNode
+        :rtype: str
+        """
+        if not root:
+            return ''
+        self.res = [None]
+        self.helper(root, '')
+        return self.res[0]
+    
+    def helper(self, root, s):
+        s = s + chr(ord('a') + root.val)
+        if not root.left and not root.right:
+            if self.res[0] == None:
+                self.res[0] = s[::-1]
+            else:
+                self.res[0] = min(self.res[0], s[::-1])
+        if root.left:
+            self.helper(root.left, s)
+        if root.right:
+            self.helper(root.right, s)
+        
 
 993. Cousins in Binary Tree
 https://leetcode.com/problems/cousins-in-binary-tree/
@@ -2764,6 +2810,28 @@ class Solution(object):
         else:
             return root
 
+1367. Linked List in Binary Tree
+https://leetcode.com/problems/linked-list-in-binary-tree/
+class Solution(object):
+    def isSubPath(self, head, root):
+        """
+        :type head: ListNode
+        :type root: TreeNode
+        :rtype: bool
+        """
+        if not head:
+            return True
+        if not root:
+            return False
+        return self.helper(head,root) or self.isSubPath(head, root.left) or self.isSubPath(head, root.right) 
+        
+    def helper(self, head, root):
+        if not head:
+            return True
+        if not root:
+            return False
+        return head.val == root.val and (self.helper(head.next, root.left) or self.helper(head.next, root.right))
+
 1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree
 https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/
 class Solution(object):
@@ -2785,6 +2853,24 @@ class Solution(object):
                 stack.append((org.left, clone.left))
             if org.right:
                 stack.append((org.right, clone.right))
+
+1430. Check If a String Is a Valid Sequence from Root to Leaves Path in a Binary Tree
+https://leetcode.com/problems/check-if-a-string-is-a-valid-sequence-from-root-to-leaves-path-in-a-binary-tree/
+class Solution(object):
+    def isValidSequence(self, root, arr):
+        """
+        :type root: TreeNode
+        :type arr: List[int]
+        :rtype: bool
+        """
+        return self.helper(0, root, arr)
+        
+    def helper(self, i, node, arr):
+        if not node or i == len(arr) or arr[i] != node.val:
+            return False
+        if i == len(arr)-1 and not node.left and not node.right:
+            return True
+        return self.helper(i+1, node.left, arr) or self.helper(i+1, node.right, arr)
 
 1448. Count Good Nodes in Binary Tree
 https://leetcode.com/problems/count-good-nodes-in-binary-tree/
@@ -2915,6 +3001,30 @@ class Solution(object):
         for child in root.children:
             newroot.children.append(self.cloneTree(child))
         return newroot
+
+1530. Number of Good Leaf Nodes Pairs
+https://leetcode.com/problems/number-of-good-leaf-nodes-pairs/
+class Solution(object):
+    def countPairs(self, root, distance):
+        """
+        :type root: TreeNode
+        :type distance: int
+        :rtype: int
+        """
+        self.count = 0
+        self.dfs(root, distance)
+        return self.count
+    
+    def dfs(self, node, distance):
+        if not node:
+            return []
+        if not node.left and not node.right:
+            return [1]
+        left = self.dfs(node.left, distance)
+        right = self.dfs(node.right, distance)
+        self.count += sum(l+r <= distance for l in left for r in right)
+        return [n+1 for n in left + right if n+1<distance]
+    
 
 1602. Find Nearest Right Node in Binary Tree
 https://leetcode.com/problems/find-nearest-right-node-in-binary-tree/
