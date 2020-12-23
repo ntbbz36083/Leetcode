@@ -91,7 +91,49 @@ class Solution(object):
             for j in range(n):
                 if not uf.connected(i*n+j, m*n):
                     board[i][j] = 'X'
-                    
+
+684. Redundant Connection
+https://leetcode.com/problems/redundant-connection/
+Union Find
+class UF(object):
+    def __init__(self, n):
+        self.parent = [i for i in range(n)]
+        self.rank = [0 for _ in range(n)]
+        
+    def find(self, p):
+        while p != self.parent[p]:
+            self.parent[p] = self.parent[self.parent[p]]
+            p = self.parent[p]
+        return p
+    
+    def union(self, a, b):
+        i = self.find(a)
+        j = self.find(b)
+        if i == j:
+            return False
+        if self.parent[i] <= self.parent[j]:
+            self.rank[j] += 1
+            self.parent[i] = self.parent[j]
+        else:
+            self.rank[i] += 1
+            self.parent[j] = self.parent[i]
+        return True
+    
+    def connected(self, a, b):
+        return self.find(a) == self.find(b)
+        
+class Solution(object):
+    def findRedundantConnection(self, edges):
+        """
+        :type edges: List[List[int]]
+        :rtype: List[int]
+        """
+        uf = UF(len(edges)+1)
+        for x, y in edges:
+            if not uf.union(x,y):
+                return [x,y]
+            
+
 990. Satisfiability of Equality Equations
 https://leetcode.com/problems/satisfiability-of-equality-equations/
 #######  DFS  #######
