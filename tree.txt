@@ -2919,6 +2919,37 @@ class Solution(object):
             return True
         return self.helper(i+1, node.left, arr) or self.helper(i+1, node.right, arr)
 
+1443. Minimum Time to Collect All Apples in a Tree
+https://leetcode.com/problems/minimum-time-to-collect-all-apples-in-a-tree/
+class Solution(object):
+    def minTime(self, n, edges, hasApple):
+        """
+        :type n: int
+        :type edges: List[List[int]]
+        :type hasApple: List[bool]
+        :rtype: int
+        """
+        path = collections.defaultdict(list)
+        for frm, to in edges:
+            path[frm].append(to)
+            path[to].append(frm)
+        
+        self.cost = 0
+        seen = set()
+        
+        def dfs(current):
+            found = False
+            if current in seen:
+                return
+            seen.add(current)
+            for nei in path[current]:
+                if dfs(nei):
+                    found = True
+                    self.cost += 2
+            return found or hasApple[current]
+        dfs(0)
+        return self.cost
+
 1448. Count Good Nodes in Binary Tree
 https://leetcode.com/problems/count-good-nodes-in-binary-tree/
 class Solution(object):
