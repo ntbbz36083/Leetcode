@@ -1,3 +1,21 @@
+560. Subarray Sum Equals K
+https://leetcode.com/problems/subarray-sum-equals-k/
+class Solution(object):
+    def subarraySum(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: int
+        """
+        d = {0:1}
+        su = 0
+        res = 0
+        for x in nums:
+            su += x
+            res += d.get(su-k,0)
+            d[su] = d.get(su,0)+1
+        return res
+
 953. Verifying an Alien Dictionary
 https://leetcode.com/problems/verifying-an-alien-dictionary/
 class Solution(object):
