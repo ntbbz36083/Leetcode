@@ -1,3 +1,37 @@
+138. Copy List with Random Pointer
+https://leetcode.com/problems/copy-list-with-random-pointer/
+class Solution:
+    def copyRandomList(self, head: 'Node') -> 'Node':
+        cloneHead = Node(-1)
+        clone = cloneHead
+        d = {None:None}
+        cur = head
+        
+        while cur:
+            clone.next = Node(cur.val)
+            clone = clone.next
+            d[cur] = clone
+            cur = cur.next
+        cur = head
+        clone = cloneHead.next
+        while cur:
+            clone.random = d[cur.random]
+            clone = clone.next
+            cur = cur.next
+        return cloneHead.next
+
+347. Top K Frequent Elements
+https://leetcode.com/problems/top-k-frequent-elements/
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        res = []
+        d = collections.Counter(nums)        
+        max_heap = [(-val, key) for key, val in d.items()]
+        heapq.heapify(max_heap)
+        for i in range(k):
+            res.append(heapq.heappop(max_heap)[1])
+        return res
+
 560. Subarray Sum Equals K
 https://leetcode.com/problems/subarray-sum-equals-k/
 class Solution(object):
@@ -14,6 +48,19 @@ class Solution(object):
             su += x
             res += d.get(su-k,0)
             d[su] = d.get(su,0)+1
+        return res
+
+692. Top K Frequent Wor
+https://leetcode.com/problems/top-k-frequent-words/
+class Solution:
+    def topKFrequent(self, words: List[str], k: int) -> List[str]:
+        d = collections.Counter(words)
+        max_heap = [(-val, key) for key, val in d.items()]
+        heapq.heapify(max_heap)
+        res = []
+        while max_heap and k>0:
+            res.append(heapq.heappop(max_heap)[1])
+            k-=1
         return res
 
 953. Verifying an Alien Dictionary
@@ -37,3 +84,22 @@ class Solution(object):
             if w1 > w2:
                 return False
         return True
+
+981. Time Based Key-Value Store
+https://leetcode.com/problems/time-based-key-value-store/
+class TimeMap:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.time = collections.defaultdict(list)
+        self.value = collections.defaultdict(list)
+
+    def set(self, key: str, value: str, timestamp: int) -> None:
+        self.time[key].append(timestamp)
+        self.value[key].append(value)
+
+    def get(self, key: str, timestamp: int) -> str:
+        i = bisect.bisect(self.time[key], timestamp)
+        return self.value[key][i-1] if i else ''
