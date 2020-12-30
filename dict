@@ -1,4 +1,15 @@
+49. Group Anagrams
+https://leetcode.com/problems/group-anagrams/
+#T:O(nlogn)
+#S:O(n)
 
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        d = collections.defaultdict(list)
+        for word in strs:
+            key = tuple(sorted(word))
+            d[key].append(word)
+        return list(d.values())
 138. Copy List with Random Pointer
 https://leetcode.com/problems/copy-list-with-random-pointer/
 class Solution:
@@ -64,6 +75,80 @@ class Solution:
             k-=1
         return res
 
+706. Design HashMap
+https://leetcode.com/problems/design-hashmap/
+class Node:
+    def __init__(self, key=-1, val=-1, next=None):
+        self.key = key
+        self.val = val
+        self.next = next
+
+class MyHashMap:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.data = [Node() for _ in range(1000)]
+    
+    def hashcode(self,key):
+        size = len(self.data)
+        return key % size
+    
+    def put(self, key: int, value: int) -> None:
+        """
+        value will always be non-negative.
+        """
+        hashcode = self.hashcode(key)
+        head = self.data[hashcode]
+        while head.next:
+            if head.next.key == key:
+                head.next.val = value
+                return
+            head = head.next
+        head.next = Node(key,value)
+
+    def get(self, key: int) -> int:
+        """
+        Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key
+        """
+        hashcode = self.hashcode(key)
+        head = self.data[hashcode]
+        while head.next:
+            if head.next.key == key:
+                return head.next.val
+            head = head.next
+        return -1
+
+    def remove(self, key: int) -> None:
+        """
+        Removes the mapping of the specified value key if this map contains a mapping for the key
+        """
+        hashcode = self.hashcode(key)
+        head = self.data[hashcode]
+        while head.next:
+            if head.next.key == key:
+                tomove = head.next
+                head.next = tomove.next
+                tomove.next = None
+                return
+            head = head.next
+
+811. Subdomain Visit Count
+https://leetcode.com/problems/subdomain-visit-count/
+class Solution:
+    def subdomainVisits(self, cpdomains: List[str]) -> List[str]:
+        d = {}
+        for i in cpdomains:
+            n, domains = i.split()
+            n = int(n)
+            domains = domains.split('.')
+            for j in range(len(domains)):
+                _str = '.'.join(domains[j:])
+                d[_str] = d.get(_str,0) + n
+        return [ str(d[i]) + ' ' + i for i in d ]
+
+
 953. Verifying an Alien Dictionary
 https://leetcode.com/problems/verifying-an-alien-dictionary/
 class Solution(object):
@@ -104,3 +189,24 @@ class TimeMap:
     def get(self, key: str, timestamp: int) -> str:
         i = bisect.bisect(self.time[key], timestamp)
         return self.value[key][i-1] if i else ''
+
+1152. Analyze User Website Visit Pattern
+https://leetcode.com/problems/analyze-user-website-visit-pattern/
+from collections import defaultdict
+from itertools import combinations
+class Solution:
+    def mostVisitedPattern(self, username: List[str], timestamp: List[int], website: List[str]) -> List[str]:
+        packed_tuple = zip(timestamp,username,website)  #[(3,'james', 'home'),...]
+        sorted_packed_tuple = sorted(packed_tuple)  #sort by first element of tuple
+        
+        mapping = defaultdict(list)
+        for t, u, w in sorted_packed_tuple:
+            mapping[u].append(w)  #websites in list are in ascending order
+            
+        counter_dict = defaultdict(int)  ##counter to check the number of different comb
+        for website_list in mapping.values():
+            combs = set(combinations(website_list,3))  ##generate combinations of websites
+            for comb in combs:
+                counter_dict[comb] += 1
+        res = sorted(counter_dict, key = lambda x:(-counter_dict[x], x))  ##sort counter dict and sort by number in descending first, then lexicographically 
+        return res[0]
