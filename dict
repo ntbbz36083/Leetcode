@@ -1,5 +1,3 @@
-
-
 49. Group Anagrams
 https://leetcode.com/problems/group-anagrams/
 #T:O(nlogn)
@@ -33,6 +31,20 @@ class Solution:
             clone = clone.next
             cur = cur.next
         return cloneHead.next
+
+242. Valid Anagram
+https://leetcode.com/problems/valid-anagram/
+class Solution:
+    def isAnagram(self, s: str, t: str) -> bool:
+        d = {}
+        for ch in s:
+            d[ch] = d.get(ch,0)+1
+        for ch in t:
+            d[ch] = d.get(ch,0)-1
+        for v in d.values():
+            if v != 0:
+                return False
+        return True
 
 347. Top K Frequent Elements
 https://leetcode.com/problems/top-k-frequent-elements/
