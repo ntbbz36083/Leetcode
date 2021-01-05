@@ -161,6 +161,16 @@ class Solution:
                 res += 1
         return res
 
+760. Find Anagram Mappings
+https://leetcode.com/problems/find-anagram-mappings/
+class Solution:
+    def anagramMappings(self, A: List[int], B: List[int]) -> List[int]:
+        d = {}
+        for i,b in enumerate(B):
+            d[b] = i
+        return [d[a] for a in A]    
+        
+
 811. Subdomain Visit Count
 https://leetcode.com/problems/subdomain-visit-count/
 class Solution:
@@ -217,6 +227,20 @@ class TimeMap:
         i = bisect.bisect(self.time[key], timestamp)
         return self.value[key][i-1] if i else ''
 
+1086. High Five
+https://leetcode.com/problems/high-five/
+class Solution:
+    def highFive(self, items: List[List[int]]) -> List[List[int]]:
+        d = collections.defaultdict(list)
+        for idx, val in items:
+            heapq.heappush(d[idx],val)
+            
+            if len(d[idx])>5:
+                heapq.heappop(d[idx])
+                
+        res = [[i,sum(d[i])//5] for i in sorted(d)]
+        return res
+
 1152. Analyze User Website Visit Pattern
 https://leetcode.com/problems/analyze-user-website-visit-pattern/
 from collections import defaultdict
@@ -237,6 +261,24 @@ class Solution:
                 counter_dict[comb] += 1
         res = sorted(counter_dict, key = lambda x:(-counter_dict[x], x))  ##sort counter dict and sort by number in descending first, then lexicographically 
         return res[0]
+
+1213. Intersection of Three Sorted Arrays
+https://leetcode.com/problems/intersection-of-three-sorted-arrays/
+class Solution:
+    def arraysIntersection(self, arr1: List[int], arr2: List[int], arr3: List[int]) -> List[int]:
+        d = {}
+        res = []
+        for a1 in arr1:
+            d[a1] = d.get(a1,0)+1
+        for a2 in arr2:
+            d[a2] = d.get(a2,0)+1
+        for a3 in arr3:
+            d[a3] = d.get(a3,0)+1
+        for k,v in d.items():
+            if v == 3:
+                res.append(k)
+        return sorted(res)
+        
 
 1365. How Many Numbers Are Smaller Than the Current Number
 https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/
