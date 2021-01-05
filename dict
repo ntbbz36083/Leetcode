@@ -148,6 +148,19 @@ class MyHashMap:
                 return
             head = head.next
 
+771. Jewels and Stones
+https://leetcode.com/problems/jewels-and-stones/
+class Solution:
+    def numJewelsInStones(self, jewels: str, stones: str) -> int:
+        res = 0
+        jew = set()
+        for ch in jewels:
+            jew.add(ch)
+        for st in stones:
+            if st in jew:
+                res += 1
+        return res
+
 811. Subdomain Visit Count
 https://leetcode.com/problems/subdomain-visit-count/
 class Solution:
@@ -224,3 +237,30 @@ class Solution:
                 counter_dict[comb] += 1
         res = sorted(counter_dict, key = lambda x:(-counter_dict[x], x))  ##sort counter dict and sort by number in descending first, then lexicographically 
         return res[0]
+
+1365. How Many Numbers Are Smaller Than the Current Number
+https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/
+class Solution:
+    def smallerNumbersThanCurrent(self, nums: List[int]) -> List[int]:
+        d = {}
+        for i, num in enumerate(sorted(nums)):
+            if num not in d:
+                d[num] = i
+        return [d[num] for num in nums]        
+
+1512. Number of Good Pairs
+https://leetcode.com/problems/number-of-good-pairs/
+class Solution:
+    def numIdenticalPairs(self, nums: List[int]) -> int:
+        d = {}
+        res = 0
+        for v in nums:
+            if v in d:
+                if d[v] == 1:
+                    res += 1
+                else:
+                    res += d[v]
+                d[v] += 1
+            else:
+                d[v] = 1
+        return res
