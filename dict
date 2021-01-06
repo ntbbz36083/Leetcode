@@ -10,6 +10,16 @@ class Solution:
             key = tuple(sorted(word))
             d[key].append(word)
         return list(d.values())
+
+136. Single Number
+https://leetcode.com/problems/single-number/
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        c = collections.Counter(nums)
+        for k,v in c.items():
+            if v==1:
+                return k
+
 138. Copy List with Random Pointer
 https://leetcode.com/problems/copy-list-with-random-pointer/
 class Solution:
@@ -46,6 +56,44 @@ class Solution:
                 return False
         return True
 
+266. Palindrome Permutation
+https://leetcode.com/problems/palindrome-permutation/
+class Solution:
+    def canPermutePalindrome(self, s: str) -> bool:
+        r = 0
+        c = collections.Counter(s)
+        for val in c.values():
+            if val % 2 ==1:
+                r += 1
+        return r <=1
+
+359. Logger Rate Limiter
+https://leetcode.com/problems/logger-rate-limiter/
+class Logger:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.d = {}
+
+    def shouldPrintMessage(self, timestamp: int, message: str) -> bool:
+        """
+        Returns true if the message should be printed in the given timestamp, otherwise returns false.
+        If this method returns false, the message will not be printed.
+        The timestamp is in seconds granularity.
+        """
+        if message not in self.d:
+            self.d[message] = timestamp
+            return True
+        else:
+            if timestamp >= self.d[message]+10:
+                self.d[message] = timestamp
+                return True
+            else:
+                return False
+
+
 347. Top K Frequent Elements
 https://leetcode.com/problems/top-k-frequent-elements/
 class Solution:
@@ -57,6 +105,45 @@ class Solution:
         for i in range(k):
             res.append(heapq.heappop(max_heap)[1])
         return res
+
+463. Island Perimeter
+https://leetcode.com/problems/island-perimeter/
+class Solution:
+    def islandPerimeter(self, grid: List[List[int]]) -> int:
+        self.res = 0
+        self.m, self.n = len(grid), len(grid[0])
+        visited = set()
+        self.res = 0
+        for i in range(self.m):
+            for j in range(self.n):
+                if grid[i][j] == 1:
+                    return self.dfs(grid, i, j, visited)
+        return 0
+                    
+    def dfs(self, grid, i, j, visited):
+        if (i,j) in visited:
+            return 0
+        if 0 <= i < self.m and 0 <= j < self.n and grid[i][j] == 1:
+            visited.add((i,j))
+            l = self.dfs(grid, i, j-1, visited)
+            r = self.dfs(grid, i, j+1, visited)
+            u = self.dfs(grid, i-1, j, visited)
+            d = self.dfs(grid, i+1, j, visited)
+            return l + r + u +d
+        return 1
+
+###########  set1 is subset of set2 if set1 <= set2 or just use issubset()  ###########
+500. Keyboard Row
+https://leetcode.com/problems/keyboard-row/
+class Solution:
+    def findWords(self, words: List[str]) -> List[str]:
+        line1, line2, line3 = set('qwertyuiop'), set('asdfghjkl'), set('zxcvbnm')
+        ret = []
+        for word in words:
+            w = set(word.lower())
+            if w <= line1 or w <= line2 or w <= line3:
+                ret.append(word)
+        return ret
 
 560. Subarray Sum Equals K
 https://leetcode.com/problems/subarray-sum-equals-k/
@@ -88,6 +175,31 @@ class Solution:
             res.append(heapq.heappop(max_heap)[1])
             k-=1
         return res
+
+705. Design HashSet
+https://leetcode.com/problems/design-hashset/
+class MyHashSet:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.arr = [-1] * 100000
+
+    def add(self, key: int) -> None:
+        key = key % 100000
+        self.arr[key] = 0
+    def remove(self, key: int) -> None:
+        key = key % 100000
+        self.arr[key] = -1
+
+    def contains(self, key: int) -> bool:
+        """
+        Returns true if this set contains the specified element
+        """
+        key = key % 100000
+        return not self.arr[key] == -1
+
 
 706. Design HashMap
 https://leetcode.com/problems/design-hashmap/
@@ -185,6 +297,29 @@ class Solution:
                 d[_str] = d.get(_str,0) + n
         return [ str(d[i]) + ' ' + i for i in d ]
 
+#####################    learn how to extract letter only by using re.findall(r'\w+',p) #####################
+819. Most Common Word
+https://leetcode.com/problems/most-common-word/
+class Solution:
+    def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:
+        d = {}
+        ban = set(banned)
+        words = re.findall(r'\w+', paragraph.lower())
+        for word in words:
+            if word not in ban:
+                d[word] = d.get(word,0)+1
+        m = max(d.values())
+        for k,v in d.items():
+            if v == m:
+                return k
+
+884. Uncommon Words from Two Sentences
+https://leetcode.com/problems/uncommon-words-from-two-sentences/
+class Solution:
+    def uncommonFromSentences(self, A: str, B: str) -> List[str]:
+        c = collections.Counter((A+' '+B).split(' '))
+        return [k for k in c if c[k]==1]
+
 
 953. Verifying an Alien Dictionary
 https://leetcode.com/problems/verifying-an-alien-dictionary/
@@ -208,6 +343,17 @@ class Solution(object):
                 return False
         return True
 
+961. N-Repeated Element in Size 2N Array
+https://leetcode.com/problems/n-repeated-element-in-size-2n-array/
+class Solution:
+    def repeatedNTimes(self, A: List[int]) -> int:
+        d = {}
+        for a in A:
+            d[a] = d.get(a,0)+1
+        for k,v in d.items():
+            if v>1:
+                return k
+
 981. Time Based Key-Value Store
 https://leetcode.com/problems/time-based-key-value-store/
 class TimeMap:
@@ -227,6 +373,37 @@ class TimeMap:
         i = bisect.bisect(self.time[key], timestamp)
         return self.value[key][i-1] if i else ''
 
+1002. Find Common Characters
+https://leetcode.com/problems/find-common-characters/
+class Solution:
+    def commonChars(self, A: List[str]) -> List[str]:
+        check = collections.Counter(A[0])
+        for word in A[1:]:
+            new_check = collections.Counter()
+            for ch in word:
+                if ch in check:
+                    new_check[ch] += 1
+                    check[ch] -= 1
+                    if check[ch] == 0:
+                        del check[ch]
+            check = new_check
+        res = []
+        for key,val in check.items():
+            for i in range(val):
+                res.append(key)
+        return res
+
+1078. Occurrences After Bigram
+https://leetcode.com/problems/occurrences-after-bigram/
+class Solution:
+    def findOcurrences(self, text: str, first: str, second: str) -> List[str]:
+        new = text.split(' ')
+        res = []
+        for i in range(2,len(new)):
+            if new[i-2] == first and new[i-1] == second:
+                res.append(new[i]) 
+        return res
+
 1086. High Five
 https://leetcode.com/problems/high-five/
 class Solution:
@@ -239,6 +416,19 @@ class Solution:
                 heapq.heappop(d[idx])
                 
         res = [[i,sum(d[i])//5] for i in sorted(d)]
+        return res
+
+1133. Largest Unique Number
+https://leetcode.com/problems/largest-unique-number/
+class Solution:
+    def largestUniqueNumber(self, A: List[int]) -> int:
+        d = {}
+        res = -1
+        for a in A:
+            d[a] = d.get(a,0)+1
+        for k,v in d.items():
+            if v == 1:
+                res = max(res,k)
         return res
 
 1152. Analyze User Website Visit Pattern
@@ -261,6 +451,27 @@ class Solution:
                 counter_dict[comb] += 1
         res = sorted(counter_dict, key = lambda x:(-counter_dict[x], x))  ##sort counter dict and sort by number in descending first, then lexicographically 
         return res[0]
+
+1160. Find Words That Can Be Formed by Characters
+https://leetcode.com/problems/find-words-that-can-be-formed-by-characters/
+class Solution:
+    def countCharacters(self, words: List[str], chars: str) -> int:
+        su, ct = 0, collections.Counter
+        ch = ct(chars)
+        for word in words:
+            wr = ct(word)
+            if all(wr[i] <= ch[i] for i in wr):
+                su += len(word)
+        return su
+        
+
+1207. Unique Number of Occurrences
+https://leetcode.com/problems/unique-number-of-occurrences/class Solution:
+    def uniqueOccurrences(self, arr: List[int]) -> bool:
+        d = {}
+        for ch in arr:
+            d[ch] = d.get(ch,0)+1
+        return len(d.values()) == len(set(d.values()))
 
 1213. Intersection of Three Sorted Arrays
 https://leetcode.com/problems/intersection-of-three-sorted-arrays/
