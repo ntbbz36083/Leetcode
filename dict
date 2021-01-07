@@ -56,6 +56,22 @@ class Solution:
                 return False
         return True
 
+246. Strobogrammatic Number
+https://leetcode.com/problems/strobogrammatic-number/
+class Solution:
+    def isStrobogrammatic(self, num: str) -> bool:
+        d = {'6':'9','9':'6','1':'1','8':'8','0':'0'}
+        i,j = 0, len(num)-1
+        while i<=j:
+            if num[i] not in d or num[j] not in d:
+                return False
+            elif d[num[j]]!= num[i]:
+                return False
+            else:
+                i+=1
+                j-=1
+        return True
+
 266. Palindrome Permutation
 https://leetcode.com/problems/palindrome-permutation/
 class Solution:
@@ -66,6 +82,49 @@ class Solution:
             if val % 2 ==1:
                 r += 1
         return r <=1
+
+350. Intersection of Two Arrays II
+https://leetcode.com/problems/intersection-of-two-arrays-ii/
+#### dict based solution
+##T:O(m+n), m=len(nums1),n=len(nums2)
+##S:O(m)
+def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        c = collections.Counter(nums1)
+        res = []
+        for num in nums2:
+            if num in c:
+                c[num] -= 1
+                res.append(num)
+                if c[num] ==0:
+                    del c[num]
+        return res
+        
+#### 2 pointers based solution if arrays are sorted
+##T:O(m+n), m=len(nums1),n=len(nums2), if sort needed, then O(m+n+logm+logn)
+##S:O(1)
+class Solution:
+    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        nums1 = sorted(nums1)
+        nums2 = sorted(nums2)
+        i,j = 0, 0
+        res = []
+        while i < len(nums1) and j < len(nums2):
+            if nums1[i] == nums2[j]:
+                res.append(nums1[i])
+                i += 1
+                j += 1
+            elif nums1[i] < nums2[j]:
+                i += 1
+            else:
+                j += 1
+        return res
+        
+1.What if the given array is already sorted? How would you optimize your algorithm?
+If 2 arrays are sorted, definitely go with 2 pointers method, which will save space from m->1
+2.What if nums1's size is small compared to nums2's size? Which algorithm is better?
+if nums1's size is smaller, then go with either should be fine. Dict solution doesn't need sort, which is a plus.
+3.What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?
+if can't load all, then we can do trunk by trunk. We need to sort the data first, then load trunk of them and compare. Or using HDFS to store the data.  
 
 359. Logger Rate Limiter
 https://leetcode.com/problems/logger-rate-limiter/
@@ -105,6 +164,18 @@ class Solution:
         for i in range(k):
             res.append(heapq.heappop(max_heap)[1])
         return res
+
+409. Longest Palindrome
+https://leetcode.com/problems/longest-palindrome/
+class Solution:
+    def longestPalindrome(self, s: str) -> int:
+        c = set()
+        for ch in s:
+            if ch in c:
+                c.remove(ch)
+            else:
+                c.add(ch)
+        return len(s)-len(c)+1 if len(c)>0 else len(s)
 
 463. Island Perimeter
 https://leetcode.com/problems/island-perimeter/
@@ -162,6 +233,34 @@ class Solution(object):
             res += d.get(su-k,0)
             d[su] = d.get(su,0)+1
         return res
+
+599. Minimum Index Sum of Two Lists
+https://leetcode.com/problems/minimum-index-sum-of-two-lists/
+class Solution:
+    def findRestaurant(self, list1: List[str], list2: List[str]) -> List[str]:
+        dic1, dic2 = {}, {}
+        res_sum = len(list1)+len(list2)
+        for i, s in enumerate(list1):
+            dic1[s] = i
+        for i, s in enumerate(list2):
+            if s in dic1:
+                tmp_sum = dic1[s] + i
+                dic2[tmp_sum] = dic2.get(tmp_sum, []) + [s]
+                res_sum = min(tmp_sum, res_sum)
+        return dic2[res_sum]
+
+645. Set Mismatch
+https://leetcode.com/problems/set-mismatch/
+class Solution:
+    def findErrorNums(self, nums: List[int]) -> List[int]:
+        d = collections.Counter(nums)
+        for i in range(1,len(nums)+1):
+            if d[i] == 2:
+                twice = i
+            if i not in d:
+                never = i
+        return twice,never
+        
 
 690. Employee Importance
 https://leetcode.com/problems/employee-importance/
@@ -273,6 +372,51 @@ class MyHashMap:
                 return
             head = head.next
 
+#####################    learn how to use trie to sovle search word issue #####################
+720. Longest Word in Dictionary
+https://leetcode.com/problems/longest-word-in-dictionary/
+https://leetcode.com/problems/longest-word-in-dictionary/discuss/203730/Python-Trie-%2B-DFS-(No-extensive-loops-or-complicated-TrieNode)
+class TrieNode():
+    def __init__(self):
+        self.children = {}
+        self.end = False
+    
+class Trie():
+    def __init__(self):
+        self.root = TrieNode()
+        
+    def insert(self, word):
+        cur = self.root
+        for c in word:
+            if c not in cur.children:
+                cur.children[c] = TrieNode()
+            cur = cur.children[c]
+        cur.end = True
+        
+    def longest_word(self):
+        def helper(node, partial_res):
+            res = partial_res
+            for c, child in node.children.items():
+                if child.end:
+                    po = helper(child, partial_res+c)
+                    if len(po)>len(res):
+                        res = po
+                    elif len(po) == len(res) and po < res:
+                        res = po
+            return res
+        return helper(self.root, '')
+
+class Solution():
+    def longestWord(self, words):
+        """
+        :type words: List[str]
+        :rtype: str
+        """
+        t = Trie()
+        for word in words:
+            t.insert(word)
+        return t.longest_word()
+
 #####################    learn how to extract letter only by using isalpha() and counter can be subtracted by another counter #####################
 748. Shortest Completing Word
 https://leetcode.com/problems/shortest-completing-word/
@@ -383,6 +527,23 @@ class Solution:
         for k,v in d.items():
             if v>1:
                 return k
+
+970. Powerful Integers
+https://leetcode.com/problems/powerful-integers/
+class Solution:
+    def powerfulIntegers(self, x: int, y: int, bound: int) -> List[int]:
+        res = set()
+        stack = [(0,0)]
+        while stack:
+            i,j = stack.pop()
+            temp = x**i+y**j
+            if temp <= bound:
+                res.add(temp)
+                if x > 1:
+                    stack.append((i+1,j))
+                if y > 1:
+                    stack.append((i,j+1))          
+        return res
 
 981. Time Based Key-Value Store
 https://leetcode.com/problems/time-based-key-value-store/
