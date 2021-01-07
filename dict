@@ -163,7 +163,20 @@ class Solution(object):
             d[su] = d.get(su,0)+1
         return res
 
-692. Top K Frequent Wor
+690. Employee Importance
+https://leetcode.com/problems/employee-importance/
+class Solution:
+    def getImportance(self, employees: List['Employee'], id: int) -> int:
+        emps = {employee.id: employee for employee in employees}
+        def dfs(id):
+            sub_imp = 0
+            for sub in emps[id].subordinates:
+                sub_imp += dfs(sub)
+            return sub_imp + emps[id].importance
+        return dfs(id)
+
+692. Top K F
+quent Wor
 https://leetcode.com/problems/top-k-frequent-words/
 class Solution:
     def topKFrequent(self, words: List[str], k: int) -> List[str]:
@@ -259,6 +272,23 @@ class MyHashMap:
                 tomove.next = None
                 return
             head = head.next
+
+#####################    learn how to extract letter only by using isalpha() and counter can be subtracted by another counter #####################
+748. Shortest Completing Word
+https://leetcode.com/problems/shortest-completing-word/
+class Solution:
+    def shortestCompletingWord(self, licensePlate: str, words: List[str]) -> str:
+        #d = Counter(x for x in licensePlate.lower() if x.isalpha())
+        #return min([w for w in words if not d - Counter(w)], key = len)
+        c = collections.Counter()
+        res = []
+        for x in licensePlate.lower():
+            if x.isalpha():
+                c[x] += 1
+        for w in words:
+            if not c-collections.Counter(w):
+                res.append(w)
+        return min(res,key=len)
 
 771. Jewels and Stones
 https://leetcode.com/problems/jewels-and-stones/
@@ -464,6 +494,16 @@ class Solution:
                 su += len(word)
         return su
         
+1189. Maximum Number of Balloons
+https://leetcode.com/problems/maximum-number-of-balloons/
+class Solution:
+    def maxNumberOfBalloons(self, text: str) -> int:
+        cnt = collections.Counter(text)
+        cntBalloon = collections.Counter('balloon')
+        res = []
+        for c in cntBalloon:
+            res.append(cnt[c]//cntBalloon[c])
+        return min(res)
 
 1207. Unique Number of Occurrences
 https://leetcode.com/problems/unique-number-of-occurrences/class Solution:
@@ -517,3 +557,15 @@ class Solution:
             else:
                 d[v] = 1
         return res
+
+1539. Kth Missing Positive Number
+https://leetcode.com/problems/kth-missing-positive-number/
+good solution:https://leetcode.com/problems/kth-missing-positive-number/discuss/1004535/Python-Two-solutions-O(n)-and-O(log-n)-explained
+class Solution:
+    def findKthPositive(self, arr: List[int], k: int) -> int:
+        s = set(arr)
+        for i in range(1,len(s)+k+1):
+            if i not in s:
+                k -= 1
+            if k == 0:
+                return i
