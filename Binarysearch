@@ -175,3 +175,34 @@ class Solution(object):
         while node.left:
             node = node.left
         return node
+
+1198. Find Smallest Common Element in All Rows
+https://leetcode.com/problems/find-smallest-common-element-in-all-rows/
+#T:O(m*n*logm)
+#S:O(1)
+class Solution:
+    def smallestCommonElement1(self, mat: List[List[int]]) -> int:
+        for element in mat[0]:
+            flag = True
+            for row in mat[1:]:
+                if not self.binarysearch(row, element):
+                    flag = False
+                    break
+            if flag:
+                return element
+        return -1
+    def binarysearch(self, row, element):
+        if element < row[0]:
+            return False
+        if element > row[-1]:
+            return False
+        i,j = 0, len(row)-1
+        while i<=j:
+            mid = (i+j)//2
+            if row[mid] == element:
+                return True
+            elif row[mid] < element:
+                i = mid + 1
+            else:
+                j = mid - 1
+        return False
