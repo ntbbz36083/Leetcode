@@ -216,6 +216,31 @@ class Solution:
                 ret.append(word)
         return ret
 
+535. Encode and Decode TinyURL
+https://leetcode.com/problems/encode-and-decode-tinyurl/
+https://leetcode.com/problems/encode-and-decode-tinyurl/discuss/169879/3-Simple-Python-Solutions
+class Codec:
+    def __init__(self):
+        self.code2url = {}
+        self.url2code = {}
+        
+    def encode(self, longUrl: str) -> str:
+        """Encodes a URL to a shortened URL.
+        """
+        letter_set = string.ascii_letters+string.digits
+        while longUrl not in self.url2code:
+            code = ''.join([random.choice(letter_set) for _ in range(6)])
+            if code not in self.code2url:
+                self.code2url[code] = longUrl
+                self.url2code[longUrl] = code
+        return 'http://tinyurl.com/'+self.url2code[longUrl]
+    
+    def decode(self, shortUrl: str) -> str:
+        """Decodes a shortened URL to its original URL.
+        """
+        return self.code2url[shortUrl[-6:]]
+
+
 560. Subarray Sum Equals K
 https://leetcode.com/problems/subarray-sum-equals-k/
 class Solution(object):
@@ -730,3 +755,27 @@ class Solution:
                 k -= 1
             if k == 0:
                 return i
+
+
+1570. Dot Product of Two Sparse Vectors
+https://leetcode.com/problems/dot-product-of-two-sparse-vectors/
+class SparseVector:
+#T:O(n+m)
+#S:O(n)
+    def __init__(self, nums: List[int]):
+        self.seen = {}
+        for i, num in enumerate(nums):
+            if num:
+                self.seen[i] = num
+
+    # Return the dotProduct of two sparse vectors
+    def dotProduct(self, vec: 'SparseVector') -> int:
+        res = 0
+        if len(self.seen) >= len(vec.seen):
+            A,B = vec.seen, self.seen
+        else:
+            A,B = self.seen, vec.seen
+        for j, num in A.items():
+            if j in B:
+                res += num * B[j]
+        return res
