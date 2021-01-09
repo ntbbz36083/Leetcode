@@ -459,6 +459,40 @@ class Solution:
                 res.append(w)
         return min(res,key=len)
 
+739. Daily Temperatures
+https://leetcode.com/problems/daily-temperatures/
+#####################  stack  #####################
+class Solution:
+    def dailyTemperatures(self, T: List[int]) -> List[int]:
+        ans = [0]*len(T)
+        stack = []
+        for i, t in enumerate(T):
+            while stack and T[stack[-1]] < t:
+                cur = stack.pop()
+                ans[cur] = i-cur
+            stack.append(i)
+        return ans
+#####################  dict  #####################        
+class Solution(object):
+    def dailyTemperatures(self, temperatures):
+        """
+        :type temperatures: List[int]
+        :rtype: List[int]
+        """
+        # Time: O(n.k), where k is the range of the temperature.
+        # Space: O(n + k)
+        temps = {}
+        results = [0] * len(temperatures)
+        for i in range(len(temperatures) - 1, -1, -1):
+            temp = temperatures[i]
+            day = str('inf')
+            for j in range(temp + 1, 101):
+                if j in temps:
+                    day = min(day, temps[j] - i)
+            if day != str('inf'):
+                results[i] = day
+            temps[temp] = i
+        return results
 771. Jewels and Stones
 https://leetcode.com/problems/jewels-and-stones/
 class Solution:
@@ -715,7 +749,48 @@ class Solution:
             if v == 3:
                 res.append(k)
         return sorted(res)
+
+1244. Design A Leaderboard
+https://leetcode.com/problems/design-a-leaderboard/
+class Leaderboard:
+
+    def __init__(self):
+        self.d = {}
+
+    def addScore(self, playerId: int, score: int) -> None:
+        if playerId in self.d:
+            self.d[playerId] += score
+        else:
+            self.d[playerId] = score
+
+    def top(self, K: int) -> int:
+        self.stack = []
+        heapq.heapify(self.stack)
+        for v in self.d.values():
+            heapq.heappush(self.stack, v)
+            if len(self.stack)>K:
+                heapq.heappop(self.stack)
+        return sum(self.stack)            
+    def reset(self, playerId: int) -> None:
+        self.d[playerId] = 0
+
+
+1261. Find Elements in a Contaminated Binary Tree
+https://leetcode.com/problems/find-elements-in-a-contaminated-binary-tree/
+class FindElements:
+
+    def __init__(self, root: TreeNode):
+        self.seen = set()
         
+        def dfs(node, v):
+            if node:
+                node.val = v
+                self.seen.add(v)
+                dfs(node.left, 2*v+1)
+                dfs(node.right, 2*v+2)
+        dfs(root,0)    
+    def find(self, target: int) -> bool:
+        return target in self.seen
 
 1365. How Many Numbers Are Smaller Than the Current Number
 https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/
@@ -727,6 +802,35 @@ class Solution:
                 d[num] = i
         return [d[num] for num in nums]        
 
+1418. Display Table of Food Orders in a Restaurant
+https://leetcode.com/problems/display-table-of-food-orders-in-a-restaurant/
+class Solution:
+    def displayTable(self, orders: List[List[str]]) -> List[List[str]]:
+        d = collections.defaultdict(dict)
+        meals = set()
+        for _, table, food in orders:
+            meals.add(food)
+            if table in d:
+                if food in d[table]:
+                    d[table][food] += 1
+                else:
+                    d[table][food] = 1
+            else:
+                d[table] = {food:1} 
+        #print(d)
+        foods = sorted(meals)
+        result = [['Table'] + [food for food in foods]]
+        for table in sorted(d,key=int):
+            temp = []
+            for food in foods:
+                if food in d[table]:
+                    temp.append(str(d[table][food]))
+                else:
+                    temp.append('0')
+            
+            result.append([str(table)] + temp)
+        return result
+    
 1512. Number of Good Pairs
 https://leetcode.com/problems/number-of-good-pairs/
 class Solution:
@@ -779,3 +883,30 @@ class SparseVector:
             if j in B:
                 res += num * B[j]
         return res
+
+1638. Count Substrings That Differ by One Character
+https://leetcode.com/problems/count-substrings-that-differ-by-one-character/
+class Solution:
+    def countSubstrings(self, s: str, t: str) -> int:
+        d = collections.defaultdict(list)
+        for i in range(len(s)+1):
+            for j in range(i):
+                substring = s[j:i]
+                if len(substring):
+                    for k in range(len(substring)):
+                        n = substring[:k]+'*'+substring[k+1:]
+                        d[n].append(substring)
+        count = 0
+        for i in range(len(t)+1):
+            for j in range(i):
+                substring = t[j:i]
+                if len(substring):
+                    for k in range(len(substring)):
+                        n = substring[:k]+'*'+substring[k+1:]
+                        if d[n]:
+                            chances = d[n]
+                            c = collections.Counter(chances)
+                            for sub in c:
+                                if substring != sub:
+                                    count += c[sub]
+        return count
