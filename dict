@@ -274,6 +274,23 @@ class Solution:
                 res_sum = min(tmp_sum, res_sum)
         return dic2[res_sum]
 
+######################  good follow-ups and for storage-related company  ######################
+609. Find Duplicate File in System
+https://leetcode.com/problems/find-duplicate-file-in-system/
+https://leetcode.com/problems/find-duplicate-file-in-system/discuss/104120/Follow-up-questions-discussion
+class Solution:
+    def findDuplicate(self, paths: List[str]) -> List[List[str]]:
+        c = collections.defaultdict(list)
+        for path in paths:
+            temp = path.split(' ')
+            root_path = temp[0]
+            files = temp[1:]
+            for file in files:
+                file_name, content = file.split('(')[0], file.split('(')[-1]
+                c[content].append(''.join(root_path+'/'+file_name))
+        return [x for x in c.values() if len(x)>1]
+
+
 645. Set Mismatch
 https://leetcode.com/problems/set-mismatch/
 class Solution:
