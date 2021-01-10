@@ -72,6 +72,22 @@ class Solution:
                 j-=1
         return True
 
+249. Group Shifted Strings
+#T:O(ab) where a is the total number of strings and b is the length of the longest string in strings.
+#S:O(n) as the most space we would use is the space required for strings and the keys of our hashmap.
+
+https://leetcode.com/problems/group-shifted-strings/
+class Solution:
+    def groupStrings(self, strings: List[str]) -> List[List[str]]:
+        hashmap = collections.defaultdict(list)
+        for s in strings:
+            key = []
+            for i in range(len(s) - 1):
+                circular_difference = ord(s[i+1]) - ord(s[i])
+                key.append(str(circular_difference % 26))
+            hashmap[','.join(key)].append(s)
+        return hashmap.values()
+
 266. Palindrome Permutation
 https://leetcode.com/problems/palindrome-permutation/
 class Solution:
@@ -303,6 +319,39 @@ class Solution:
                 never = i
         return twice,never
         
+648. Replace Words
+https://leetcode.com/problems/replace-words/
+class Trie():
+    def __init__(self):
+        self.root = {}
+        
+    def insert(self, word):
+        cur = self.root
+        for w in word:
+            if w not in cur:
+                cur[w] = {}
+            cur = cur[w]
+        cur['#'] = word
+    
+    def replace(self, word):
+        cur = self.root
+        for w in word:
+            if '#' in cur:
+                return cur['#']
+            if w not in cur:
+                return word
+            cur = cur[w]  
+        return word
+class Solution:
+    def replaceWords(self, dictionary: List[str], sentence: str) -> str:
+        t = Trie()
+        res = []
+        for word in dictionary:
+            t.insert(word)
+        for word in sentence.split(' '):
+            res.append(t.replace(word))
+        return ' '.join(res)
+    
 
 690. Employee Importance
 https://leetcode.com/problems/employee-importance/
@@ -329,6 +378,69 @@ class Solution:
             res.append(heapq.heappop(max_heap)[1])
             k-=1
         return res
+
+694. Number of Distinct Islands
+https://leetcode.com/problems/number-of-distinct-islands/submissions/
+#### solution1, with standard dfs by subtracting row and column number ####
+class Solution:
+    def numDistinctIslands(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        seen = set()
+        distinctIslands = set()
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == 1:
+                    # 'o' for origin
+                    self.steps = ''
+                    self.helper(grid, i, j, 'o',seen)
+                    print(self.steps)
+                    distinctIslands.add(self.steps)
+                    self.steps = ''
+        print(distinctIslands)
+        return len(distinctIslands)
+    
+    def helper(self, grid, i, j, direct,seen):
+        if (i,j) in seen:
+            return
+        if 0 <= i < len(grid) and 0 <= j < len(grid[0]) and grid[i][j] == 1:
+            self.steps += direct
+            seen.add((i,j))
+            self.helper(grid, i+1, j, 'd',seen)  # down
+            self.helper(grid, i-1, j, 'u', seen)  # upper
+            self.helper(grid, i, j+1, 'r', seen)  # right
+            self.helper(grid, i, j-1, 'l', seen)  # left
+            self.steps += 'b'  # back
+
+#### solution1, with adding direct string ####
+class Solution:
+    def numDistinctIslands(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """        
+        distinctIslands = set()
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == 1:
+                    # 'o' for origin
+                    self.steps = ''
+                    self.helper(grid, i, j, 'o')
+                    distinctIslands.add(self.steps)
+                    self.steps = ''
+        return len(distinctIslands)
+    
+    def helper(self, grid, i, j, direct):
+        if 0 <= i < len(grid) and 0 <= j < len(grid[0]) and grid[i][j] == 1:
+            self.steps += direct
+            grid[i][j] = 0
+            self.helper(grid, i+1, j, 'd')  # down
+            self.helper(grid, i-1, j, 'u')  # upper
+            self.helper(grid, i, j+1, 'r')  # right
+            self.helper(grid, i, j-1, 'l')  # left
+            self.steps += 'b'  # back
 
 705. Design HashSet
 https://leetcode.com/problems/design-hashset/
@@ -417,7 +529,7 @@ class MyHashMap:
 #####################    learn how to use trie to sovle search word issue #####################
 720. Longest Word in Dictionary
 https://leetcode.com/problems/longest-word-in-dictionary/
-https://leetcode.com/problems/longest-word-in-dictionary/discuss/203730/Python-Trie-%2B-DFS-(No-extensive-loops-or-complicated-TrieNode)
+https://leetcode.com/problems/longest-word-in-dictionary/discuss/203730/Python--%2B-DFS-(No-extensive-loops-or-complicated-TrieNode)
 class TrieNode():
     def __init__(self):
         self.children = {}
@@ -660,6 +772,17 @@ class Solution:
                 res.append(key)
         return res
 
+1072. Flip Columns For Maximum Number of Equal Rows
+https://leetcode.com/problems/flip-columns-for-maximum-number-of-equal-rows/
+class Solution:
+    def maxEqualRowsAfterFlips(self, matrix: List[List[int]]) -> int:
+        c = collections.Counter()
+        for row in matrix:
+            c[tuple(row)] += 1
+            flip = [1-x for x in row]
+            c[tuple(flip)] += 1
+        return max(c.values())
+
 1078. Occurrences After Bigram
 https://leetcode.com/problems/occurrences-after-bigram/
 class Solution:
@@ -683,6 +806,22 @@ class Solution:
                 heapq.heappop(d[idx])
                 
         res = [[i,sum(d[i])//5] for i in sorted(d)]
+        return res
+
+1090. Largest Values From Labels
+https://leetcode.com/problems/largest-values-from-labels/
+class Solution:
+    def largestValsFromLabels(self, values: List[int], labels: List[int], num_wanted: int, use_limit: int) -> int:
+        ct, res = 0, 0
+        label_counts = collections.defaultdict(int)
+        for val, label in sorted(zip(values,labels),reverse=True):
+            if ct == num_wanted:
+                break
+            if label_counts[label] == use_limit:
+                continue
+            ct += 1
+            res += val
+            label_counts[label] += 1
         return res
 
 1133. Largest Unique Number
@@ -730,7 +869,26 @@ class Solution:
             if all(wr[i] <= ch[i] for i in wr):
                 su += len(word)
         return su
-        
+
+1166. Design File System
+https://leetcode.com/problems/design-file-system/
+class FileSystem:
+
+    def __init__(self):
+        #self.d = {"":-1}
+        self.d = {'':-1}
+
+    def createPath(self, path: str, value: int) -> bool:
+        parent = '/'.join(path.split('/')[:-1])
+        if parent in self.d and path not in self.d:
+            self.d[path] = value
+            return True
+        return False
+            
+    def get(self, path: str) -> int:
+        return self.d.get(path,-1)
+
+
 1189. Maximum Number of Balloons
 https://leetcode.com/problems/maximum-number-of-balloons/
 class Solution:
