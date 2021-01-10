@@ -56,6 +56,29 @@ class Solution:
                 return False
         return True
 
+244. Shortest Word Distance II
+https://leetcode.com/problems/shortest-word-distance-ii/
+class WordDistance:
+
+    def __init__(self, words: List[str]):
+        self.d = collections.defaultdict(list)
+        self.l = len(words)
+        for i,word in enumerate(words):
+            self.d[word].append(i)
+            
+    def shortest(self, word1: str, word2: str) -> int:
+        l1, l2 = self.d[word1], self.d[word2]
+        i = j = 0
+        res = self.l
+        # O(m+n) time complexity
+        while i < len(l1) and j < len(l2):
+            res = min(res, abs(l1[i]-l2[j]))
+            if l1[i] < l2[j]:
+                i += 1
+            else:
+                j += 1
+        return res
+
 246. Strobogrammatic Number
 https://leetcode.com/problems/strobogrammatic-number/
 class Solution:
@@ -192,6 +215,36 @@ class Solution:
             else:
                 c.add(ch)
         return len(s)-len(c)+1 if len(c)>0 else len(s)
+
+447. Number of Boomerangs
+https://leetcode.com/problems/number-of-boomerangs/
+class Solution:
+    def numberOfBoomerangs(self, points: List[List[int]]) -> int:
+        res = 0
+        #for each point, find its nei that has same distance
+        for point1 in points:
+            dmap = {}
+            for point2 in points:
+                d = (point1[0]-point2[0])**2 + (point1[1]-point2[1])**2
+                dmap[d] = dmap.get(d,0) + 1
+            for k in dmap:
+                res += dmap[k] *(dmap[k]-1)
+        return res
+
+454. 4Sum II
+https://leetcode.com/problems/4sum-ii/
+class Solution:
+    def fourSumCount(self, A: List[int], B: List[int], C: List[int], D: List[int]) -> int:
+        hashtable = {}
+        count = 0 
+        for a in A:
+            for b in B :
+                hashtable[a+b] = hashtable.get(a+b,0)+1        
+        for c in C :
+            for d in D :
+                if -c - d in hashtable :
+                    count += hashtable[-c-d]
+        return count
 
 463. Island Perimeter
 https://leetcode.com/problems/island-perimeter/
@@ -351,7 +404,30 @@ class Solution:
         for word in sentence.split(' '):
             res.append(t.replace(word))
         return ' '.join(res)
-    
+
+676. Implement Magic Dictionary
+https://leetcode.com/problems/implement-magic-dictionary/
+class MagicDictionary:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.d = {}
+
+    def buildDict(self, dictionary: List[str]) -> None:
+        for word in dictionary:
+            self.d[len(word)] = self.d.get(len(word),[]) + [word]
+
+    def search(self, searchWord: str) -> bool:
+        for word in self.d.get(len(searchWord),[]):
+            countdiff = 0
+            for j in range(len(searchWord)):
+                if word[j] != searchWord[j]:
+                    countdiff += 1
+            if countdiff == 1:
+                return True
+        return False
 
 690. Employee Importance
 https://leetcode.com/problems/employee-importance/
@@ -771,6 +847,25 @@ class Solution:
             for i in range(val):
                 res.append(key)
         return res
+
+1048. Longest String Chain
+https://leetcode.com/problems/longest-string-chain/
+class Solution:
+    def longestStrChain(self, words: List[str]) -> int:
+        def dfs(word):
+            #if this word doesn't exist in words, return 0
+            if word not in dp:
+                return 0
+            #if it's never touched in the past, removing one char from it and find whether it's in words
+            #find the max length from dp, +1 means add this word into it  
+            if not dp[word]:
+                dp[word] = max([dfs(word[:i]+word[i+1:]) + 1 for i in range(len(word))])
+            # if it's already there with a value, we don't need to cal it and just return it's value
+            return dp[word]
+			
+        dp = {word: None for word in words}
+        # for each word find it's longest chain, return max
+        return max([dfs(word) for word in dp])
 
 1072. Flip Columns For Maximum Number of Equal Rows
 https://leetcode.com/problems/flip-columns-for-maximum-number-of-equal-rows/
