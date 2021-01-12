@@ -268,6 +268,28 @@ def isPalindrome(self, head):
             new_head = new_head.next
         return True
 
+274. H-Index
+https://leetcode.com/problems/h-index/
+#T:O(n)
+#S:O(n)
+class Solution:
+    def hIndex(self, citations: List[int]) -> int:
+        n = len(citations)
+        citecount = [0 for _ in range(n+1)]
+        for c in citations:
+            if c >= n:
+                citecount[n] += 1
+            else:
+                citecount[c] += 1
+        
+        i = n-1
+        while i >= 0:
+            if citecount[i+1] >= i+1:
+                return i + 1
+            citecount[i] += citecount[i+1]
+            i -= 1
+        return 0
+
 283. Move Zeroes
 https://leetcode.com/problems/move-zeroes/
 
