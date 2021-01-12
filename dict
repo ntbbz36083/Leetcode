@@ -1241,6 +1241,40 @@ class SparseVector:
                 res += num * B[j]
         return res
 
+1577. Number of Ways Where Square of Number Is Equal to Product of Two Numbers
+https://leetcode.com/problems/number-of-ways-where-square-of-number-is-equal-to-product-of-two-numbers/
+class Solution:
+    def numTriplets(self, nums1: List[int], nums2: List[int]) -> int:
+        d1 = collections.Counter([i*i for i in nums1])
+        d2 = collections.Counter([i*i for i in nums2])
+        res = 0
+        for i in range(len(nums1) - 1):
+            for j in range(i + 1, len(nums1)):
+                p = nums1[i] * nums1[j]
+                if p in d2:
+                    res += d2[p]
+        for i in range(len(nums2) - 1):
+            for j in range(i + 1, len(nums2)):
+                p = nums2[i] * nums2[j]
+                if p in d1:
+                    res += d1[p]
+        return res
+
+1590. Make Sum Divisible by P
+https://leetcode.com/problems/make-sum-divisible-by-p/
+https://leetcode.com/problems/make-sum-divisible-by-p/discuss/854166/JavaPython-3-O(n)-code-w-brief-explanation-analysis-and-similar-problems.
+class Solution:
+    def minSubarray(self, nums: List[int], p: int) -> int:
+        need, min_len, prefix_sum = sum(nums) % p, len(nums), 0
+        prefix_sum_to_index = {prefix_sum : -1}
+        for i, num in enumerate(nums):
+            prefix_sum = (prefix_sum + num) % p
+            prefix_sum_to_index[prefix_sum] = i
+            key = (prefix_sum - need) % p
+            if key in prefix_sum_to_index:
+                min_len = min(min_len, i - prefix_sum_to_index[key])
+        return min_len if min_len < len(nums) else -1
+
 1638. Count Substrings That Differ by One Character
 https://leetcode.com/problems/count-substrings-that-differ-by-one-character/
 class Solution:
