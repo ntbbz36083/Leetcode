@@ -42,6 +42,32 @@ class Solution:
             cur = cur.next
         return cloneHead.next
 
+166. Fraction to Recurring Decimal
+https://leetcode.com/problems/fraction-to-recurring-decimal/
+class Solution:
+#T:O(n)
+#S:O(n)
+    def fractionToDecimal(self, numerator: int, denominator: int) -> str:
+        if numerator % denominator == 0:
+            return str(numerator // denominator)
+        sign = '' if numerator * denominator >= 0 else '-'
+        numerator, denominator = abs(numerator), abs(denominator)
+        res = sign + str(numerator//denominator) + '.'
+        i, part = 0, ''
+        d = {numerator:i}
+        numerator %= denominator
+        while numerator % denominator:
+            numerator *= 10
+            rem = numerator % denominator
+            part += str(numerator // denominator)
+            if rem in d:
+                part = part[:d[rem]] + '(' + part[d[rem]:] + ')'
+                return res + part
+            i += 1
+            d[rem] = i
+            numerator = rem
+        return res + part        
+
 242. Valid Anagram
 https://leetcode.com/problems/valid-anagram/
 class Solution:
@@ -1100,7 +1126,68 @@ class Solution:
             
             result.append([str(table)] + temp)
         return result
-    
+
+1487. Making File Names Unique
+https://leetcode.com/problems/making-file-names-unique/
+class Solution:
+    def getFolderNames(self, names: List[str]) -> List[str]:
+        used, d = set(), collections.defaultdict(int)
+        res = []
+        for name in names:
+            k = d[name]
+            cur = name
+            while cur in used:
+                k += 1
+                cur = name + '(' + str(k) + ')'
+            d[name] = k
+            used.add(cur)
+            res.append(cur)
+        return res
+
+1488. Avoid Flood in The City
+https://leetcode.com/problems/avoid-flood-in-the-city/
+class Solution:
+    def avoidFlood(self, rains: List[int]) -> List[int]:
+        lake_stat = collections.defaultdict(bool)
+        lastrain = collections.defaultdict(int)
+        dry, res = [], []
+        for k,v in enumerate(rains):
+            # rains today
+            if v >0:
+                # if lake is empty, update it to full, update lastrain day of lake v to k
+                if not lake_stat[v]:
+                    lake_stat[v] = True
+                    res.append(-1)
+                    lastrain[v] = k
+                # lake is full
+                else:
+                    # no dry day, return []
+                    if dry == []:
+                        return []
+                    else:
+                        #check if there's a dry day we can use
+                        i, found = 0, False
+                        while i < len(dry) and not found:
+                            # any day that comes after lastrain[v], means we find it
+                            if dry[i] > lastrain[v]:
+                                found = True
+                                dry_day = dry[i]
+                            else:
+                                i += 1
+                        # if we find it, update res to v, lastrain to k,pop dry
+                        if found:
+                            res[dry_day] = v
+                            lastrain[v] = k
+                            dry.pop(i)
+                            res.append(-1)
+                        else:
+                            return []
+            # not rain, add dry day to dry        
+            elif v == 0:
+                res.append(1)
+                dry.append(k)
+        return res
+
 1512. Number of Good Pairs
 https://leetcode.com/problems/number-of-good-pairs/
 class Solution:
@@ -1180,3 +1267,16 @@ class Solution:
                                 if substring != sub:
                                     count += c[sub]
         return count
+
+1711. Count Good Meals
+https://leetcode.com/problems/count-good-meals/
+class Solution:
+    def countPairs(self, deliciousness: List[int]) -> int:
+        ans = 0
+        freq = defaultdict(int)
+        for x in deliciousness: 
+            for k in range(22): 
+                ans += freq[2**k - x]
+            freq[x] += 1
+        return ans % 1_000_000_007
+        
