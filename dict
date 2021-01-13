@@ -1,3 +1,38 @@
+36. Valid Sudoku
+https://leetcode.com/problems/valid-sudoku/
+class Solution:
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        return self.is_col_vaild(board) and self.is_row_vaild(board) and self.is_square_vaild(board)
+    
+    def is_unit_vaild(self, unit):
+        # check whether there's repeated value
+        unit = [i for i in unit if i != '.']
+        return len(set(unit)) == len(unit)
+    
+    def is_row_vaild(self, board):
+        for row in board:
+            if not self.is_unit_vaild(row):
+                return False
+        return True
+        
+    def is_col_vaild(self, board):
+        # use zip(*) to transpose matrix
+        for col in zip(*board):
+            if not self.is_unit_vaild(col):
+                return False
+        return True
+        
+    def is_square_vaild(self, board):
+        for i in [0,3,6]:
+            for j in [0,3,6]:
+                square = []
+                for x in range(i,i+3):
+                    for y in range(j,j+3):
+                        square.append(board[x][y])
+                if not self.is_unit_vaild(square):
+                    return False
+        return True
+
 49. Group Anagrams
 https://leetcode.com/problems/group-anagrams/
 #T:O(nlogn)
@@ -170,6 +205,22 @@ class Solution:
                 cow += min(s[k], g[k])
         
         return '{0}A{1}B'.format(bull, cow)
+
+325. Maximum Size Subarray Sum Equals k
+https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
+class Solution:
+    def maxSubArrayLen(self, nums: List[int], k: int) -> int:
+        ans, acc = 0, 0               # answer and the accumulative value of nums
+        mp = {0:-1}                 #key is acc value, and value is the index
+        for i in range(len(nums)):
+            acc += nums[i]
+            if acc not in mp:
+                mp[acc] = i
+            # acc-k in mp means there is a k inside acc now, subtract it from acc and get the old 
+            # index, i-old index is the length of possible answer
+            if acc-k in mp:
+                ans = max(ans, i-mp[acc-k])
+        return ans
 
 350. Intersection of Two Arrays II
 https://leetcode.com/problems/intersection-of-two-arrays-ii/
@@ -378,6 +429,22 @@ class Codec:
         """
         return self.code2url[shortUrl[-6:]]
 
+554. Brick Wall
+https://leetcode.com/problems/brick-wall/
+class Solution:
+    def leastBricks(self, wall: List[List[int]]) -> int:
+        # the key idea here is using a dict to keep track of edges
+        # more edges means less cross, we want to find max edges
+        d = collections.defaultdict(int)
+        max_edge = 0
+        for line in wall:
+            # use an accumulative i to count the wall length
+            i = 0
+            for brick in line[:-1]:
+                i += brick
+                d[i] += 1
+                max_edge = max(max_edge, d[i])
+        return len(wall)-max_edge
 
 560. Subarray Sum Equals K
 https://leetcode.com/problems/subarray-sum-equals-k/
@@ -898,6 +965,20 @@ class Solution:
             if v>1:
                 return k
 
+966. Vowel Spellchecker
+https://leetcode.com/problems/vowel-spellchecker/
+class Solution:
+#T:O(4n)
+#S:O(3n)
+# first step check whether query in original word
+# second step check whether in lower case word
+# third step check whether in vowel sub word
+    def spellchecker(self, wordlist: List[str], queries: List[str]) -> List[str]:
+        words = {w: w for w in wordlist}
+        cap = {w.lower(): w for w in wordlist[::-1]}
+        vowel = {re.sub("[aeiou]", '#', w.lower()): w for w in wordlist[::-1]}
+        return [words.get(w) or cap.get(w.lower()) or vowel.get(re.sub("[aeiou]", '#', w.lower()), "") for w in queries]
+
 970. Powerful Integers
 https://leetcode.com/problems/powerful-integers/
 class Solution:
@@ -913,6 +994,22 @@ class Solution:
                     stack.append((i+1,j))
                 if y > 1:
                     stack.append((i,j+1))          
+        return res
+
+974. Subarray Sums Divisible by K
+https://leetcode.com/problems/subarray-sums-divisible-by-k/
+class Solution:
+    def subarraysDivByK(self, A: List[int], K: int) -> int:
+        res = 0
+        d = collections.defaultdict(int)
+        d[0] = 1
+        prefix = 0
+        for num in A:
+            prefix += num
+            prefix %= K
+            if prefix in d:
+                res += d[prefix]
+            d[prefix] += 1 
         return res
 
 981. Time Based Key-Value Store
@@ -1024,6 +1121,24 @@ class Solution:
             res += val
             label_counts[label] += 1
         return res
+
+1138. Alphabet Board Path
+https://leetcode.com/problems/alphabet-board-path/
+class Solution:
+    def alphabetBoardPath(self, target: str) -> str:
+        m = {w:(i//5,i%5) for i, w in enumerate('abcdefghijklmnopqrstuvwxyz')}
+        #print(m)
+        x0, y0 = 0,0
+        res = []
+        for c in target:
+            x,y = m[c]
+            if y < y0: res.append('L' *(y0-y))
+            if x < x0: res.append('U' *(x0-x))
+            if y > y0: res.append('R' *(y-y0))    
+            if x > x0: res.append('D' *(x-x0))
+            res.append('!')
+            x0, y0 = x, y
+        return ''.join(res)
 
 1311. Get Watched Videos by Your Friends
 https://leetcode.com/problems/get-watched-videos-by-your-friends/
@@ -1229,6 +1344,11 @@ class Solution:
             result.append([str(table)] + temp)
         return result
 
+######################################################  more work needed  ######################################################
+1429. First Unique Number
+https://leetcode.com/problems/first-unique-number/
+
+
 1487. Making File Names Unique
 https://leetcode.com/problems/making-file-names-unique/
 class Solution:
@@ -1403,6 +1523,24 @@ class Solution:
                                 if substring != sub:
                                     count += c[sub]
         return count
+
+1679. Max Number of K-Sum Pairs
+https://leetcode.com/problems/max-number-of-k-sum-pairs/
+class Solution:
+    def maxOperations(self, nums: List[int], k: int) -> int:
+        c = collections.Counter(nums)
+        res = 0 
+        for key in c:
+            if c.get(k - key):
+                if k - key == key:
+                    res += c[key]//2
+                    c[key] -= c[key]//2
+                else:
+                    m = min(c[key], c[k-key])
+                    c[key] -= m
+                    c[k-key] -= m
+                    res += m
+        return res                
 
 1711. Count Good Meals
 https://leetcode.com/problems/count-good-meals/
