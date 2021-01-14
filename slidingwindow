@@ -136,6 +136,42 @@ class Solution:
             max_len = max(max_len, right-left)
         return max_len
 
+395. Longest Substring with At Least K Repeating Characters
+https://leetcode.com/problems/longest-substring-with-at-least-k-repeating-characters/
+class Solution:
+#T:O(26n)
+#S:O(26)
+    def longestSubstring(self, s: str, k: int) -> int:
+        res = 0
+        n = len(collections.Counter(s))+1
+        # each round we only check T number different char possible answer
+        # T means how many different char we can have in this round of 
+        # sliding window
+        for T in range(1, n):
+            left, right, found, freq, cn = 0, 0, 0, [0]*26, 0
+            while right < len(s):
+                # if current char number less than T, which means we can add more char in
+                if cn <= T:
+                    cur = ord(s[right]) - 97
+                    freq[cur] += 1
+                    if freq[cur] == 1:
+                        cn += 1
+                    if freq[cur] == k:
+                        found += 1
+                    right += 1
+                # we can't add more char since we run out of char, we need to pop char now
+                else:
+                    pop = ord(s[left]) - 97
+                    left += 1
+                    if freq[pop] == k:
+                        found -= 1
+                    freq[pop] -= 1
+                    if freq[pop] ==0:
+                        cn -= 1
+                if cn == T and found == T:
+                    res = max(res, right-left)
+        return res
+
 438. Find All Anagrams in a String
 https://leetcode.com/problems/find-all-anagrams-in-a-string/
 
@@ -201,3 +237,73 @@ class Solution(object):
                         match -= 1
                     window[c2] -= 1      
         return False
+
+487. Max Consecutive Ones II
+https://leetcode.com/problems/max-consecutive-ones-ii/
+class Solution:
+    def findMaxConsecutiveOnes(self, nums: List[int]) -> int:
+        max_len = 0
+        zero = 0
+        left, right = 0,0
+        while right < len(nums):
+            zero += 1 - nums[right]
+            right += 1
+            if zero > 1:
+                zero -= 1 -nums[left]
+                left += 1
+            max_len = max(max_len, right-left)
+        return max_len
+
+################################  Follow up  ################################
+What if the input numbers come in one by one as an infinite stream? 
+In other words, you can't store all numbers coming from the stream as it's too large to hold in memory.
+class Solution:
+    def findMaxConsecutiveOnes(self, nums: List[int]) -> int:
+        # previous and current length of consecutive 1 
+        pre, curr, maxlen = -1, 0, 0
+        for n in nums:
+            if n == 0:
+                pre, curr = curr, 0
+            else:
+                curr += 1
+            maxlen = max(maxlen, pre + 1 + curr )
+        
+        return maxlen
+        
+1004. Max Consecutive Ones III
+https://leetcode.com/problems/max-consecutive-ones-iii/
+class Solution:
+    def longestOnes(self, A: List[int], K: int) -> int:
+        max_len = 0
+        zero = 0
+        left, right = 0,0
+        # basiclly we count the number of zeros of current window
+        # if it is more than K, we need to move left pointer unitl some amount of 
+        # zero is removed so we can continue, if new window has bigger range, check
+        while right < len(A):
+            zero += 1 - A[right]
+            right += 1
+            if zero > K:
+                zero -= 1 -A[left]
+                left += 1
+            if max_len < right-left:
+                max_len = right-left
+        return max_len
+
+1423. Maximum Points You Can Obtain from Cards
+https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/
+class Solution:
+    def maxScore(self, cardPoints: List[int], k: int) -> int:
+        # translate question to find minvalue subarry from array with size k
+        size = len(cardPoints) - k
+        cur, j, min_sum = 0, 0, float('inf')
+        # i is rightmost index, j is leftmost index
+        for i, v in enumerate(cardPoints):
+            cur += v
+            # if subarry > size, we need to subtract leftmost value
+            if i -j +1 > size:
+                cur -= cardPoints[j]
+                j += 1
+            if i -j + 1 == size:
+                min_sum = min(min_sum, cur)
+        return sum(cardPoints) - min_sum
