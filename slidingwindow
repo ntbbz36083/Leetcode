@@ -172,6 +172,23 @@ class Solution:
                     res = max(res, right-left)
         return res
 
+424. Longest Repeating Character Replacement
+https://leetcode.com/problems/longest-repeating-character-replacement/
+class Solution:
+    def characterReplacement(self, s: str, k: int) -> int:
+        lo, hi, res = 0, 0, 0
+        count = collections.Counter()
+        while hi < len(s):
+            cur = s[hi]
+            hi += 1
+            count[cur] += 1
+            maxf = max(count.values())
+            while lo < hi and hi - lo - maxf > k:
+                count[s[lo]] -= 1
+                lo += 1
+            res = max(res, hi-lo)
+        return res
+
 438. Find All Anagrams in a String
 https://leetcode.com/problems/find-all-anagrams-in-a-string/
 
@@ -289,6 +306,26 @@ class Solution:
             if max_len < right-left:
                 max_len = right-left
         return max_len
+
+1176. Diet Plan Performance
+https://leetcode.com/problems/diet-plan-performance/
+class Solution:
+    def dietPlanPerformance(self, calories: List[int], k: int, lower: int, upper: int) -> int:
+        lo, hi, temp,res = 0, 0, 0, 0
+        while hi < len(calories):
+            cur = calories[hi]
+            hi += 1
+            temp += cur
+            k -= 1
+            if k == 0:
+                if temp > upper:
+                    res +=1
+                elif temp < lower:
+                    res -= 1
+                temp -= calories[lo]
+                k += 1
+                lo += 1
+        return res
 
 1423. Maximum Points You Can Obtain from Cards
 https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/
