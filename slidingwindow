@@ -223,6 +223,180 @@ class Solution(object):
                 left += 1
         return res
 
+#########################################  good to learn a new container, sortedlist which add/remove cost logk  ######################################
+#########################################  good to learn heapq with maxheap and minheap  ######################################
+480. Sliding Window Median
+https://leetcode.com/problems/sliding-window-median/
+##Solution1 with new container
+#T:O(nlogk)
+#S:O(k)
+from sortedcontainers import SortedList
+class Solution:
+    def medianSlidingWindow(self, nums: List[int], k: int) -> List[float]:
+        sortedWindow = SortedList()
+        i, res = 0, []
+        for j in range(len(nums)):
+            sortedWindow.add(nums[j])
+            if j-i+1 == k:
+                res.append(self.findMedian(sortedWindow, k))
+                sortedWindow.remove(nums[i])
+                i += 1
+        return res
+        
+    def findMedian(self, window, k):
+        return window[k//2] if (k % 2) else (window[k//2-1]+window[k//2])/2
+
+##Solution2 with 2 heapq
+import heapq
+
+class Heap:
+    # T:O(n)
+    def __init__(self, indices: List[int], nums: List[int], max=False) -> None:
+        self.max = max
+        # T:O(n)
+        self.heap = [[-nums[i], i] if self.max else [nums[i],i] for i in indices]
+        self.indices = set(indices)
+        # T:O(logn)
+        heapq.heapify(self.heap)
+        
+    def __len__(self) -> int:
+        return len(self.indices)
+    
+    def remove(self, index: int) -> None:
+        # T:O(1)
+        if index in self.indices:
+            self.indices.remove(index)
+                
+    def pop(self) -> List[int]:
+        # T:O(logn)
+        while self.heap and self.heap[0][1] not in self.indices:
+            heapq.heappop(self.heap)
+        item = heapq.heappop(self.heap)
+        self.indices.remove(item[1])
+        return [-item[0], item[1]] if self.max else item
+    
+    def push(self, item: List[int]) -> None:
+        # T:O(logn)
+        self.indices.add(item[1])
+        heapq.heappush(self.heap, [-item[0], item[1]] if self.max else item)
+    
+    def peek(self) -> int:
+        # T:O(logn)
+        while self.heap and self.heap[0][1] not in self.indices:
+            heapq.heappop(self.heap)
+        v, _ = self.heap[0]
+        return -v if self.max else v
+    
+import heapq
+
+class Heap:
+    # T:O(n)
+    def __init__(self, indices: List[int], nums: List[int], max=False) -> None:
+        self.max = max
+        # T:O(n)
+        self.heap = [[-nums[i], i] if self.max else [nums[i],i] for i in indices]
+        self.indices = set(indices)
+        # T:O(logn)
+        heapq.heapify(self.heap)
+        
+    def __len__(self) -> int:
+        return len(self.indices)
+    
+    def remove(self, index: int) -> None:
+        # T:O(1)
+        if index in self.indices:
+            self.indices.remove(index)
+                
+    def pop(self) -> List[int]:
+        # T:O(logn)
+        while self.heap and self.heap[0][1] not in self.indices:
+            heapq.heappop(self.heap)
+        item = heapq.heappop(self.heap)
+        self.indices.remove(item[1])
+        return [-item[0], item[1]] if self.max else item
+    
+    def push(self, item: List[int]) -> None:
+        # T:O(logn)
+        self.indices.add(item[1])
+        heapq.heappush(self.heap, [-item[0], item[1]] if self.max else item)
+    
+    def peek(self) -> int:
+        # T:O(logn)
+        while self.heap and self.heap[0][1] not in self.indices:
+            heapq.heappop(self.heap)
+        v, _ = self.heap[0]
+        return -v if self.max else v
+    
+class Solution:
+# T:O(nlogk)
+    def medianSlidingWindow(self, nums: List[int], k: int) -> List[float]:
+        ## General idea here is using 2 heapq, one maxheap and one minheap
+        ## using maxheap to store smaller value, minheap to store bigger value
+        ## everytime we have a new value, push to max first, then pop from max and 
+        ## push to minheap. if len(min) > len(max), get one from min and put it to max
+        indices = sorted(range(k), key=lambda x:nums[x]) # T:O(logk)
+        # below 2 steps are totally: T:O(logk)
+        minheap = Heap(indices[(k+1)//2:], nums)
+        maxheap = Heap(indices[:(k+1)//2], nums, max=True)
+        # # T:O(logk)
+        median = ((lambda: maxheap.peek()) if k % 2 else 
+		          (lambda: (minheap.peek() + maxheap.peek()) / 2))
+        ans = []
+        ans.append(median())
+        # # T:O(n-k)*logk=nlogk
+        for i in range(k, len(nums)):
+            v = nums[i]
+            minheap.remove(i-k)
+            maxheap.remove(i-k)
+            maxheap.push([v, i]) # T:O(logk)
+            minheap.push(maxheap.pop()) # T:O(logk)
+            if len(minheap) > len(maxheap):
+                maxheap.push(minheap.pop()) # T:O(logk)
+            ans.append(median())
+        return ans
+
+295. Find Median from Data Stream
+https://leetcode.com/problems/find-median-from-data-stream/
+import heapq
+class MedianFinder:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.small = [] # store the small half, top is the largest in the small part
+        self.large = [] # store the large half, top is the smallest in the large part
+
+    def addNum(self, num):
+        """
+        Adds a num into the data structure.
+        :type num: int
+        :rtype: void
+        """
+        if len(self.small) == 0:
+            heapq.heappush(self.small, -num)
+            return
+        if num <= -self.small[0]:
+            # push to small part
+            heapq.heappush(self.small, -num)
+        else:
+            # push to large part
+            heapq.heappush(self.large, num)
+        # adjust small and large balance
+        if len(self.small) - len(self.large) == 2:
+            heapq.heappush(self.large, -heapq.heappop(self.small))
+        elif len(self.small) - len(self.large) == -2:
+            heapq.heappush(self.small, -heapq.heappop(self.large))
+
+    def findMedian(self):
+        """
+        Returns the median of current data stream
+        :rtype: float
+        """
+        if len(self.small) == len(self.large):
+            return (self.large[0] - self.small[0])/2.0
+        return -float(self.small[0]) if len(self.small) > len(self.large) else float(self.large[0])
+
 567. Permutation in String
 https://leetcode.com/problems/permutation-in-string/
 
