@@ -461,6 +461,67 @@ class Solution:
         
         return maxlen
         
+727. Minimum Window Subsequence
+https://leetcode.com/problems/minimum-window-subsequence/
+class Solution:
+    def minWindow(self, S: str, T: str) -> str:
+        # find the index that fulfill the request of T
+        def find_sub(s):
+            t = 0
+            while s < len(S):
+                if S[s] == T[t]:
+                    t += 1
+                    if t == len(T):
+                        break
+                s += 1
+            return s if t == len(T) else None
+        
+        # improve sub that find it's best start point
+        def improve_sub(s):
+            t = len(T) - 1
+            while t >= 0:
+                if S[s] == T[t]:
+                    t -= 1
+                    if t < 0:
+                        break
+                s -= 1
+            return s 
+        
+        s, min_len, min_window = 0, float('inf'), ""
+        
+        # loop through and find the min len of sub
+        while s < len(S):
+            end = find_sub(s)
+            if not end:
+                break
+            start = improve_sub(end)
+            
+            if end-start+1 < min_len:
+                min_len = end-start+1
+                min_window = S[start:end+1]
+            s = start + 1
+        return min_window
+
+992. Subarrays with K Different Integers
+https://leetcode.com/problems/subarrays-with-k-different-integers/
+class Solution:
+    def subarraysWithKDistinct(self, A, K):
+        return self.atMostK(A, K) - self.atMostK(A, K - 1)
+
+    def atMostK(self, A, K):
+        count = collections.Counter()
+        res = i = 0
+        for j in range(len(A)):
+            if count[A[j]] == 0: K -= 1
+            count[A[j]] += 1
+            while K < 0:
+                count[A[i]] -= 1
+                if count[A[i]] == 0: K += 1
+                i += 1
+            res += j - i + 1
+        return res
+
+
 1004. Max Consecutive Ones III
 https://leetcode.com/problems/max-consecutive-ones-iii/
 class Solution:
