@@ -273,6 +273,64 @@ class Solution(object):
                             uf.union((i*n+j), (x*n+y))                            
         return uf.count    
 
+207. Course Schedule
+https://leetcode.com/problems/course-schedule/
+class Solution:
+#T:O(V+E), v is vetex number, E is egde number
+#S:O(E)
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        graph = collections.defaultdict(list)
+        for p in prerequisites:
+            x, y = p
+            graph[x] += [y]
+        visited = [0 for _ in range(numCourses)]
+        for i in range(numCourses):
+            if self.dfs(graph, visited, i):
+                return False
+        return True
+    
+    def dfs(self, graph, visited, i):
+            if visited[i] == -1:
+                return True
+            if visited[i] == 1:
+                return False
+            visited[i] = -1
+            for j in graph[i]:
+                if self.dfs(graph, visited, j):
+                    return False
+            visited[i] = 1
+            return False
+
+210. Course Schedule II
+https://leetcode.com/problems/course-schedule-ii/
+class Solution:
+#T:O(V+E), v is vetex number, E is egde number
+#S:O(E)
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        graph = collections.defaultdict(list)
+        visited = [0 for _ in range(numCourses)]
+        res = []
+        for p in prerequisites:
+            x, y = p
+            graph[x] += [y]
+        for i in range(numCourses):
+            if self.dfs(graph, visited, i, res):
+                return []
+        return res
+    
+    def dfs(self, graph, visited, i, res):
+            if visited[i] == -1:
+                return True
+            if visited[i] == 1:
+                return
+            visited[i] = -1
+            for j in graph[i]:
+                if self.dfs(graph, visited, j, res):
+                    return []
+            res.append(i)
+            visited[i] = 1
+
+
 323. Number of Connected Components in an Undirected Graph
 https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
 #######  DFS  ######
