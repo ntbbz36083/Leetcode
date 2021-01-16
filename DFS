@@ -394,6 +394,25 @@ class Solution(object):
         
         return len([0 for i in range(n) if i == parent[i]])
 
+339. Nested List Weight Sum
+https://leetcode.com/problems/nested-list-weight-sum/
+class Solution:
+#T:O(n) n is the number of all elements
+#S:O(d) d us the depth of nestedlist
+    def depthSum(self, nestedList: List[NestedInteger]) -> int:
+        return self.dfs(nestedList, 1)
+        
+    
+    def dfs(self, nestedList, depth):
+        res = 0
+        for item in nestedList:
+            if item.isInteger():
+                res += item.getInteger() * depth
+            else:
+                res +=self.dfs(item.getList(), depth+1)
+        return res
+        
+
 394. Decode String
 https://leetcode.com/problems/decode-string/
 
@@ -500,6 +519,67 @@ class Solution(object):
             master = find(id)
             res[master] = res.get(master,[]) + [email]
         return [[id_to_name[id]]+sorted(emails) for id, emails in res.items()]
+
+733. Flood Fill
+https://leetcode.com/problems/flood-fill/
+class Solution:
+    def floodFill(self, image: List[List[int]], sr: int, sc: int, newColor: int) -> List[List[int]]:
+#T:O(n)
+#S:O(h)
+        self.m, self.n = len(image), len(image[0])
+        self.start_color = image[sr][sc]
+        self.dfs(image, sr, sc, newColor)
+        return image
+    def dfs(self, image, i, j, newColor):
+        if 0 <= i < self.m and 0 <= j < self.n:
+            # tricky part is if newcolor is the same as the start_color, we need to skip 
+            if image[i][j] == newColor or image[i][j] != self.start_color:
+                return
+            image[i][j] = newColor
+            self.dfs(image, i+1, j, newColor)
+            self.dfs(image, i-1, j, newColor)
+            self.dfs(image, i, j+1, newColor)
+            self.dfs(image, i, j-1, newColor)
+            
+797. All Paths From Source to Target
+https://leetcode.com/problems/all-paths-from-source-to-target/
+class Solution:
+    def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
+        n = len(graph)-1
+        gd = collections.defaultdict(list)
+        for i, item in enumerate(graph):
+            for x in item:
+                gd[i].append(x)
+        path = []
+        
+        def dfs(root, n, temp):
+            if root == n:
+                path.append(temp)
+                return
+            for nei in gd[root]:
+                dfs(nei, n, temp+[nei])
+        dfs(0, n, [0])    
+        return path
+
+
+897. Increasing Order Search Tree
+https://leetcode.com/problems/increasing-order-search-tree/
+class Solution:
+#T:O(n)
+#T:O(h)
+    def increasingBST(self, root: TreeNode) -> TreeNode:
+        def dfs(node):
+            l1, r2 = node, node
+            if node.left:
+                l1, l2 = dfs(node.left)
+                l2.right = node
+            if node.right:
+                r1, r2 = dfs(node.right)
+                node.right = r1
+            node.left = None
+            return (l1,r2)
+        return dfs(root)[0]
+
 990. Satisfiability of Equality Equations
 https://leetcode.com/problems/satisfiability-of-equality-equations/
 #######  DFS  #######
