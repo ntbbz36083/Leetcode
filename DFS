@@ -561,6 +561,25 @@ class Solution:
         dfs(0, n, [0])    
         return path
 
+841. Keys and Rooms
+https://leetcode.com/problems/keys-and-rooms/
+class Solution:
+    def canVisitAllRooms(self, rooms: List[List[int]]) -> bool:
+        d = collections.defaultdict(list)
+        self.res = 0
+        visited =set()
+        for i, key in enumerate(rooms):
+            d[i] = key
+        self.dfs(0,d,visited)
+        return self.res == len(rooms)
+    
+    def dfs(self, rn, d, visited):
+        if rn not in visited:
+            self.res += 1
+            visited.add(rn)
+            for key in d[rn]:
+                self.dfs(key, d, visited)
+        return 
 
 897. Increasing Order Search Tree
 https://leetcode.com/problems/increasing-order-search-tree/
@@ -579,6 +598,41 @@ class Solution:
             node.left = None
             return (l1,r2)
         return dfs(root)[0]
+
+959. Regions Cut By Slashes
+https://leetcode.com/problems/regions-cut-by-slashes/
+class Solution:
+    def regionsBySlashes(self, grid: List[str]) -> int:
+        m, n = len(grid), len(grid[0])
+        g = [[0 for x in range(3*n)] for y in range(3*m)]
+        cnt = 0
+        visited = set()
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '/':
+                    g[i*3][j*3+2] = 1
+                    g[i*3+1][j*3+1] = 1
+                    g[i*3+2][j*3] = 1
+                elif grid[i][j] == '\\':
+                    g[i*3][j*3] = 1
+                    g[i*3+1][j*3+1] = 1
+                    g[i*3+2][j*3+2] = 1
+                
+        for i in range(3*m):
+            for j in range(3*n):
+                if g[i][j] == 0:
+                    if (i,j) not in visited:
+                        self.dfs(g, i,j, visited)
+                        cnt += 1
+        return cnt 
+    
+    def dfs(self, g, i, j, visited):
+        if 0 <= i < len(g) and 0 <= j < len(g[0]) and g[i][j] ==0 and (i,j) not in visited:
+            visited.add((i,j))
+            self.dfs(g,i+1,j,visited)
+            self.dfs(g,i-1,j,visited)
+            self.dfs(g,i,j+1,visited)
+            self.dfs(g,i,j-1,visited)
 
 990. Satisfiability of Equality Equations
 https://leetcode.com/problems/satisfiability-of-equality-equations/
@@ -661,4 +715,53 @@ class Solution(object):
             if uf.find(a) == uf.find(b):
                 return False
         return True
-        
+
+1061. Lexicographically Smallest Equivalent String
+https://leetcode.com/problems/lexicographically-smallest-equivalent-string/
+class Solution:
+    def smallestEquivalentString(self, A: str, B: str, S: str) -> str:
+        g = defaultdict(list)
+        for a, b in zip(A, B):
+            g[a].append(b)
+            g[b].append(a)     
+        smallest = {}
+        for c in A:
+            if c in smallest:
+                continue
+            equiv, least = self.findEquivalent(c,g)
+            for e in equiv:
+                smallest[e] = least
+        return ''.join(smallest[c] if c in smallest else c for c in S)   
+    
+    def findEquivalent(self, u,g):
+            self.seen = set()
+            self.least = 'z'
+            self.dfs(u,g) 
+            return self.seen, self.least
+    def dfs(self, u, g):
+            if u in self.seen:
+                return
+            self.seen.add(u)
+            self.least = min(self.least, u)
+            for v in g[u]:
+                self.dfs(v,g)
+
+1236. Web Crawler
+https://leetcode.com/problems/web-crawler/
+
+class Solution:
+    def crawl(self, startUrl: str, htmlParser: 'HtmlParser') -> List[str]:
+        res = set()
+        hostname = startUrl.split('/')[2]
+        self.dfs(startUrl, res, htmlParser, hostname)
+        return list(res)
+    
+    def dfs(self, starturl, res, htmlParser, hostname) :
+        new_hostname = starturl.split('/')[2]
+        if new_hostname != hostname:
+            return
+        if starturl not in res:
+            res.add(starturl)
+            for url in htmlParser.getUrls(starturl):
+                self.dfs(url, res, htmlParser, hostname)
+        return 
