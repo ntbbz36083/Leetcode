@@ -457,6 +457,40 @@ class Solution:
                 self.dfs(visited,n,pos+1)
                 visited[i] = False
     
+529. Minesweeper
+https://leetcode.com/problems/minesweeper/
+class Solution:
+    def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        if not board:
+            return []
+        i,j = click[0], click[1]
+        if board[i][j] == 'M':
+            board[i][j] = 'X'
+            return board
+        
+        self.m, self.n = len(board), len(board[0])
+        self.dfs(board,i,j)
+        return board
+    
+    def dfs(self, board, i, j):
+        if board[i][j] != 'E':
+            return
+        directions = [(-1,-1), (0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0)]
+        mine_count = 0
+        for d in directions:
+            x, y = i+d[0], j+d[1]
+            if 0 <= x < self.m and 0 <= y < self.n and board[x][y] =='M':
+                mine_count += 1
+        if mine_count == 0:
+            board[i][j] = 'B'
+        else:
+            board[i][j] = str(mine_count)
+            return
+        for d in directions:
+            x, y = i+d[0], j+d[1]
+            if 0 <= x < self.m and 0 <= y < self.n:
+                self.dfs(board,x,y)
+                
 
 547. Friend Circles
 https://leetcode.com/problems/friend-circles/
@@ -756,6 +790,36 @@ class Solution(object):
                 return False
         return True
 
+1020. Number of Enclaves
+https://leetcode.com/problems/number-of-enclaves/
+class Solution:
+    def numEnclaves(self, A: List[List[int]]) -> int:
+        res = 0
+        self.m,self.n = len(A), len(A[0])
+        visited = set()
+        for i in range(self.m):
+            for j in range(self.n):
+                if A[i][j] == 1 and (i,j) not in visited:
+                    self.area = 0
+                    if self.dfs(i,j,A,visited):
+                        res += self.area 
+        return res
+    
+    def dfs(self, i, j, A, visited):
+        if i < 0 or j < 0 or i >= self.m or j >= self.n:
+            return False
+        if A[i][j] == 0:
+            return True
+        if (i,j) in visited:
+            return True
+        visited.add((i,j))
+        self.area += 1
+        top = self.dfs(i+1,j,A, visited)
+        bot = self.dfs(i-1,j,A, visited)
+        right = self.dfs(i,j+1,A, visited)
+        left = self.dfs(i,j-1,A, visited)
+        return top and bot and left and right
+
 1061. Lexicographically Smallest Equivalent String
 https://leetcode.com/problems/lexicographically-smallest-equivalent-string/
 class Solution:
@@ -805,3 +869,24 @@ class Solution:
             for url in htmlParser.getUrls(starturl):
                 self.dfs(url, res, htmlParser, hostname)
         return 
+
+1466. Reorder Routes to Make All Paths Lead to the City Zero
+https://leetcode.com/problems/reorder-routes-to-make-all-paths-lead-to-the-city-zero/
+class Solution:
+    def minReorder(self, n: int, connections: List[List[int]]) -> int:
+        d = collections.defaultdict(list)
+        roads = set()
+        self.res = 0
+        for a,b in connections:
+            d[a].append(b)
+            d[b].append(a)
+            roads.add((a,b))
+        def dfs(u,parent):
+            if (parent,u) in roads:
+                self.res += 1
+            for v in d[u]:
+                if v == parent:
+                    continue
+                dfs(v,u)
+        dfs(0,-1)
+        return self.res
