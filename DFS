@@ -491,10 +491,81 @@ class Solution:
             if 0 <= x < self.m and 0 <= y < self.n:
                 self.dfs(board,x,y)
                 
+542. 01 Matrix
+https://leetcode.com/problems/01-matrix/
+#################################  BFS for each 1  ######################################
+class Solution:
+    def updateMatrix(self, matrix: List[List[int]]) -> List[List[int]]:
+        if not matrix:
+            return[]
+        self.m, self.n = len(matrix), len(matrix[0])
+        for i in range(self.m):
+            for j in range(self.n):
+                if matrix[i][j] == 1:
+                    self.bfs(i,j,matrix)
+        return matrix
+    
+    def bfs(self, i, j, matrix):
+        q = collections.deque([(i,j,0)])
+        while q:
+            I,J, step = q.popleft()
+            for x, y in [(I+1,J),(I-1,J),(I,J+1),(I,J-1)]: 
+                if 0 <= x < self.m and 0 <= y < self.n:
+                    if matrix[x][y] == 0:
+                        matrix[i][j] = step+1
+                        return
+                    else:
+                        q.append((x,y,step+1))
+
+#################################  BFS for each 0  ######################################
+class Solution:
+    def updateMatrix(self, matrix: List[List[int]]) -> List[List[int]]:
+        if not matrix:
+            return[]
+        self.m, self.n = len(matrix), len(matrix[0])
+        q = collections.deque()
+        visited = set()
+        for i in range(self.m):
+            for j in range(self.n):
+                if matrix[i][j] == 0:
+                    q.append((i,j))
+                    visited.add((i, j))
+                    
+        while q:
+            x,y = q.popleft()
+            for r, c in [(x+1,y),(x-1,y),(x,y+1),(x,y-1)]:
+                if (r,c) in visited:
+                    continue 
+                else:
+                    if 0 <= r < self.m and 0 <= c < self.n:
+                        matrix[r][c] = matrix[x][y] + 1
+                        q.append((r,c))
+                        visited.add((r,c))
+        return matrix
 
 547. Friend Circles
 https://leetcode.com/problems/friend-circles/
 
+576. Out of Boundary Paths
+https://leetcode.com/problems/out-of-boundary-paths/
+class Solution:
+    def findPaths(self, m: int, n: int, N: int, i: int, j: int) -> int:
+        mod = 10**9+7
+        cache = collections.defaultdict(int)
+        def helper(i,j,N):
+            if (i,j,N) in cache:
+                return cache[(i,j,N)]
+            if 0 <= i < m and 0 <= j < n:
+                if N ==0:
+                    cache[(i,j,N)]=0
+                    return cache[(i,j,N)]
+                for x,y in [(i+1,j),(i-1,j),(i,j+1), (i,j-1)]:
+                    cache[(i,j,N)] += helper(x,y,N-1)
+                return cache[(i,j,N)] % mod
+            else:
+                cache[(i,j,N)]=1
+                return cache[(i,j,N)]
+        return helper(i,j,N) % mod
 
 695. Max Area of Island
 class Solution(object):
