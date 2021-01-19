@@ -144,6 +144,27 @@ class Solution(object):
                     dp[i][j] = max(dp[i+1][j],dp[i][j-1])
         return dp[0][n-1]
 
+576. Out of Boundary Paths
+https://leetcode.com/problems/out-of-boundary-paths/
+class Solution:
+    def findPaths(self, m: int, n: int, N: int, i: int, j: int) -> int:
+        mod = 10**9+7
+        cache = collections.defaultdict(int)
+        def helper(i,j,N):
+            if (i,j,N) in cache:
+                return cache[(i,j,N)]
+            if 0 <= i < m and 0 <= j < n:
+                if N ==0:
+                    cache[(i,j,N)]=0
+                    return cache[(i,j,N)]
+                for x,y in [(i+1,j),(i-1,j),(i,j+1), (i,j-1)]:
+                    cache[(i,j,N)] += helper(x,y,N-1)
+                return cache[(i,j,N)] % mod
+            else:
+                cache[(i,j,N)]=1
+                return cache[(i,j,N)]
+        return helper(i,j,N) % mod
+
 718. Maximum Length of Repeated Subarray
 https://leetcode.com/problems/maximum-length-of-repeated-subarray/
 class Solution:
