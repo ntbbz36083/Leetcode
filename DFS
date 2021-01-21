@@ -439,6 +439,38 @@ class Solution:
 394. Decode String
 https://leetcode.com/problems/decode-string/
 
+
+417. Pacific Atlantic Water Flow
+https://leetcode.com/problems/pacific-atlantic-water-flow/
+class Solution:
+    def pacificAtlantic(self, matrix: List[List[int]]) -> List[List[int]]:
+        if not matrix:
+            return []
+        self.m, self.n = len(matrix), len(matrix[0])
+        self.dire = [(1,0),(-1,0),(0,1),(0,-1)]
+        p_visited = set()
+        a_visited = set()
+        
+        for i in range(self.m):
+            self.dfs(matrix,i,0,p_visited)
+            self.dfs(matrix,i,self.n-1,a_visited)
+        for j in range(self.n):
+            self.dfs(matrix,0,j,p_visited)
+            self.dfs(matrix,self.m-1,j,a_visited)
+        
+        return list(p_visited & a_visited)
+        
+    def dfs(self, matrix,i,j, visited):
+        if (i,j) in visited:
+            return
+        visited.add((i,j))
+        for d in self.dire:
+            x,y = i+d[0], j+d[1]
+            if 0 <= x < self.m and 0 <= y < self.n:
+                if matrix[x][y] >= matrix[i][j]:
+                    self.dfs(matrix,x,y,visited)
+                    
+
 526. Beautiful Arrangement
 https://leetcode.com/problems/beautiful-arrangement/
 class Solution:
