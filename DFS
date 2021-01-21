@@ -331,6 +331,30 @@ class Solution:
             res.append(i)
             visited[i] = 1
 
+261. Graph Valid Tree
+https://leetcode.com/problems/graph-valid-tree/
+class Solution:
+    def validTree(self, n: int, edges: List[List[int]]) -> bool:
+        if n-1 != len(edges):
+            return False
+        d = collections.defaultdict(list)
+        for a,b in edges:
+            d[a].append(b)
+            d[b].append(a)
+        self.visited = set()
+        if self.dfs(d, 0, -1):
+            return False 
+        return True if len(self.visited) == n else False
+    
+    def dfs(self, d, v, parent):
+        self.visited.add(v)
+        for nei in d[v]:
+            if nei not in self.visited:
+                if self.dfs(d, nei, v):
+                    return False
+            elif nei != parent:
+                return True
+        return False
 
 323. Number of Connected Components in an Undirected Graph
 https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
@@ -470,6 +494,34 @@ class Solution:
                 if matrix[x][y] >= matrix[i][j]:
                     self.dfs(matrix,x,y,visited)
                     
+473. Matchsticks to Square
+https://leetcode.com/problems/matchsticks-to-square/
+class Solution:
+    def makesquare(self, nums: List[int]) -> bool:
+        if len(nums) < 4:
+            return False
+        s = sum(nums)
+        if s % 4:
+            return False
+        nums.sort(reverse=True)#logn
+        target = s // 4
+        if nums[0]> target:
+            return False
+        return self.dfs(0, [target]*4, nums)
+        
+    def dfs(self, pos, lefts, nums):
+        if pos == len(nums):
+            return True
+        n = nums[pos]
+        used = set()
+        for i, left in enumerate(lefts):
+            if n <= left and left not in used:
+                lefts[i] -= n
+                if self.dfs(pos+1, lefts, nums):
+                    return True
+                lefts[i] += n
+                used.add(left)
+        return False
 
 526. Beautiful Arrangement
 https://leetcode.com/problems/beautiful-arrangement/
@@ -924,6 +976,40 @@ class Solution:
         left = self.dfs(i,j-1,A, visited)
         return top and bot and left and right
 
+1059. All Paths from Source Lead to Destination
+https://leetcode.com/problems/all-paths-from-source-lead-to-destination/
+class Solution:
+    def leadsToDestination(self, n: int, edges: List[List[int]], source: int, destination: int) -> bool:
+        d = collections.defaultdict(list)    
+        for a, b in edges:
+            d[a].append(b)
+        self.visited = [0 for _ in range(n)]
+        return self.hasCycle(d,source, destination)
+        
+    def hasCycle(self, d, start,destination):
+        # when len(d[start])==0, means this is a destination, just check 
+        # whether it's our target destination
+        if len(d[start])==0:
+            return start == destination
+        # if ==1, means we encounter a node that we have visited in current path,
+        # this means we have a cycle in our graph
+        elif self.visited[start] == 1:
+            return False
+        # if == 2: means we had visited this in the past, which we can skip to save
+        # some time
+        elif self.visited[start] == 2:
+            return True
+        else:
+            # else, choose current node and mark it as 1, if not cycle found,
+            # mark it as 2 means this node is visited and in the future if we meet
+            # it again, we can skip it to save time since no cycle was detected here
+            self.visited[start] = 1
+            for nei in d[start]:
+                if not self.hasCycle(d, nei, destination):
+                    return False
+            self.visited[start] = 2
+            return True
+
 1061. Lexicographically Smallest Equivalent String
 https://leetcode.com/problems/lexicographically-smallest-equivalent-string/
 class Solution:
@@ -994,3 +1080,27 @@ class Solution:
                 dfs(v,u)
         dfs(0,-1)
         return self.res
+
+1631. Path With Minimum Effort
+https://leetcode.com/problems/path-with-minimum-effort/
+https://leetcode.com/problems/path-with-minimum-effort/discuss/909017/JavaPython-Dijikstra-Clean-and-Concise-O(MNlogMN)
+class Solution:
+    def minimumEffortPath(self, heights: List[List[int]]) -> int:
+        m,n = len(heights), len(heights[0])
+        dist = [[float('inf') for _ in range(n)]for _ in range(m)]
+        min_heap = []
+        min_heap.append((0, 0, 0))
+        dire = [(1,0),(-1,0),(0,1),(0,-1)]
+        while min_heap:
+            d, r, c = heappop(min_heap)
+            if d > dist[r][c]:
+                continue
+            if r == m-1 and c == n-1:
+                return d
+            for dd in dire:
+                x,y = r + dd[0], c + dd[1]
+                if 0 <= x < m and 0 <= y < n:
+                    newdist = max(d, abs(heights[x][y]-heights[r][c]))
+                    if dist[x][y]> newdist:
+                        dist[x][y] = newdist
+                        heappush(min_heap, (dist[x][y],x,y))
