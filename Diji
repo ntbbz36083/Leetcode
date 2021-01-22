@@ -1,0 +1,87 @@
+499. The Maze III
+https://leetcode.com/problems/the-maze-iii/
+class Solution:
+    def findShortestWay(self, maze: List[List[int]], ball: List[int], hole: List[int]) -> str:
+        dire = [(0, 1,'r'), (0, -1,'l'), (-1, 0,'u'), (1, 0,'d')]
+        m, n = len(maze), len(maze[0])
+        visited = collections.defaultdict(list)
+        visited[(ball[0],ball[1])] = [0,'']
+        q = []
+        heapq.heappush(q,(0, ball[0], ball[1], ''))
+        def go(start, direction,hole):
+            # return the stop position and length
+            i, j = start
+            ii, jj, dd = direction
+            l=0
+            while 0<=i+ii<m and 0<=j+jj<n and maze[i+ii][j+jj]!=1:
+                if [i, j] == hole:
+                    return l, (i,j)
+                i+=ii
+                j+=jj
+                l+=1
+            return l, (i,j)
+        while q:
+            val, i, j, pattern = heapq.heappop(q)
+            if [i,j] == hole:
+                return pattern
+            for d in dire:
+                l, (x, y) = go((i,j), d, hole)
+                if (x,y) not in visited or [val+l, pattern+d[2]] < visited[(x,y)]:
+                    visited[(x,y)] = [val+l, pattern+d[2]]
+                    heapq.heappush(q,(val+l, x,y, pattern+d[2]))
+        return "impossible"
+
+505. The Maze II
+https://leetcode.com/problems/the-maze-ii/
+class Solution:
+    def shortestDistance(self, maze: List[List[int]], start: List[int], destination: List[int]) -> int:
+        dire = [(0, 1), (0, -1), (-1, 0), (1, 0)]
+        m, n = len(maze), len(maze[0])
+        visited = collections.defaultdict(int)
+        q = []
+        heapq.heappush(q,(0, start[0], start[1]))
+        def go(start, direction):
+            # return the stop position and length
+            i, j = start
+            ii, jj = direction
+            l=0
+            while 0<=i+ii<m and 0<=j+jj<n and maze[i+ii][j+jj]!=1:
+                i+=ii
+                j+=jj
+                l+=1
+            return l, (i,j)
+        while q:
+            val, i, j = heapq.heappop(q)
+            if (i,j) in visited and visited[(i,j)] <= val:
+                continue
+            visited[(i,j)] = val
+            if [i,j] == destination:
+                return val
+            for d in dire:
+                l, [x, y] = go((i,j), d)
+                heapq.heappush(q,(val+l, x,y))
+        return -1
+        
+1631. Path With Minimum Effort
+https://leetcode.com/problems/path-with-minimum-effort/
+https://leetcode.com/problems/path-with-minimum-effort/discuss/909017/JavaPython-Dijikstra-Clean-and-Concise-O(MNlogMN)
+class Solution:
+    def minimumEffortPath(self, heights: List[List[int]]) -> int:
+        m,n = len(heights), len(heights[0])
+        dist = [[float('inf') for _ in range(n)]for _ in range(m)]
+        min_heap = []
+        min_heap.append((0, 0, 0))
+        dire = [(1,0),(-1,0),(0,1),(0,-1)]
+        while min_heap:
+            d, r, c = heappop(min_heap)
+            if d > dist[r][c]:
+                continue
+            if r == m-1 and c == n-1:
+                return d
+            for dd in dire:
+                x,y = r + dd[0], c + dd[1]
+                if 0 <= x < m and 0 <= y < n:
+                    newdist = max(d, abs(heights[x][y]-heights[r][c]))
+                    if dist[x][y]> newdist:
+                        dist[x][y] = newdist
+                        heappush(min_heap, (dist[x][y],x,y))
