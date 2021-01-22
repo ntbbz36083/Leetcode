@@ -1040,6 +1040,30 @@ class Solution:
             for v in g[u]:
                 self.dfs(v,g)
 
+1102. Path With Maximum Minimum Value
+https://leetcode.com/problems/path-with-maximum-minimum-value/
+class Solution:
+#Time: O(MN log MN)
+#Space: O(MN)
+    def maximumMinimumPath(self, A: List[List[int]]) -> int:
+        m, n = len(A), len(A[0])
+        dire = [(1,0),(-1,0),(0,1),(0,-1)]
+        maxHeap = [(-A[0][0], 0, 0)]
+        seen = set()
+        while maxHeap:
+            val, i, j = heapq.heappop(maxHeap)
+            if i == m - 1 and j == n - 1: return -val
+            for d in dire:
+                x, y = i + d[0], j + d[1]
+                if 0 <= x < m and 0 <= y < n and (x,y) not in seen:
+                    seen.add((x,y)) # passed
+                    # use a maxheap to keep the min value of current path and 
+                    # next x,y, since maxheap will put bigger value in front 
+                    # of queue, so always bigger value will get calculated first.
+                    heapq.heappush(maxHeap, (max(val, -A[x][y]), x, y))
+        return -1
+
+
 1236. Web Crawler
 https://leetcode.com/problems/web-crawler/
 
