@@ -50,6 +50,67 @@ class Solution:
             res.append(d[i])
         return res
 
+490. The Maze
+https://leetcode.com/problems/the-maze/
+class Solution:
+#T:O(mn)
+#S:O(mn)
+    def hasPath(self, maze: List[List[int]], start: List[int], destination: List[int]) -> bool:
+        dire = [(0, 1), (0, -1), (-1, 0), (1, 0)]
+        m, n = len(maze), len(maze[0])
+        visited = [[False] * n for _ in range(m)]
+        visited[start[0]][start[1]] = True
+        q = collections.deque([(start[0], start[1])])
+        
+        while q:
+            i,j = q.popleft()
+            if i == destination[0] and j == destination[1]:
+                return True
+            for d in dire:
+                x, y = i+d[0], j+d[1]
+                while 0 <= x < m and 0 <= y < n and maze[x][y]==0:
+                    x += d[0]
+                    y += d[1]
+                    
+                x -= d[0]
+                y -= d[1]
+                if not visited[x][y]:
+                    q.append((x,y))
+                    visited[x][y] = True
+        return False
+
+505. The Maze II
+https://leetcode.com/problems/the-maze-ii/
+class Solution:
+    def shortestDistance(self, maze: List[List[int]], start: List[int], destination: List[int]) -> int:
+        dire = [(0, 1), (0, -1), (-1, 0), (1, 0)]
+        m, n = len(maze), len(maze[0])
+        visited = collections.defaultdict(int)
+        q = []
+        heapq.heappush(q,(0, start[0], start[1]))
+        def go(start, direction):
+            # return the stop position and length
+            i, j = start
+            ii, jj = direction
+            l=0
+            while 0<=i+ii<m and 0<=j+jj<n and maze[i+ii][j+jj]!=1:
+                i+=ii
+                j+=jj
+                l+=1
+            return l, (i,j)
+        while q:
+            val, i, j = heapq.heappop(q)
+            if (i,j) in visited and visited[(i,j)] <= val:
+                continue
+            visited[(i,j)] = val
+            if [i,j] == destination:
+                return val
+            for d in dire:
+                l, [x, y] = go((i,j), d)
+                heapq.heappush(q,(val+l, x,y))
+        return -1
+
+
 752. Open the Lock
 https://leetcode.com/problems/open-the-lock/
 
