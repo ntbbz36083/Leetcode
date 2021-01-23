@@ -52,14 +52,13 @@ class Solution:
             return l, (i,j)
         while q:
             val, i, j = heapq.heappop(q)
-            if (i,j) in visited and visited[(i,j)] <= val:
-                continue
-            visited[(i,j)] = val
             if [i,j] == destination:
                 return val
             for d in dire:
                 l, [x, y] = go((i,j), d)
-                heapq.heappush(q,(val+l, x,y))
+                if (x,y) not in visited or val+l < visited[(x,y)]: 
+                    heapq.heappush(q,(val+l, x,y))
+                    visited[(x,y)] = val+l
         return -1
         
 1631. Path With Minimum Effort
@@ -85,3 +84,31 @@ class Solution:
                     if dist[x][y]> newdist:
                         dist[x][y] = newdist
                         heappush(min_heap, (dist[x][y],x,y))
+
+1730. Shortest Path to Get Food
+https://leetcode.com/problems/shortest-path-to-get-food/
+class Solution:
+    def getFood(self, grid: List[List[str]]) -> int:
+        dire = [(0, 1), (0, -1), (-1, 0), (1, 0)]
+        m, n = len(grid), len(grid[0])
+        visited = collections.defaultdict(int)
+        start = []
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '#':
+                    start.append((i,j))
+        
+        
+        q = [(0, x[0],x[1]) for x in start]
+        #print(q)
+        while q:
+            val, i, j = heapq.heappop(q)
+            if grid[i][j] == '*':
+                return val
+            for d in dire:
+                x,y = i+d[0], j + d[1]
+                if 0 <= x < m and 0 <= y < n and grid[x][y] != 'X':
+                    if (x,y) not in visited:
+                        visited[(x,y)] = val+1
+                        heapq.heappush(q,(val+1, x,y))
+        return -1
