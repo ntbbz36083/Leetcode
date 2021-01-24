@@ -493,7 +493,37 @@ class Solution:
             if 0 <= x < self.m and 0 <= y < self.n:
                 if matrix[x][y] >= matrix[i][j]:
                     self.dfs(matrix,x,y,visited)
-                    
+
+430. Flatten a Multilevel Doubly Linked List
+https://leetcode.com/problems/flatten-a-multilevel-doubly-linked-list/
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val, prev, next, child):
+        self.val = val
+        self.prev = prev
+        self.next = next
+        self.child = child
+"""
+
+class Solution:
+    def flatten(self, head: 'Node') -> 'Node':
+        if not head:
+            return head
+        stack, order = [head], []
+        while stack:
+            last = stack.pop()
+            order.append(last)
+            if last.next:
+                stack.append(last.next)
+            if last.child:
+                stack.append(last.child)
+        for i in range(len(order)-1):
+            order[i+1].prev = order[i]
+            order[i].next = order[i+1]
+            order[i].child = None
+        return order[0]
+
 473. Matchsticks to Square
 https://leetcode.com/problems/matchsticks-to-square/
 class Solution:
@@ -651,6 +681,28 @@ class Solution:
                 cache[(i,j,N)]=1
                 return cache[(i,j,N)]
         return helper(i,j,N) % mod
+
+638. Shopping Offers
+https://leetcode.com/problems/shopping-offers/
+class Solution:
+    def shoppingOffers(self, price: List[int], special: List[List[int]], needs: List[int]) -> int:
+        d = {}
+        special = list(filter(lambda x:all(x[i] - needs[i] for i in range(len(needs))) >= 0, special))
+        def dfs(cur):
+            val = sum([price[i] * cur[i] for i in range(len(needs))])
+            for spec in special:
+                if val < spec[-1]:
+                    continue
+                tmp = [cur[i]-spec[i] for i in range(len(needs))]
+                if min(tmp) >= 0:
+                    val = min(
+                        val, 
+                        d.get(tuple(tmp), dfs(tmp))+ spec[-1]
+                    )
+            d[tuple(cur)] = val
+            return val
+        return dfs(needs)
+        
 
 695. Max Area of Island
 class Solution(object):
@@ -1198,6 +1250,38 @@ class Solution:
                 return total_sum, total_node
         return dfs(0)[1]
 
+1376. Time Needed to Inform All Employees
+https://leetcode.com/problems/time-needed-to-inform-all-employees/
+######################  bottom to top  ########################
+class Solution:
+    def numOfMinutes(self, n: int, headID: int, manager: List[int], informTime: List[int]) -> int:
+
+        def recurse(worker):
+            # if manager[worker] == -1 means this is headID
+            if manager[worker] != -1:
+                # get its manager id and inform time add to current 
+                # worker informatime
+                informTime[worker] += recurse(manager[worker])
+                # marked it as visited
+                manager[worker] = -1
+            # return informtime of worker
+            return informTime[worker]
+        # find the max time
+        return max(map(recurse, manager))
+
+######################  top to bottom  ########################
+subordinates = collections.defaultdict(list)
+        self.res = 0
+        for i, v in enumerate(manager):
+            subordinates[v].append(i)
+        
+        def dfs(manager, time):
+            self.res = max(self.res, time)
+            for subordinate in subordinates[manager]:
+                dfs(subordinate, time + informTime[manager])
+        dfs(headID, 0)        
+        return self.res
+        
 1466. Reorder Routes to Make All Paths Lead to the City Zero
 https://leetcode.com/problems/reorder-routes-to-make-all-paths-lead-to-the-city-zero/
 class Solution:
@@ -1217,6 +1301,25 @@ class Solution:
                     continue
                 dfs(v,u)
         dfs(0,-1)
+        return self.res
+
+1625. Lexicographically Smallest String After Applying Operations
+https://leetcode.com/problems/lexicographically-smallest-string-after-applying-operations/
+class Solution:
+    def findLexSmallestString(self, s: str, a: int, b: int) -> str:
+        def dfs(s):
+            if s not in seen:
+                seen.add(s)
+                self.res = min(self.res, s)
+                addA = list(s)
+                for i,c in enumerate(addA):
+                    if i % 2 == 1:
+                        addA[i] = str((int(c)+a)%10)
+                dfs(''.join(addA))
+                dfs(s[-b :]+s[: -b])
+        seen = set()
+        self.res = s
+        dfs(s)
         return self.res
 
 1631. Path With Minimum Effort
