@@ -93,6 +93,106 @@ class Solution(object):
                 if not uf.connected(i*n+j, m*n):
                     board[i][j] = 'X'
 
+305. Number of Islands II
+https://leetcode.com/problems/number-of-islands-ii/
+#T:O(m+n logn)
+class UF(object):
+    def __init__(self):
+        self.id = {}
+        self.sz = {}
+        self.count = 0
+    
+    def add(self, p):
+        self.id[p] = p
+        self.sz[p] = 1
+        self.count += 1
+    
+    def find(self, p):
+        while p != self.id[p]:
+            self.id[p] = self.id[self.id[p]]
+            p = self.id[p]
+        return p
+    
+    def union(self, a, b):
+        i = self.find(a)
+        j = self.find(b)
+        if i == j:
+            return
+        if self.sz[i] > self.sz[j]:
+            i, j = j,i
+        self.id[i] = j
+        self.sz[j] += self.sz[i]
+        self.count -= 1
+        
+    def connected(self, a, b):
+        return self.find(a) == self.find(b)
+
+class Solution:
+    def numIslands2(self, m: int, n: int, positions: List[List[int]]) -> List[int]:
+        ans = []
+        dire = [(1,0),(-1,0),(0,1),(0,-1)]
+        islands = UF()
+        for p in map(tuple, positions):
+            if p in islands.id:
+                ans += [islands.count]
+            else:
+                islands.add(p)
+                for d in dire:
+                    q = (p[0] + d[0], p[1]+d[1])
+                    if q in islands.id:
+                        islands.union(p,q)
+                ans += [islands.count]
+        return ans
+
+323. Number of Connected Components in an Undirected Graph
+https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+class UF:
+    def __init__(self,n):
+        self.d = {}
+        self.sz = {}
+        self.count = n
+        
+    def add(self, p):
+        if p in self.d:
+            return
+        self.d[p] = p
+        self.sz[p] = 1
+        
+    def find(self, p):
+        while p != self.d[p]:
+            self.d[p] = self.d[self.d[p]]
+            p = self.d[p]
+        return p
+    
+    def union(self, a, b):
+        i,j = self.find(a), self.find(b)
+        if i == j:
+            return
+        if self.sz[i] > self.sz[j]:
+            i, j = j, i
+        self.d[i] = j
+        self.sz[j] += self.sz[i]
+        self.count -= 1
+        
+class Solution:
+    def countComponents(self, n: int, edges: List[List[int]]) -> int:
+        u = UF(n)
+        for a, b in edges:
+            if a in u.d:
+                if b in u.d:
+                    u.union(a,b)
+                else:
+                    u.add(b)
+                    u.union(a,b)
+            else:
+                if b in u.d:
+                    u.add(a)
+                else:
+                    u.add(a)
+                    u.add(b)
+                u.union(a,b)            
+        return u.count
+
 684. Redundant Connection
 https://leetcode.com/problems/redundant-connection/
 Union Find
