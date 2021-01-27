@@ -316,3 +316,44 @@ class Solution(object):
             if uf.find(a) == uf.find(b):
                 return False
         return True                                
+
+1319. Number of Operations to Make Network Connected
+https://leetcode.com/problems/number-of-operations-to-make-network-connected/
+class UF:  
+    def __init__(self,n):
+        self.count = n
+        self.d = {}
+        self.sz = {}
+    
+    def add(self,p):
+        if p in self.d:
+            return
+        self.d[p] = p
+        self.sz[p] = 1
+        
+    def find(self, p):
+        while p!=self.d[p]:
+            self.d[p] = self.d[self.d[p]]
+            p = self.d[p]
+        return p
+    
+    def union(self, a, b):
+        i, j = self.find(a), self.find(b)
+        if i == j:
+            return
+        if self.sz[i]>self.sz[j]:
+            i, j = j, i
+        self.d[i] = j
+        self.sz[j] += self.sz[i]
+        self.count -= 1
+        
+class Solution:
+    def makeConnected(self, n: int, connections: List[List[int]]) -> int:
+        if len(connections) < n-1:
+            return -1
+        u = UF(n)
+        for a, b in connections:
+            u.add(a)
+            u.add(b)
+            u.union(a,b)
+        return u.count -1
