@@ -553,6 +553,26 @@ class Solution:
                 used.add(left)
         return False
 
+494. Target Sum
+https://leetcode.com/problems/target-sum/
+class Solution:
+#T:O(ns)
+#S:O(ns)
+    def findTargetSumWays(self, nums: List[int], S: int) -> int:
+        d = collections.defaultdict(int)
+        return self.dfs(0, S, d, nums)
+        
+    def dfs(self, index, s, d, nums):
+        if (index, s) not in d:
+            r = 0
+            if index == len(nums):
+                if s == 0:
+                    r = 1
+            else:
+                r = self.dfs(index+1,s+nums[index], d, nums) + self.dfs(index+1,s-nums[index], d, nums)
+            d[(index,s)] = r
+        return d[(index,s)]
+
 526. Beautiful Arrangement
 https://leetcode.com/problems/beautiful-arrangement/
 class Solution:
@@ -951,6 +971,30 @@ class Solution:
                 self.dfs(key, d, visited)
         return 
 
+851. Loud and Rich
+https://leetcode.com/problems/loud-and-rich/
+class Solution:
+#T:O(n)
+#S:O(n)
+    def loudAndRich(self, richer: List[List[int]], quiet: List[int]) -> List[int]:
+        morerich = collections.defaultdict(set)
+        for i, j in richer: 
+            morerich[j].add(i)
+        res = []
+        @lru_cache(maxsize=None)
+        def dfs(i):
+            cur, r = quiet[i], i
+            if i not in morerich:
+                return cur,r
+            for rich in morerich[i]:
+                cur1, r1 = dfs(rich)
+                if cur1 < cur:
+                    cur, r = cur1, r1
+            return cur, r
+        for i in range(len(quiet)): 
+            res.append(dfs(i)[1])
+        return res
+
 897. Increasing Order Search Tree
 https://leetcode.com/problems/increasing-order-search-tree/
 class Solution:
@@ -968,6 +1012,47 @@ class Solution:
             node.left = None
             return (l1,r2)
         return dfs(root)[0]
+
+934. Shortest Bridge
+https://leetcode.com/problems/shortest-bridge/
+class Solution:
+    def shortestBridge(self, A: List[List[int]]) -> int:
+        bound= set()
+        dire = [(1,0),(-1,0),(0,1),(0,-1)]
+        m, n = len(A), len(A[0])
+        # get root of islanda
+        def getfirst():
+            for i in range(m):
+                for j in range(n):
+                    if A[i][j] == 1:
+                        return i,j
+        # get boundary of islanda
+        def dfs(i,j):
+            A[i][j] = -1
+            for d in dire:
+                x,y = i+d[0],j+d[1]
+                if 0 <= x<m and 0 <= y < n:
+                    if A[x][y] == 0:
+                        bound.add((i,j))
+                    elif A[x][y] == 1:
+                        dfs(x,y)
+        i,j = getfirst()
+        dfs(i,j)
+        # BFS to find next island
+        step = 0
+        while bound:
+            new = []
+            for i,j in bound:
+                for d in dire:
+                    x,y = i+d[0],j+d[1]
+                    if 0 <= x < m and 0 <= y < n:
+                        if A[x][y] == 1:
+                            return step
+                        elif A[x][y] ==0:
+                            A[x][y] = -1
+                            new.append((x,y))
+            step += 1
+            bound = new
 
 947. Most Stones Removed with Same Row or Column
 https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/
