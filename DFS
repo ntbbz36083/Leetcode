@@ -969,6 +969,33 @@ class Solution:
             return (l1,r2)
         return dfs(root)[0]
 
+947. Most Stones Removed with Same Row or Column
+https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/
+class Solution:
+    def removeStones(self, stones: List[List[int]]) -> int:
+        seen = set()
+        row, col = collections.defaultdict(list), collections.defaultdict(list)
+        res = 0
+        for i,j in stones:
+            row[i].append(j)
+            col[j].append(i)
+        for i,j in stones:
+            if (i,j) not in seen:
+                self.dfs(i,j, row, col, seen)
+                res += 1
+        return len(stones)-res
+    
+    def dfs(self, i,j,row,col,seen):
+        for jj in row[i]:
+            if (i,jj) not in seen:
+                seen.add((i,jj))
+                self.dfs(i,jj,row,col,seen)
+        for ii in col[j]:
+            if (ii,j) not in seen:
+                seen.add((ii,j))
+                self.dfs(ii,j,row,col,seen)
+
+
 959. Regions Cut By Slashes
 https://leetcode.com/problems/regions-cut-by-slashes/
 class Solution:
