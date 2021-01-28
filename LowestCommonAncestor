@@ -1,3 +1,113 @@
+235. Lowest Common Ancestor of a Binary Search Tree
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
+#take advantage of BFS
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        while root:
+            if max(p.val, q.val) < root.val:
+                root = root.left
+            elif min(p.val, q.val) > root.val:
+                root = root.right
+            else:
+                return root
+
+#standard template
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        return self.helper(root, p, q)
+    
+    def helper(self, node, p,q):
+        if not node:
+            return None
+        if node.val == p.val or node.val == q.val:
+            return node
+        left = self.helper(node.left,p,q)
+        right = self.helper(node.right,p,q)
+        if left and right:
+            return node
+        return left or right
+
+236. Lowest Common Ancestor of a Binary Tree
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        return self.helper(root, p, q)
+    
+    def helper(self, node, p, q):
+        if not node:
+            return None
+        if node.val == p.val or node.val == q.val:
+            return node
+        left = self.helper(node.left, p, q)
+        right = self.helper(node.right, p, q)
+        if left and right:
+            return node
+        return left or right
+865. Smallest Subtree with all the Deepest Nodes
+https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/submissions/
+1123. Lowest Common Ancestor of Deepest Leaves
+https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/
+class Solution:
+    def lcaDeepestLeaves(self, root):
+            """
+            :type root: TreeNode
+            :rtype: TreeNode
+            """
+            return self.helper(root)[1]
+    
+    def helper(self, node):
+        if node:
+            hl, llca = self.helper(node.left)
+            hr, rlca = self.helper(node.right)
+            if hl > hr:
+                return hl+1, llca
+            elif hl < hr:
+                return hr+1, rlca
+            else:
+                return hl+1, node
+        else:
+            return 0, None
+            
+1644. Lowest Common Ancestor of a Binary Tree II
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        self.res = 0
+        self.helper(root, p, q)
+        return self.res
+        
+    def helper(self, node, p, q):
+        if not node:
+            return
+        left = self.helper(node.left, p, q)
+        right = self.helper(node.right, p, q)
+        if left and right:
+            self.res = node
+            return False
+        elif (left or right) and (p==node or q==node):
+            self.res = node
+            return False
+        elif p==node or q==node:
+            return True
+        else:
+            return left or right
+
+1650. Lowest Common Ancestor of a Binary Tree III
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/
+class Solution:
+    def lowestCommonAncestor(self, p: 'Node', q: 'Node') -> 'Node':
+        p1, q1 = p, q
+        while p1!=q1:
+            if p1.parent:
+                p1 = p1.parent
+            else:
+                p1 = q
+            if q1.parent:
+                q1 = q1.parent
+            else:
+                q1 = p
+        return p1
+            
 1676. Lowest Common Ancestor of a Binary Tree IV
 https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iv/
 #T:O(n)
