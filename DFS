@@ -419,6 +419,28 @@ class Solution(object):
         
         return len([0 for i in range(n) if i == parent[i]])
 
+332. Reconstruct Itinerary
+https://leetcode.com/problems/reconstruct-itinerary/
+class Solution:
+    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+        d = collections.defaultdict(list)
+        for a,b in tickets:
+            d[a].append(b)
+        self.route = ["JFK"]
+        def dfs(start):
+            if len(self.route) == len(tickets) + 1:
+                return self.route
+            myDsts = sorted(d[start])
+            for dst in myDsts:
+                d[start].remove(dst)
+                self.route += dst,
+                worked = dfs(dst)
+                if worked:
+                    return worked
+                self.route.pop()
+                d[start] += dst,
+        return dfs('JFK')
+
 339. Nested List Weight Sum
 https://leetcode.com/problems/nested-list-weight-sum/
 class Solution:
@@ -842,6 +864,72 @@ class Solution:
             self.dfs(image, i-1, j, newColor)
             self.dfs(image, i, j+1, newColor)
             self.dfs(image, i, j-1, newColor)
+
+743. Network Delay Time
+https://leetcode.com/problems/network-delay-time/
+https://leetcode.com/problems/network-delay-time/discuss/471164/Python-DFS-BFS-Dijkstra-Bellman-Ford-SPFA-Floyd-Warshall
+################################## simple DFS ##################################
+class Solution:
+#T:O(3n) n for looping edges, n for max(), n for dfs since visited all nodes
+#S:O(2n) n for g and n for distance
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        g = collections.defaultdict(list)
+        self.res = float('inf')
+        visited = set()
+        for a,b,c in times:
+            g[a].append((b,c))
+        distance = {i:float('inf') for i in range(1,n+1)}
+        self.dfs(k,g,visited,0, distance)
+        res = max(distance.values())
+        return res if res != float('inf') else -1
+        
+    def dfs(self, i, g, visited, time, distance):
+        if time >= distance[i]:
+            return
+        distance[i] = time
+        for j, cost in g[i]:
+            self.dfs(j,g,visited, time+cost, distance)
+            
+################################## simple BFS ##################################
+class Solution:
+#T:O(3n) n for looping edges, n for max(), n for dfs since visited all nodes
+#S:O(2n) n for g and n for distance
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        elapsedTime = {i:float('inf') for i in range(1,n+1)} 
+        queue = deque([(0, k)])
+        graph = defaultdict(list)
+        for u, v, w in times:
+            graph[u].append((v, w))
+        while queue:
+            time, node = queue.popleft()
+            if time < elapsedTime[node]:
+                elapsedTime[node] = time
+                for v, w in graph[node]:
+                    queue.append((time + w, v))
+        mx = max(elapsedTime.values())
+        return mx if mx < float("inf") else -1
+        
+
+################################## Dijkstra algorithm ##################################
+class Solution:
+#T:O(2n+logn) n for looping edges, n for max(), logn for heap
+#S:O(2n) n for g and n for distance
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        elapsedTime = {i:float('inf') for i in range(1,n+1)} 
+        heap = [(0, k)]
+        graph = defaultdict(list)
+        for u, v, w in times:
+            graph[u].append((v, w))
+        while heap:
+            time, node = heappop(heap)
+            if time < elapsedTime[node]:
+                elapsedTime[node] = time
+                for v, w in graph[node]:
+                    heappush(heap,(time + w, v))
+        mx = max(elapsedTime.values())
+        return mx if mx < float("inf") else -1
+
+
 
 749. Contain Virus
 https://leetcode.com/problems/contain-virus/
@@ -1414,6 +1502,30 @@ class Solution:
                 dfs(v,u)
         dfs(0,-1)
         return self.res
+
+1519. Number of Nodes in the Sub-Tree With the Same Label
+https://leetcode.com/problems/number-of-nodes-in-the-sub-tree-with-the-same-label/
+class Solution:
+#Time & space: O(n)
+    def countSubTrees(self, n: int, edges: List[List[int]], labels: str) -> List[int]:        
+        g = collections.defaultdict(list)
+        ans = [0] * n
+        visited = set()
+        
+        for a,b in edges:
+            g[a].append(b)
+            g[b].append(a)
+        def dfs(i):
+            c =collections.Counter()
+            if i not in visited:
+                visited.add(i)
+                c[labels[i]] += 1
+                for child in g[i]:
+                    c += dfs(child)
+                ans[i] += c[labels[i]]
+            return c
+        dfs(0)
+        return ans
 
 1625. Lexicographically Smallest String After Applying Operations
 https://leetcode.com/problems/lexicographically-smallest-string-after-applying-operations/
