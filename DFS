@@ -419,6 +419,34 @@ class Solution(object):
         
         return len([0 for i in range(n) if i == parent[i]])
 
+329. Longest Increasing Path in a Matrix
+https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
+class Solution:
+#T:O(mn*V)
+#S:O(mn)
+    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
+        self.m, self.n = len(matrix), len(matrix[0])
+        self.dire = [(1,0),(-1,0),(0,1),(0,-1)]
+        self.max_len = 0
+        self.d = collections.defaultdict(int)
+        for i in range(self.m):
+            for j in range(self.n):
+                self.dfs(matrix, i, j, float('-inf'))
+        return self.max_len
+    def dfs(self, matrix, i, j, prev):
+        if i < 0 or i >= len(matrix) or j < 0 or j >= len(matrix[0]) or matrix[i][j] <= prev: 
+            return 0
+        if (i,j) in self.d:
+            return self.d[(i,j)]
+        res = []
+        for d in self.dire:
+            x,y = i + d[0], j + d[1]
+            res.append(self.dfs(matrix, x, y, matrix[i][j]))
+        path = 1+max(res)
+        self.d[(i,j)] = path
+        self.max_len = max(self.max_len, path)
+        return path
+
 332. Reconstruct Itinerary
 https://leetcode.com/problems/reconstruct-itinerary/
 class Solution:
@@ -574,6 +602,23 @@ class Solution:
                 lefts[i] += n
                 used.add(left)
         return False
+
+491. Increasing Subsequences
+https://leetcode.com/problems/increasing-subsequences/
+class Solution(object):
+    def findSubsequences(self, nums):
+        ans = []
+        self.dfs(ans, nums, [], 0)
+        return ans
+    def dfs(self, ans, nums, temp, pos):
+        if len(temp) >=2:
+            ans.append(temp)
+        visited = set()
+        for i in range(pos, len(nums)):
+            if not temp or temp[-1] <= nums[i]:
+                if nums[i] not in visited:
+                    visited.add(nums[i])
+                    self.dfs(ans, nums, temp+[nums[i]], i+1)
 
 494. Target Sum
 https://leetcode.com/problems/target-sum/
