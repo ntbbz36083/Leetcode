@@ -574,6 +574,54 @@ class Solution:
             order[i].child = None
         return order[0]
 
+439. Ternary Expression Parser
+https://leetcode.com/problems/ternary-expression-parser/
+class Solution:
+    def parseTernary(self, expression: str) -> str:
+        i = len(expression)-1
+        st = []
+        while i >= 0:
+            ch = expression[i]
+            if ch.isdigit():
+                st.append(ch)
+                i -= 1
+            elif ch == ':':
+                i -= 1
+            elif ch == 'T' or ch == 'F':
+                st.append(ch)
+                i -= 1
+            else:
+                i -= 1
+                true = st.pop()
+                false = st.pop()
+                if expression[i] == 'T':
+                    st.append(true)
+                else:
+                    st.append(false)
+                i -= 1
+        return st[-1]
+
+472. Concatenated Words
+https://leetcode.com/problems/concatenated-words/
+class Solution:
+    def findAllConcatenatedWordsInADict(self, words: List[str]) -> List[str]:
+#T:O(N*L^2) N is the number of words, L is the max length of word
+#S:O(N*L^2)
+        memo = {}
+        words = set(words)
+        
+        def dfs(word):
+            if word in memo:
+                return memo[word]
+            for i in range(1,len(word)):
+                prefix, surfix = word[:i], word[i:]
+                if prefix in words and surfix in words or prefix in words and dfs(surfix):
+                    memo[word] = True
+                    return True
+            memo[word] = False
+            return False
+        return [word for word in words if dfs(word)]
+
 473. Matchsticks to Square
 https://leetcode.com/problems/matchsticks-to-square/
 class Solution:
@@ -602,6 +650,62 @@ class Solution:
                 lefts[i] += n
                 used.add(left)
         return False
+
+488. Zuma Game
+https://leetcode.com/problems/zuma-game/
+class Solution:
+    def findMinStep(self, board: str, hand: str) -> int:
+        def remove(b):
+            i = 0
+            for j in range(len(b)+1):
+                if j == len(b) or b[j] != b[i]:
+                    if j - i >= 3:
+                        return remove(b[:i]+b[j:])
+                    i = j
+            return b
+        
+        @lru_cache(None)
+        def dfs(b, h):
+            b = remove(b)
+            if b and not h: 
+                return float('inf')
+            if not b: 
+                return 0
+            
+            res = float('inf')
+            for i in range(len(b)+1):
+                for j in range(len(h)):
+                    res = min(res, 1 + dfs(b[:i] + h[j] + b[i:], h[:j] + h[j+1:]))
+            return res
+        
+        hand = ''.join(filter(lambda x: x in board, hand))
+        res = dfs(board, hand)
+        return res if res != float('inf') else -1
+
+489. Robot Room Cleaner
+https://leetcode.com/problems/robot-room-cleaner/
+
+class Solution:
+    def cleanRoom(self, robot):
+        """
+        :type robot: Robot
+        :rtype: None
+        """
+        path = set()
+        def dfs(x,y,dx,dy):
+            robot.clean()
+            path.add((x,y))
+            for _ in range(4):
+                if (x+dx, y+dy) not in path and robot.move():
+                    dfs(x+dx, y+dy, dx, dy)
+                robot.turnLeft()
+                dx, dy = -dy, dx
+            robot.turnLeft()
+            robot.turnLeft()
+            robot.move()
+            robot.turnLeft()
+            robot.turnLeft()
+        dfs(0,0,0,1)
 
 491. Increasing Subsequences
 https://leetcode.com/problems/increasing-subsequences/
@@ -1281,6 +1385,32 @@ class Solution:
             self.dfs(g,i-1,j,visited)
             self.dfs(g,i,j+1,visited)
             self.dfs(g,i,j-1,visited)
+
+967. Numbers With Same Consecutive Differences
+https://leetcode.com/problems/numbers-with-same-consecutive-differences/
+Time: O(N * 2 ^ N), space: O(2 ^ N).
+class Solution:
+    def numsSameConsecDiff(self, n: int, k: int) -> List[int]:
+        if n == 1:
+            return list(range(10))
+        if k == 0:
+            return [int(''.join([str(i) for _ in range(n)])) for i in range(1,10)]
+        res = []
+        for i in range(1,10):
+            self.dfs(res, [i], n, k)
+        return res
+    
+    def dfs(self, res, tmp, n, k):
+        if len(tmp) == n:
+            res.append(int(''.join(map(str,tmp))))
+            return
+        next_num = tmp[-1] + k
+        if next_num < 10:
+            self.dfs(res, tmp+[next_num], n, k)
+        next_num = tmp[-1] - k
+        if next_num >= 0:
+            self.dfs(res, tmp+[next_num], n, k)
+        
 
 990. Satisfiability of Equality Equations
 https://leetcode.com/problems/satisfiability-of-equality-equations/
