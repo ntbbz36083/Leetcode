@@ -206,3 +206,24 @@ class Solution:
             else:
                 j = mid - 1
         return False
+
+
+1385. Find the Distance Value Between Two Arrays
+https://leetcode.com/problems/find-the-distance-value-between-two-arrays/
+#T:O(nlogn)
+#S:O(logn)
+class Solution:
+    def findTheDistanceValue(self, arr1: List[int], arr2: List[int], d: int) -> int:
+        arr2.sort()
+        def isvaild(val):
+            l,r = 0, len(arr2)-1
+            while l <= r:
+                mid = (l+r) // 2
+                if abs(arr2[mid] - val) <= d:
+                    return False
+                elif arr2[mid] > val:
+                    r = mid - 1
+                else:
+                    l = mid + 1
+            return True
+        return sum(isvaild(val) for val in arr1)
