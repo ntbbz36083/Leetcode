@@ -66,3 +66,36 @@ class Solution(object):
                 slow += 1
             fast += 1
         return slow
+
+723. Candy Crush
+#Worst case, everytime we only find one candy, thus we need run mn/3 times while loop, inside while loop,
+#it is 2mn, so total time will be m^2n^2, space will be O(mn)
+https://leetcode.com/problems/candy-crush/
+class Solution:
+    def candyCrush(self, board: List[List[int]]) -> List[List[int]]:
+        m,n = len(board), len(board[0])
+        while True:
+            #check
+            crush = set()
+            for i in range(m):
+                for j in range(n):
+                    if i > 1 and board[i][j] and board[i][j] == board[i-1][j] == board[i-2][j]:
+                        crush |= {(i,j),(i-1,j),(i-2,j)}
+                    if j > 1 and board[i][j] and board[i][j] == board[i][j-1] == board[i][j-2]:
+                        crush |= {(i,j),(i,j-1),(i,j-2)}
+            #crush
+            if not crush:
+                break
+            for i,j in crush:
+                board[i][j] = 0
+            
+            #drop
+            for j in range(n):
+                idx = m - 1
+                for i in reversed(range(m)):
+                    if board[i][j]:
+                        board[idx][j] = board[i][j]
+                        idx -= 1
+                for i in range(idx+1):
+                    board[i][j] = 0
+        return board                                                                                             
