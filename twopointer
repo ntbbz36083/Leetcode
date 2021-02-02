@@ -18,6 +18,27 @@ class Solution:
             r.next = ListNode(1)
         return head.next
         
+11. Container With Most Water
+https://leetcode.com/problems/container-with-most-water/
+class Solution:
+    def maxArea(self, height: List[int]) -> int:
+        if len(height) == 2:
+            return min(height)
+        l, r = 0, len(height)-1
+        res = 0
+        while l < r:
+            if height[l] > height[r]:
+                ans = height[r] * (r-l)
+                r -= 1
+            elif height[l] < height[r]:
+                ans = height[l] * (r-l)
+                l += 1
+            else:
+                ans = height[r] * (r-l)
+                l,r = l+1, r-1
+            res = max(res, ans)
+        return res
+
 26. Remove Duplicates from Sorted Array
 https://leetcode.com/problems/remove-duplicates-from-sorted-array/
 class Solution(object):
