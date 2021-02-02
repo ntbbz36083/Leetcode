@@ -50,6 +50,20 @@ class Solution(object):
         slow.next = None
         return head
 
+238. Product of Array Except Self
+https://leetcode.com/problems/product-of-array-except-self/
+class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        res = [1] * len(nums)
+        pi = pj = 1
+        for i in range(len(nums)):
+            j = -1 -i
+            res[i] *= pi
+            res[j] *= pj
+            pi *= nums[i]
+            pj *= nums[j]
+        return res
+
 283. Move Zeroes
 https://leetcode.com/problems/move-zeroes/
 
