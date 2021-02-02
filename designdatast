@@ -73,3 +73,23 @@ class Solution(object):
         if index in self.dic:
             return self.dic[index]
         return index
+
+1396. Design Underground System
+https://leetcode.com/problems/design-underground-system/
+class UndergroundSystem:
+
+    def __init__(self):
+        self.checkin = defaultdict(int)
+        self.timebetweenstation = defaultdict(lambda : defaultdict(lambda : [0, 0]))
+        
+    def checkIn(self, id: int, stationName: str, t: int) -> None:
+        self.checkin[id] = (stationName, t)
+        
+
+    def checkOut(self, id: int, stationName: str, t: int) -> None:
+        startstation, checkintime = self.checkin[id]
+        count, totalTime = self.timebetweenstation[startstation][stationName]
+        self.timebetweenstation[startstation][stationName] = [count+1, totalTime + t-checkintime] 
+        
+    def getAverageTime(self, startStation: str, endStation: str) -> float:
+        count, total = self.timebetweenstation[startStation][endStation]
