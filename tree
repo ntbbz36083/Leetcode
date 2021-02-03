@@ -2290,27 +2290,54 @@ class Solution(object):
 
 919. Complete Binary Tree Inserter
 https://leetcode.com/problems/complete-binary-tree-inserter/
-class CBTInserter(object):
-
-    def __init__(self, root):
-        self.tree = [root]
-        for i in self.tree:
-            if i.left: self.tree.append(i.left)
-            if i.right: self.tree.append(i.right)
-
-    def insert(self, v):
-        N = len(self.tree)
-        self.tree.append(TreeNode(v))
-        if N % 2:
-            self.tree[(N - 1) / 2].left = self.tree[-1]
+###### logic, level order traverse tree, add root'left and right to queue as long as root.right exist
+###### if current node left exists, add right, pop out this node since it's completed and append new children
+###### if left not exists, just append left
+class CBTInserter:
+#init O(n), insert O(1)
+    def __init__(self, root: TreeNode):
+        self.root = root
+        self.q = deque([root])
+        while self.q[0].right:
+            parent = self.q.popleft()
+            self.q.append(parent.left)
+            self.q.append(parent.right)
+    def insert(self, v: int) -> int:
+        parent = self.q[0]
+        if parent.left:
+            parent.right = TreeNode(v)
+            self.q.append(parent.left)
+            self.q.append(parent.right)
+            self.q.popleft()
         else:
-            self.tree[(N - 1) / 2].right = self.tree[-1]
-        return self.tree[(N - 1) / 2].val
+            parent.left = TreeNode(v)
+        return parent.val
+    def get_root(self) -> TreeNode:
+        return self.root
 
-    def get_root(self):
-        return self.tree[0]
-
-
+class CBTInserter:
+#init O(1), insert O(n)
+    def __init__(self, root: TreeNode):
+        self.root = root
+        self.q = deque([root])
+        
+    def insert(self, v: int) -> int:
+        while self.q[0].right:
+            parent = self.q.popleft()
+            self.q.append(parent.left)
+            self.q.append(parent.right)
+        parent = self.q[0]
+        if parent.left:
+            parent.right = TreeNode(v)
+            self.q.append(parent.left)
+            self.q.append(parent.right)
+            self.q.popleft()
+        else:
+            parent.left = TreeNode(v)
+        return parent.val
+    def get_root(self) -> TreeNode:
+        return self.root
+        
 938. Range Sum of BST
 https://leetcode.com/problems/range-sum-of-bst/
 class Solution(object):
@@ -2923,6 +2950,21 @@ class Solution(object):
             return False
         return head.val == root.val and (self.helper(head.next, root.left) or self.helper(head.next, root.right))
 
+1372. Longest ZigZag Path in a Binary Tree
+https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree/
+class Solution:
+    def longestZigZag(self, root: TreeNode) -> int:
+        self.res = 0
+        self.helper(root)
+        return self.res-1
+    def helper(self, node):
+        if not node:
+            return 0, 0
+        _, lr = self.helper(node.left)
+        rl, _ = self.helper(node.right)
+        self.res = max(self.res, lr+1, rl+1)
+        return lr+1, rl+1
+
 1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree
 https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/
 class Solution(object):
@@ -3147,7 +3189,95 @@ class Solution(object):
         self.count += sum(l+r <= distance for l in left for r in right)
         return [n+1 for n in left + right if n+1<distance]
     
+1586. Binary Search Tree Iterator II
+https://leetcode.com/problems/binary-search-tree-iterator-ii/
+#### with precalculation  ###
+class BSTIterator:
 
+    def __init__(self, root: TreeNode):
+        self.res = []
+        self._iot(root)        
+        self.n = len(self.res)
+        self.i = -1
+    def hasNext(self) -> bool:
+        if self.i+1 < self.n:
+            return True
+        return False
+
+    def next(self) -> int:
+        self.i += 1
+        return self.res[self.i]
+    def hasPrev(self) -> bool:
+        if self.i-1 >=0:
+            return True
+        return False
+
+    def prev(self) -> int:
+        self.i -= 1
+        return self.res[self.i]
+    
+    def _iot(self, root):
+        if not root:
+            return None
+        self._iot(root.left)
+        self.res.append(root.val)
+        self._iot(root.right)
+    
+#### without precalculation  ###
+class BSTIterator:
+
+    def __init__(self, root: TreeNode):
+        dummy = TreeNode(val=float('-inf'), right=root)    
+        self.stack=[dummy]
+        # leftmost and rightmost is used for checking whether we are at the boundary
+        self.leftmost = root
+        while self.leftmost.left:
+            self.leftmost = self.leftmost.left
+            
+        self.rightmost = root
+        while self.rightmost.right:
+            self.rightmost = self.rightmost.right
+            
+    def hasNext(self) -> bool:
+        if self.stack[-1].val >= self.rightmost.val:
+            return False
+        return True
+    
+    def next(self) -> int:
+        # get the last node of stack, if it has right subtree, find its leftmost leave, which will be the next, append all the parent through the way
+         
+        node = self.stack[-1]
+        if node.right:
+            node = node.right
+            while node:
+                self.stack.append(node)
+                node = node.left
+            return self.stack[-1].val
+        # to understand here, we can use below example
+        # for example, this happens on the rightmost node of left tree, to find the next node, we need to go back all the way to the root node
+        node = self.stack.pop()
+        while self.stack and self.stack[-1].left is not node:
+            node = self.stack.pop()
+        return self.stack[-1].val
+    
+    def hasPrev(self) -> bool:
+        if self.stack[-1].val <= self.leftmost.val:
+            return False
+        return True
+    
+    def prev(self) -> int:
+        node = self.stack[-1]
+        if node.left:
+            node = node.left
+            while node:
+                self.stack.append(node)
+                node = node.right
+            return self.stack[-1].val
+        
+        node = self.stack.pop()
+        while self.stack and self.stack[-1].right is not node:
+            node = self.stack.pop()
+        return self.stack[-1].val
 1602. Find Nearest Right Node in Binary Tree
 https://leetcode.com/problems/find-nearest-right-node-in-binary-tree/
 class Solution(object):
