@@ -1,0 +1,18 @@
+71. Simplify Path
+https://leetcode.com/problems/simplify-path/
+class Solution:
+    def simplifyPath(self, path: str) -> str:
+        path = path.split('/')
+        stack = []
+        i = 0
+        while i < len(path):
+            cur = path[i]
+            if cur not in ['', '.', '..']:
+                stack.append(cur)
+                i += 1
+            elif stack and cur == '..':
+                stack.pop()
+                i += 1
+            else:
+                i += 1
+        return '/'+'/'.join(stack)
