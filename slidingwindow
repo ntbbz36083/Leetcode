@@ -81,6 +81,23 @@ class Solution:
             max_len = max(max_len, right-left)
         return max_len
 
+209. Minimum Size Subarray Sum
+https://leetcode.com/problems/minimum-size-subarray-sum/
+class Solution:
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        if not target or not nums:
+            return 0
+        su, i, j, res = 0, 0, 0, float('inf')
+        while j < len(nums):
+            if su < target:
+                su += nums[j]
+            j += 1
+            while i <= j and su >= target:
+                res = min(res, j-i)
+                su -= nums[i]
+                i += 1
+        return res if res != float('inf') else 0
+
 239. Sliding Window Maximum
 https://leetcode.com/problems/sliding-window-maximum/
 class Solution:
