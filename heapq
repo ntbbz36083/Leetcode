@@ -171,3 +171,26 @@ class MedianFinder:
         if len(self.small) == len(self.large):
             return (self.large[0] - self.small[0])/2.0
         return -float(self.small[0]) if len(self.small) > len(self.large) else float(self.large[0])
+
+767. Reorganize String
+https://leetcode.com/problems/reorganize-string/
+class Solution:
+    def reorganizeString(self, S: str) -> str:
+        res, c ='', Counter(S)
+        pq = []
+        for key,val in c.items():
+            if val > len(S)//2+1:
+                return ''
+            pq.append((-val, key))
+        heapq.heapify(pq)
+        p_a, p_b = 0, ''
+        while pq:
+            a, b = heapq.heappop(pq)
+            a += 1
+            if p_a <0:
+                heapq.heappush(pq,(p_a,p_b))
+            res += b
+            p_a, p_b = a, b
+        if len(res) != len(S):
+            return ''
+        return res
