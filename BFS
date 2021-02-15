@@ -25,6 +25,29 @@ class Solution(object):
             depth += 1
         return depth
 
+127. Word Ladder
+https://leetcode.com/problems/word-ladder/
+import string
+class Solution:
+    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        if endWord not in wordList:
+            return 0
+        q = deque([(beginWord,1)])
+        visited = set()
+        wordList = set(wordList)
+        char = string.ascii_lowercase
+        while q:
+            word, step = q.popleft()
+            if word == endWord:
+                return step
+            for i in range(len(word)):
+                for ch in char:
+                    new = word[:i] + ch + word[i+1:]
+                    if new in wordList and new not in visited:
+                        visited.add(new)
+                        q.append((new,step+1))
+        return 0
+
 314. Binary Tree Vertical Order Traversal
 https://leetcode.com/problems/binary-tree-vertical-order-traversal/
 class Solution:
@@ -143,3 +166,21 @@ class Solution(object):
             res.append(src[:i] + str((num+1)%10) + src[i+1:])
         return res
         
+1197. Minimum Knight Moves
+https://leetcode.com/problems/minimum-knight-moves/
+class Solution:
+    def minKnightMoves(self, x: int, y: int) -> int:
+        q = deque([(0,0,0)])
+        x,y = abs(x), abs(y)
+        dire = [(-2,1), (-1,2), (1,2), (2,1), (2,-1), (1,-2)]
+        visited = set()
+        while q:
+            i,j, step = q.popleft()
+            if i == x and j == y:
+                return step
+            for d in dire:
+                ii, jj = i + d[0], j + d[-1]
+                if (ii,jj) not in visited and -1 <= ii <= x+2 and -1 <= jj <= y+2:
+                    q.append((ii,jj,step+1))
+                    visited.add((ii,jj))
+        return -1
