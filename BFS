@@ -165,7 +165,71 @@ class Solution(object):
             res.append(src[:i] + str((num-1)%10) + src[i+1:])
             res.append(src[:i] + str((num+1)%10) + src[i+1:])
         return res
+
+909. Snakes and Ladders
+https://leetcode.com/problems/snakes-and-ladders/
+class Solution:
+    def snakesAndLadders(self, board: List[List[int]]) -> int:
+        arr = [0]
         
+        board.reverse()
+        for i, row in enumerate(board):
+            if i % 2 == 0:
+                arr += row
+            else:
+                arr += row[::-1]
+        nn = len(board)**2
+        q = deque([1])
+        visited = set()
+        move = 0
+        while q:
+            new = deque([])
+            while q:
+                square = q.popleft()
+                if square == nn:
+                    return move
+                for i in range(1,7):
+                    if square + i <= nn and square+i not in visited:
+                        visited.add(square+i)
+                        if arr[square+i] > -1:
+                            new.append(arr[square+i])
+                        else:
+                            new.append(square+i)
+            q = new
+            move += 1
+        return -1
+
+994. Rotting Oranges
+https://leetcode.com/problems/rotting-oranges/
+class Solution:
+    def orangesRotting(self, grid: List[List[int]]) -> int:
+        visited = set()
+        q = deque([])
+        dire = [(0, 1), (0, -1), (-1, 0), (1, 0)]
+        res = 0
+        cnt = 0
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == 2:
+                    q.append((i,j))
+                elif grid[i][j] == 1:
+                    cnt += 1
+        while q:
+            #new = deque([])
+            for _ in range(len(q)):
+                i,j = q.popleft()
+                for d in dire:
+                    x,y = i+d[0], j + d[-1]
+                    if 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] == 1:
+                        grid[x][y] = 2
+                        q.append((x,y))
+                        cnt -= 1
+            #q = new
+            res += 1
+        if cnt:
+            return -1
+        return max(0,res-1)
+
 1197. Minimum Knight Moves
 https://leetcode.com/problems/minimum-knight-moves/
 class Solution:
