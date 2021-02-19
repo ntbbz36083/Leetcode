@@ -20,6 +20,27 @@ class Solution(object):
         dfs(0, "")
         return res
 
+22. Generate Parentheses
+https://leetcode.com/problems/generate-parentheses/
+class Solution:
+    def generateParenthesis(self, n: int) -> List[str]:
+        if not n:
+            return []
+        ans = []
+        self.dfs(n, n, ans, '')
+        return ans
+    
+    def dfs(self, left, right, ans, path):
+        if right < left:
+            return
+        if not left and not right:
+            ans.append(path)
+            return
+        if left:
+            self.dfs(left-1, right, ans, path+'(')
+        if right:
+            self.dfs(left, right-1, ans, path+')')
+
 46. Permutations
 https://leetcode.com/problems/permutations/
 class Solution(object):
